@@ -2,6 +2,8 @@
 
 Bootstrap your next SaaS project with this SvelteKit template. 🚀
 
+🌍 Live: https://kit-saas-starter.pages.dev/
+
 ## How to use
 
 Clone this repo with

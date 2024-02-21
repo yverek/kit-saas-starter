@@ -13,7 +13,10 @@
     "format": "prettier --write .",
     "test:integration": "playwright test",
     "test:unit": "vitest",
-    "build-cf-types": "pnpm exec wrangler types && mv worker-configuration.d.ts src/"
+    "build-cf-types": "pnpm exec wrangler types && mv worker-configuration.d.ts src/",
+    "drizzle:migrate": "drizzle-kit generate:sqlite",
+    "drizzle:push:dev": "pnpm wrangler d1 migrations apply kss-prod --local",
+    "drizzle:push:prod": "pnpm wrangler d1 migrations apply kss-prod"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240208.0",
@@ -25,6 +28,7 @@
     "@types/eslint": "8.56.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
+    "drizzle-kit": "^0.20.14",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-svelte": "^2.36.0-next.4",
@@ -38,5 +42,8 @@
     "vitest": "^1.2.0",
     "wrangler": "^3.28.4"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "drizzle-orm": "^0.29.3"
+  }
 }
