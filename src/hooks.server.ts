@@ -23,13 +23,9 @@ export const handle = async ({ event, resolve }) => {
     };
   }
 
-  if (!event.platform?.env.DB) {
-    throw new Error("D1 db not defined!");
-  }
+  event.locals.db = drizzle(event.platform?.env.DB as D1Database, { schema });
 
-  event.locals.db = drizzle(event.platform.env.DB, { schema });
-
-  event.locals.lucia = initializeLucia(event.platform.env.DB);
+  event.locals.lucia = initializeLucia(event.platform?.env.DB as D1Database);
 
   const lucia = event.locals.lucia;
   const sessionId = event.cookies.get(lucia.sessionCookieName);
