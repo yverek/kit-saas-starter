@@ -2,6 +2,7 @@ import { drizzle } from "drizzle-orm/d1";
 import { dev } from "$app/environment";
 
 import * as schema from "$lib/server/db/schema";
+import { initializeLucia } from "$lib/server/lucia";
 
 /*
   When developing, this hook will add proxy objects to the `platform` object which
@@ -22,10 +23,39 @@ export const handle = async ({ event, resolve }) => {
     };
   }
 
-  event.locals.db = drizzle(event.platform?.env.DB as D1Database, { schema });
+  if (!event.platform?.env.DB) {
+    throw new Error("D1 db not defined!");
+  }
 
-  const test = await event.locals.db.query.users.findFirst();
-  console.log("🚀 ~ test:", test);
+  event.locals.db = drizzle(event.platform.env.DB, { schema });
+
+  event.locals.lucia = initializeLucia(event.platform.env.DB);
+
+  const lucia = event.locals.lucia;
+  const sessionId = event.cookies.get(lucia.sessionCookieName);
+
+  if (!sessionId) {
+    event.locals.user = null;
+    event.locals.session = null;
+    return resolve(event);
+  }
+
+  const { session, user } = await lucia.validateSession(sessionId);
+
+  if (session && session.fresh) {
+    const { name, value, attributes } = lucia.createSessionCookie(session.id);
+
+    event.cookies.set(name, value, { ...attributes, path: "." });
+  }
+
+  if (!session) {
+    const { name, value, attributes } = lucia.createBlankSessionCookie();
+
+    event.cookies.set(name, value, { ...attributes, path: "." });
+  }
+
+  event.locals.user = user;
+  event.locals.session = session;
 
   return resolve(event);
 };
