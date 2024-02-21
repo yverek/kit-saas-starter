@@ -43,7 +43,6 @@ Go to `drizzle.config.ts` and change `dbName`.
 Go to `package.json` and change dbName in `drizzle:push:dev` and `drizzle:push:prod`.
 
 ```bash
-pnpm drizzle:migrate
 pnpm drizzle:push:dev
 ```
 
