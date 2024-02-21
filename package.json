@@ -46,7 +46,10 @@
   "dependencies": {
     "@lucia-auth/adapter-sqlite": "^3.0.0",
     "drizzle-orm": "^0.29.3",
+    "formsnap": "^0.5.0",
     "lucia": "^3.0.1",
-    "oslo": "^1.1.2"
+    "oslo": "^1.1.2",
+    "sveltekit-superforms": "^2.5.0",
+    "zod": "^3.22.4"
   }
 }

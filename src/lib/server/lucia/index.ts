@@ -10,17 +10,13 @@ export function initializeLucia(db: D1Database) {
 
   return new Lucia(adapter, {
     sessionCookie: { attributes: { secure: !dev } },
-    getUserAttributes: (attributes) => {
-      return {
-        username: attributes.username
-      };
-    }
+    getUserAttributes: ({ name, email }) => ({ name, email })
   });
 }
 
 declare module "lucia" {
   export interface Register {
     exportAuth: ReturnType<typeof initializeLucia>;
-    DatabaseUserAttributes: { username: string };
+    DatabaseUserAttributes: { name: string; email: string };
   }
 }
