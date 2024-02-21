@@ -10,17 +10,50 @@ Clone this repo with
 
 ```bash
 pnpm dlx degit --mode=git yverek/kit-saas-starter my-project
+cd my-project
+pnpm install
+cp wrangler.example.toml wrangler.toml
 ```
 
-## Developing
+Go to [Cloudflare](cloudflare.com) and [deploy](https://developers.cloudflare.com/pages/framework-guides/deploy-a-svelte-site/) this project.
 
-Once you've cloned this project and installed dependencies with `pnpm install`, start a development server:
+Log in with your Cloudflare account by running:
 
 ```bash
-npm run dev
+pnpm exec wrangler login
+```
+
+Now create your D1 database with
+
+```bash
+$ pnpm exec wrangler d1 create my-db-prod
+
+✅ Successfully created DB "my-db-prod"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "my-db-prod"
+database_id = "<unique-ID-for-your-database>"
+```
+
+Go to `wrangler.toml` and change `database_name` and `database_id`.
+
+Go to `drizzle.config.ts` and change `dbName`.
+
+Go to `package.json` and change dbName in `drizzle:push:dev` and `drizzle:push:prod`.
+
+```bash
+pnpm drizzle:migrate
+pnpm drizzle:push:dev
+```
+
+Now, you can run
+
+```bash
+pnpm dev
 
 # or start the server and open the app in a new browser tab
-npm run dev -- --open
+pnpm dev -- --open
 ```
 
 ## Testing
@@ -37,14 +70,10 @@ Run
 pnpm test
 ```
 
-## Building
+## Deploy
 
-To create a production version of your app:
+Just migrate schema to production database
 
 ```bash
-npm run build
+pnpm drizzle:push:prod
 ```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
