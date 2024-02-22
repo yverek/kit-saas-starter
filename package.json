@@ -50,11 +50,15 @@
   "type": "module",
   "dependencies": {
     "@lucia-auth/adapter-sqlite": "^3.0.0",
+    "clsx": "^2.1.0",
     "drizzle-orm": "^0.29.3",
     "formsnap": "^0.5.0",
     "lucia": "^3.0.1",
+    "lucide-svelte": "^0.336.0",
     "oslo": "^1.1.2",
     "sveltekit-superforms": "^2.5.0",
+    "tailwind-merge": "^2.2.1",
+    "tailwind-variants": "^0.2.0",
     "zod": "^3.22.4"
   }
 }
