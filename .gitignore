@@ -10,3 +10,5 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 /.wrangler
 wrangler.toml
+/test_suite_analysis
+/managed_context
