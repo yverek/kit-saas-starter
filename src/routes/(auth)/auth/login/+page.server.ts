@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
   const form = await superValidate(zod(loginFormSchema));
 
-  return { form, title: "Login to your account" };
+  return { form };
 };
 
 export const actions: Actions = {
