@@ -3,13 +3,13 @@
   import Sun from "lucide-svelte/icons/sun";
   import Moon from "lucide-svelte/icons/moon";
   import { toggleMode } from "mode-watcher";
-  import { APP_NAME, APP_URL } from "$lib/constants/general";
+  import { APP_NAME } from "$lib/constants/general";
   import { NAV_LINKS } from "$lib/constants/landing-page";
 </script>
 
 <header class="border-b px-4 py-2.5">
   <nav class="mx-auto flex max-w-screen-xl justify-between">
-    <a href={APP_URL} class="flex items-center gap-3">
+    <a href="/" class="flex items-center gap-3">
       <img src="/logo.png" class="size-10" alt={`${APP_NAME} Logo`} />
       <span class="text-xl font-bold text-black dark:text-white">{APP_NAME}</span>
     </a>
