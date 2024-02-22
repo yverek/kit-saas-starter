@@ -11,9 +11,8 @@
   import Google from "$components/icons/google.svelte";
 
   export let data: PageData;
-  const form = superForm(data.form, {
-    validators: zodClient(loginFormSchema)
-  });
+
+  const form = superForm(data.form, { validators: zodClient(loginFormSchema) });
   const { form: formData, enhance } = form;
 </script>
 
