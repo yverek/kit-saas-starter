@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
   const form = await superValidate(zod(registerFormSchema));
 
-  return { form, title: "Create an account" };
+  return { form };
 };
 
 export const actions: Actions = {
