@@ -12,10 +12,10 @@
       <img class="mr-2 h-8 w-8" src="/images/logo.png" alt="logo" />
       {APP_NAME}
     </a>
-    <div class="w-full rounded-lg bg-white shadow sm:max-w-md md:mt-0 xl:p-0 dark:border dark:border-gray-700 dark:bg-gray-800">
+    <div class="w-full rounded-lg bg-white shadow dark:border dark:border-gray-700 dark:bg-gray-800 sm:max-w-md md:mt-0 xl:p-0">
       <div class="space-y-4 p-6 sm:p-8 md:space-y-6">
         <!-- TODO test this -->
-        <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+        <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl">
           <slot name="title" />
         </h1>
         <slot />
