@@ -19,14 +19,3 @@
   <Button type="submit" variant="outline" size="sm">Logout</Button>
 </form>
 <h1>Landing Page</h1>
-<section>
-  <article>
-    <h2>Total of users registered <strong>({data.users[0].value})</strong></h2>
-  </article>
-  <article>
-    <strong>{JSON.stringify(data.user, null, 2)}</strong>
-    <form method="post" use:enhance>
-      <button style="margin-top: 10px;">Sign out</button>
-    </form>
-  </article>
-</section>
