@@ -1,4 +1,4 @@
-import { fail, redirect } from "@sveltejs/kit";
+import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad, Actions } from "./$types";
 import { generateId } from "lucia";
 import { users } from "$lib/server/db/schema";
@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
   const form = await superValidate(zod(registerFormSchema));
 
-  return { form };
+  return { form, title: "Create an account" };
 };
 
 export const actions: Actions = {
