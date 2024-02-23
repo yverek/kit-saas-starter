@@ -9,7 +9,7 @@ declare global {
     // interface Error {}
     // interface PageState {}
     interface PageData {
-      flashMessage?: FlashMessage;
+      flash?: FlashMessage;
     }
     interface Locals {
       db: DrizzleD1Database<typeof schema>;
