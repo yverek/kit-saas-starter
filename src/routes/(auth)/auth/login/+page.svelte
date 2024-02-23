@@ -13,17 +13,7 @@
   let { data } = $props();
 
   const form = superForm(data.form, { validators: zodClient(loginFormSchema) });
-  const { form: formData, enhance, message } = form;
-
-  $effect(() => {
-    if (!$message) return;
-
-    const { status, text } = $message;
-
-    if (status === "error") {
-      toast.error(text);
-    }
-  });
+  const { form: formData, enhance } = form;
 </script>
 
 <Card.Root class="w-96">

@@ -1,4 +1,3 @@
-import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad, Actions } from "./$types";
 import { eq } from "drizzle-orm";
 import { users } from "$lib/server/db/schema";
@@ -6,9 +5,10 @@ import { verifyPasswordHash } from "$lib/server/lucia/auth-utils";
 import loginFormSchema from "$lib/zod-schemas/login-form.schema";
 import { type Infer, message, superValidate } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
+import { redirect } from "sveltekit-flash-message/server";
 
-export const load: PageServerLoad = async ({ locals }) => {
-  if (locals.user) return redirect(302, "/");
+export const load: PageServerLoad = async ({ locals, cookies }) => {
+  if (locals.user) redirect("/dashboard", { status: "success", text: "You are already logged in." }, cookies);
 
   const form = await superValidate(zod(loginFormSchema));
 
