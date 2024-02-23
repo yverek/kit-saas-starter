@@ -1,19 +1,29 @@
 <script lang="ts">
+  import { toast } from "svelte-sonner";
   import { superForm } from "sveltekit-superforms";
   import * as Form from "$lib/components/ui/form";
   import { Input } from "$lib/components/ui/input";
   import * as Card from "$lib/components/ui/card";
   import { zodClient } from "sveltekit-superforms/adapters";
-  import type { PageData } from "./$types";
   import loginFormSchema from "$lib/zod-schemas/login-form.schema";
   import Button from "$components/ui/button/button.svelte";
   import Apple from "$components/icons/apple.svelte";
   import Google from "$components/icons/google.svelte";
 
-  export let data: PageData;
+  let { data } = $props();
 
   const form = superForm(data.form, { validators: zodClient(loginFormSchema) });
-  const { form: formData, enhance } = form;
+  const { form: formData, enhance, message } = form;
+
+  $effect(() => {
+    if (!$message) return;
+
+    const { status, text } = $message;
+
+    if (status === "error") {
+      toast.error(text);
+    }
+  });
 </script>
 
 <Card.Root class="w-96">

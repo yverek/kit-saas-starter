@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { users } from "$lib/server/db/schema";
 import { verifyPasswordHash } from "$lib/server/lucia/auth-utils";
 import loginFormSchema from "$lib/zod-schemas/login-form.schema";
-import { message, superValidate } from "sveltekit-superforms/server";
+import { type Infer, message, superValidate } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -17,24 +17,24 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
   default: async ({ request, cookies, url, locals: { db, lucia } }) => {
-    const form = await superValidate(request, zod(loginFormSchema));
+    const form = await superValidate<Infer<typeof loginFormSchema>, FlashMessage>(request, zod(loginFormSchema));
 
     if (!form.valid) {
       form.data.password = "";
 
-      return message(form, "Invalid form");
+      return message(form, { status: "error", text: "Invalid form" });
     }
 
     const { email, password } = form.data;
 
     const existingUser = await db.query.users.findFirst({ where: eq(users.email, email) });
     if (!existingUser) {
-      return message(form, "Incorrect username or password", { status: 400 });
+      return message(form, { status: "error", text: "Incorrect username or password" }, { status: 400 });
     }
 
     const validPassword = await verifyPasswordHash(password, existingUser.password);
     if (!validPassword) {
-      return message(form, "Incorrect username or password", { status: 400 });
+      return message(form, { status: "error", text: "Incorrect username or password" }, { status: 400 });
     }
 
     const session = await lucia.createSession(existingUser.id, {});
@@ -43,6 +43,7 @@ export const actions: Actions = {
 
     let redirectTo = url.searchParams.get("redirectTo");
 
+    // TODO this should be a svelte-flash-message?
     if (redirectTo) {
       // with this line we are forcing to redirect to our domain
       // for example, if they pass a malicious domain like example.com/auth/login?redirectTo=http://virus.com
