@@ -112,6 +112,9 @@ devDependencies:
   svelte-check:
     specifier: ^3.6.0
     version: 3.6.4(postcss-load-config@5.0.3)(postcss@8.4.35)(svelte@5.0.0-next.64)
+  sveltekit-flash-message:
+    specifier: ^2.4.2
+    version: 2.4.2(@sveltejs/kit@2.5.0)(svelte@5.0.0-next.64)
   tailwindcss:
     specifier: ^3.3.6
     version: 3.4.1
@@ -4657,6 +4660,16 @@ packages:
       locate-character: 3.0.0
       magic-string: 0.30.7
       zimmerframe: 1.1.2
+
+  /sveltekit-flash-message@2.4.2(@sveltejs/kit@2.5.0)(svelte@5.0.0-next.64):
+    resolution: {integrity: sha512-iXZSOp8La7kHQuOsXOcjIp7x24J/Ycs2uPoHwtjsbObVCbjgxZrtvjd0XUfA0mYZBp97BtAQ5SW5owRDJCWq6A==}
+    peerDependencies:
+      '@sveltejs/kit': 1.x || 2.x
+      svelte: 3.x || 4.x || >=5.0.0-next.51
+    dependencies:
+      '@sveltejs/kit': 2.5.0(@sveltejs/vite-plugin-svelte@3.0.2)(svelte@5.0.0-next.64)(vite@5.1.4)
+      svelte: 5.0.0-next.64
+    dev: true
 
   /sveltekit-superforms@2.5.0(@sveltejs/kit@2.5.0)(@types/json-schema@7.0.15)(esbuild-runner@2.2.2)(esbuild@0.19.12)(svelte@5.0.0-next.64):
     resolution: {integrity: sha512-mMWvmpHpq1iYyawnb8H7NZb+f79z0I81Dx1xPbOak7yIrrwR8wdFnFCCXxdLnIXVAhwhd60jAQraYHcvCaZGgQ==}
