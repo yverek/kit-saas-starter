@@ -6,6 +6,7 @@ import { createPasswordHash } from "$lib/server/lucia/auth-utils";
 import registerFormSchema from "$lib/zod-schemas/register-form.schema";
 import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
+import { sendWelcomeEmail } from "$lib/server/email/send";
 
 export const load: PageServerLoad = async ({ locals }) => {
   if (locals.user) return redirect(302, "/");
@@ -34,13 +35,19 @@ export const actions: Actions = {
     try {
       await db.insert(users).values({ id: userId, name, email, password: hashedPassword });
 
+      const res = await sendWelcomeEmail(email);
+
+      if (!res.success) {
+        // TODO we need to log this using a library
+        console.error(res.error);
+      }
+
       const session = await lucia.createSession(userId, {});
       if (session) {
         const { name, value, attributes } = lucia.createSessionCookie(session.id);
         cookies.set(name, value, { ...attributes, path: "." });
       }
     } catch (e) {
-      console.log("🚀 ~ e:", e);
       if (e instanceof Error && e.message === `D1_ERROR: UNIQUE constraint failed: users.email`) {
         return message(form, "Email already used", { status: 400 });
       }
