@@ -7,8 +7,10 @@ import type { Lucia } from "lucia";
 declare global {
   namespace App {
     // interface Error {}
-    // interface PageData {}
     // interface PageState {}
+    interface PageData {
+      flashMessage?: FlashMessage;
+    }
     interface Locals {
       db: DrizzleD1Database<typeof schema>;
       lucia: Lucia;
@@ -20,6 +22,9 @@ declare global {
       cf: CfProperties;
       ctx: ExecutionContext;
     }
+  }
+  namespace Superforms {
+    type Message = FlashMessage;
   }
 }
 
