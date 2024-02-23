@@ -32,6 +32,9 @@ dependencies:
   oslo:
     specifier: ^1.1.2
     version: 1.1.2
+  svelte-sonner:
+    specifier: ^0.3.18
+    version: 0.3.18(svelte@5.0.0-next.64)
   sveltekit-superforms:
     specifier: ^2.5.0
     version: 2.5.0(@sveltejs/kit@2.5.0)(@types/json-schema@7.0.15)(esbuild-runner@2.2.2)(esbuild@0.19.12)(svelte@5.0.0-next.64)
@@ -4642,6 +4645,14 @@ packages:
       svelte: 5.0.0-next.64
       typescript: 5.3.3
     dev: true
+
+  /svelte-sonner@0.3.18(svelte@5.0.0-next.64):
+    resolution: {integrity: sha512-DkpbeLB1yZ6CQ0vg/tpFUv2KGxdugODBjZYk9KWsxIAMOsnKg2VEyV2h1ycDztaEbiwoIGBObPvv+MG/4z1HSg==}
+    peerDependencies:
+      svelte: '>=3 <5'
+    dependencies:
+      svelte: 5.0.0-next.64
+    dev: false
 
   /svelte@5.0.0-next.64:
     resolution: {integrity: sha512-MXQgo86gXY1dVQSWNrUnckALKT7e1pbCu2PcWzpWsKswMqO/Ruiab+GJKNzP4I1AafAILbKaCBXYsWDuKtTnNg==}

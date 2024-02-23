@@ -60,6 +60,7 @@
     "lucide-svelte": "^0.336.0",
     "mode-watcher": "^0.2.1",
     "oslo": "^1.1.2",
+    "svelte-sonner": "^0.3.18",
     "sveltekit-superforms": "^2.5.0",
     "tailwind-merge": "^2.2.1",
     "tailwind-variants": "^0.2.0",
