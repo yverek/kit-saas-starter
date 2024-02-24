@@ -39,7 +39,7 @@ export const actions: Actions = {
 
     const session = await lucia.createSession(existingUser.id, {});
     const { name, value, attributes } = lucia.createSessionCookie(session.id);
-    cookies.set(name, value, { ...attributes, path: "." });
+    cookies.set(name, value, { ...attributes, path: "/" });
 
     let redirectTo = url.searchParams.get("redirectTo");
 

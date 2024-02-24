@@ -41,13 +41,13 @@ export const handle = async ({ event, resolve }) => {
   if (session && session.fresh) {
     const { name, value, attributes } = lucia.createSessionCookie(session.id);
 
-    event.cookies.set(name, value, { ...attributes, path: "." });
+    event.cookies.set(name, value, { ...attributes, path: "/" });
   }
 
   if (!session) {
     const { name, value, attributes } = lucia.createBlankSessionCookie();
 
-    event.cookies.set(name, value, { ...attributes, path: "." });
+    event.cookies.set(name, value, { ...attributes, path: "/" });
   }
 
   event.locals.user = user;

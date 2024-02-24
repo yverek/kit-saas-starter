@@ -9,7 +9,7 @@ export const actions: Actions = {
 
     await lucia.invalidateSession(session.id);
     const { name, value, attributes } = lucia.createBlankSessionCookie();
-    cookies.set(name, value, { ...attributes, path: "." });
+    cookies.set(name, value, { ...attributes, path: "/" });
 
     redirect(302, "/");
   }
