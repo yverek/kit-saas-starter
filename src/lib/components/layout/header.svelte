@@ -11,9 +11,9 @@
   <nav class="mx-auto flex max-w-screen-xl justify-between">
     <a href="/" class="flex items-center gap-3">
       <img src="/logo.png" class="size-10" alt={`${APP_NAME} Logo`} />
-      <span class="text-xl font-bold text-black dark:text-white">{APP_NAME}</span>
+      <span class="hidden text-xl font-bold text-black dark:text-white sm:block">{APP_NAME}</span>
     </a>
-    <ul class="mt-4 flex flex-col font-medium md:mt-0 md:flex-row">
+    <ul class="hidden lg:flex lg:flex-row lg:font-medium">
       {#each NAV_LINKS as { name, href }}
         <li>
           <Button {href} variant="link" class="text-md text-black dark:text-white">
@@ -23,7 +23,7 @@
         </li>
       {/each}
     </ul>
-    <div class="ml-2 flex gap-2">
+    <div class="mr-2 flex gap-2">
       <Button on:click={toggleMode} variant="secondary" size="icon">
         <Sun class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
         <Moon class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
