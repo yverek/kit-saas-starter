@@ -1,4 +1,4 @@
-import { logger } from "$lib/server/logger";
+import { logger } from "$lib/logger";
 import type { Handle } from "@sveltejs/kit";
 
 import { initializeLucia } from "$lib/server/lucia";

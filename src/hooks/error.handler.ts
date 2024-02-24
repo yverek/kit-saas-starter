@@ -1,4 +1,4 @@
-import { logger } from "$lib/server/logger";
+import { logger } from "$lib/logger";
 import type { HandleServerError } from "@sveltejs/kit";
 
 export const handleError: HandleServerError = ({ status, error, message }) => {

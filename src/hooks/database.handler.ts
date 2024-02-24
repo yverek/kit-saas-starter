@@ -1,5 +1,5 @@
 import { dev } from "$app/environment";
-import { logger } from "$lib/server/logger";
+import { logger } from "$lib/logger";
 import type { Handle } from "@sveltejs/kit";
 import { drizzle } from "drizzle-orm/d1";
 

@@ -15,4 +15,6 @@ if (dev) {
   };
 }
 
+// TODO add production options
+
 export const logger = pino(options);
