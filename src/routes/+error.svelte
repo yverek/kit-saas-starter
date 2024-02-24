@@ -1,5 +1,6 @@
 <script>
   import { page } from "$app/stores";
+  import { route } from "$lib/ROUTES";
 
   import Button from "$components/ui/button/button.svelte";
 </script>
@@ -10,7 +11,7 @@
 
     <p class="text-muted-foreground">Oops! The page you're looking for does not exist. It might have been moved, renamed, or might never existed.</p>
 
-    <Button href="/" class="w-fit">Go to Home Page</Button>
+    <Button href={route("/")} class="w-fit">Go to Home Page</Button>
   {:else}
     <h1>{$page.status}: {$page.error?.message}</h1>
   {/if}

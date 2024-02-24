@@ -9,6 +9,7 @@
   import Button from "$components/ui/button/button.svelte";
   import Apple from "$components/icons/apple.svelte";
   import Google from "$components/icons/google.svelte";
+  import { route } from "$lib/ROUTES";
 
   export let data: PageData;
 
@@ -22,10 +23,12 @@
   </Card.Header>
   <Card.Content class="grid gap-4">
     <div class="grid grid-cols-2 gap-6">
+      <!-- TODO change this href -->
       <Button variant="outline" href="#">
         <Apple class="mr-2 h-4 w-4" />
         GitHub
       </Button>
+      <!-- TODO change this href -->
       <Button variant="outline" href="#">
         <Google class="mr-2 h-4 w-4" />
         Google
@@ -73,7 +76,7 @@
   </Card.Content>
   <Card.Footer>
     <p class="text-sm">
-      Already have an account? <a href="/auth/login" class="font-medium hover:underline">Login</a>
+      Already have an account? <a href={route("/auth/login")} class="font-medium hover:underline">Login</a>
     </p>
   </Card.Footer>
 </Card.Root>

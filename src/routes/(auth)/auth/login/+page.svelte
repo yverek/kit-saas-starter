@@ -9,6 +9,7 @@
   import Button from "$components/ui/button/button.svelte";
   import Apple from "$components/icons/apple.svelte";
   import Google from "$components/icons/google.svelte";
+  import { route } from "$lib/ROUTES.js";
 
   let { data } = $props();
 
@@ -54,13 +55,13 @@
         </Form.Control>
         <Form.FieldErrors />
       </Form.Field>
-      <a href="/auth/password-reset" class="flex- text-right text-sm font-medium hover:underline">Forgot password?</a>
+      <a href={route("/auth/password-reset")} class="flex- text-right text-sm font-medium hover:underline">Forgot password?</a>
       <Form.Button type="submit" class="mt-4">Login</Form.Button>
     </form>
   </Card.Content>
   <Card.Footer>
     <p class="text-sm">
-      Don't have an account yet? <a href="/auth/register" class="font-medium hover:underline">Register</a>
+      Don't have an account yet? <a href={route("/auth/register")} class="font-medium hover:underline">Register</a>
     </p>
   </Card.Footer>
 </Card.Root>

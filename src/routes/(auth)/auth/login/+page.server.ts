@@ -6,9 +6,10 @@ import loginFormSchema from "$lib/zod-schemas/login-form.schema";
 import { type Infer, message, superValidate } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { redirect } from "sveltekit-flash-message/server";
+import { route } from "$lib/ROUTES";
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
-  if (locals.user) redirect("/dashboard", { status: "success", text: "You are already logged in." }, cookies);
+  if (locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
 
   const form = await superValidate(zod(loginFormSchema));
 
@@ -52,6 +53,6 @@ export const actions: Actions = {
       redirectTo = `/${redirectTo.slice(1)}`;
     }
 
-    redirect(303, redirectTo ?? "/dashboard");
+    redirect(303, redirectTo ?? route("/dashboard"));
   }
 };

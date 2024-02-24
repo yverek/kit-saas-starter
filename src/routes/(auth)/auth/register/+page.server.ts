@@ -7,9 +7,10 @@ import { superValidate, message, type Infer } from "sveltekit-superforms/server"
 import { zod } from "sveltekit-superforms/adapters";
 import { sendWelcomeEmail } from "$lib/server/email/send";
 import { redirect } from "sveltekit-flash-message/server";
+import { route } from "$lib/ROUTES";
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
-  if (locals.user) redirect("/dashboard", { status: "success", text: "You are already logged in." }, cookies);
+  if (locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
 
   const form = await superValidate(zod(registerFormSchema));
 
@@ -55,6 +56,6 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "An unknown error occurred" }, { status: 500 });
     }
 
-    redirect(302, "/");
+    redirect(302, route("/"));
   }
 };

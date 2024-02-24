@@ -2,12 +2,13 @@
   import { ChevronRight } from "lucide-svelte";
   import Button from "$components/ui/button/button.svelte";
   import { GitHub, Drizzle, Svelte, Tailwind, Cloudflare, Shacdn, TypeScript, Pnpm, Superforms } from "$components/icons";
+  import { route } from "$lib/ROUTES";
 </script>
 
 <section>
   <div class="mx-auto max-w-screen-xl px-4 py-8 text-center lg:px-12 lg:py-16">
     <Button
-      href="https://github.com/yverek/kit-saas-starter"
+      href={route("github")}
       class="mb-7 inline-flex items-center justify-between rounded-full px-1 py-1 pr-2 text-sm"
       role="alert"
       variant="secondary"
@@ -21,10 +22,10 @@
       Bootstrap your next SaaS project with this open source SvelteKit template. 🚀
     </p>
     <div class="mb-8 flex flex-row items-center justify-center space-x-4 lg:mb-16">
-      <Button variant="outline" class="text-md h-12 w-36 font-bold" href="https://github.com/yverek/kit-saas-starter">
+      <Button variant="outline" class="text-md h-12 w-36 font-bold" href={route("github")}>
         <GitHub class="mr-2 size-5" />GitHub
       </Button>
-      <Button href="/auth/register" class="text-md h-12 w-36 font-bold">
+      <Button href={route("/auth/register")} class="text-md h-12 w-36 font-bold">
         Get started <ChevronRight class="size-5" />
       </Button>
     </div>

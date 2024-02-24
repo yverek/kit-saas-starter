@@ -1,3 +1,4 @@
+import { route } from "$lib/ROUTES";
 import type { Actions } from "./$types";
 import { error, redirect } from "@sveltejs/kit";
 
@@ -11,6 +12,6 @@ export const actions: Actions = {
     const { name, value, attributes } = lucia.createBlankSessionCookie();
     cookies.set(name, value, { ...attributes, path: "/" });
 
-    redirect(302, "/");
+    redirect(302, route("/"));
   }
 } satisfies Actions;
