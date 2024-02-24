@@ -1,10 +1,10 @@
 <script lang="ts">
   import type { PageData } from "./$types";
-  import { Header } from "$components/layout/header";
+  import { Header, Hero } from "$components/layout";
 
   export let data: PageData;
 </script>
 
 <Header />
 
-<h1>Landing Page</h1>
+<Hero />
