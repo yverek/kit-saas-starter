@@ -1,7 +1,22 @@
 import { Facebook, GitHub, Instagram, TikTok, Twitter, Discord } from "$components/icons";
 import { route } from "$lib/ROUTES";
 
-export const footerLinks = [
+export const legals = [
+  {
+    name: "Privacy Policy",
+    href: "#"
+  },
+  {
+    name: "Terms & Conditions",
+    href: "#"
+  },
+  {
+    name: "Cookie Policy",
+    href: "#"
+  }
+];
+
+export const socials = [
   {
     href: route("facebook"),
     component: Facebook
