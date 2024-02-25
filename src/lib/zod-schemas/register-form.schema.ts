@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { NAME_MIN_LEN, NAME_MAX_LEN } from "$lib/constants/fields-length";
+import { NAME_MIN_LEN, NAME_MAX_LEN } from "$configs/fields-length";
 import loginFormSchema from "./login-form.schema";
 
 /**

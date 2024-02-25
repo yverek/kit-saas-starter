@@ -1,0 +1,16 @@
+import { route } from "$lib/ROUTES";
+
+export const navLinks = [
+  {
+    name: "Features",
+    href: route("/") + "#features" // TODO check this
+  },
+  {
+    name: "Team",
+    href: route("/") + "#team"
+  },
+  {
+    name: "Contact",
+    href: route("/") + "#contact"
+  }
+];

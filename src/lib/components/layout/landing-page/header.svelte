@@ -3,8 +3,8 @@
   import Sun from "lucide-svelte/icons/sun";
   import Moon from "lucide-svelte/icons/moon";
   import { toggleMode } from "mode-watcher";
-  import { APP_NAME } from "$lib/constants/general";
-  import { NAV_LINKS } from "$lib/constants/landing-page";
+  import { APP_NAME } from "$configs/general";
+  import { navLinks } from "$configs/landing/header-links";
   import type { User } from "lucia";
   import { enhance } from "$app/forms";
   import { route } from "$lib/ROUTES";
@@ -19,7 +19,7 @@
       <span class="hidden text-xl font-bold text-black dark:text-white sm:block">{APP_NAME}</span>
     </a>
     <ul class="hidden lg:flex lg:flex-row lg:font-medium">
-      {#each NAV_LINKS as { name, href }}
+      {#each navLinks as { name, href }}
         <li>
           <Button {href} variant="link" class="text-md text-black dark:text-white">
             {name}

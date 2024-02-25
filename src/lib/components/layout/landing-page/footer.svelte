@@ -1,7 +1,7 @@
 <script>
   import { route } from "$lib/ROUTES";
-  import { socials, sections } from "$lib/constants/footer-links";
-  import { APP_NAME } from "$lib/constants/general";
+  import { socials, sections } from "$configs/landing/footer-links";
+  import { APP_NAME } from "$configs/general";
 </script>
 
 <footer class="border-t p-6">

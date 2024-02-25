@@ -1,6 +1,6 @@
 <script lang="ts">
   import { route } from "$lib/ROUTES";
-  import { APP_NAME } from "$lib/constants/general";
+  import { APP_NAME } from "$configs/general";
   import type { LayoutData } from "./$types";
 
   export let data: LayoutData;
