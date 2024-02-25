@@ -1,6 +1,6 @@
 <script>
   import { route } from "$lib/ROUTES";
-  import { resources, legals, socials } from "$lib/constants/footer-links";
+  import { socials, sections } from "$lib/constants/footer-links";
   import { APP_NAME } from "$lib/constants/general";
 </script>
 
@@ -14,26 +14,18 @@
         </a>
       </div>
       <div class="grid grid-cols-2 gap-8 sm:grid-cols-2 sm:gap-6">
-        <div class="mr-4">
-          <h2 class="mb-6 text-sm font-semibold uppercase text-gray-900 dark:text-white">Legal</h2>
-          <ul class="flex flex-col gap-4 text-gray-600 dark:text-gray-400">
-            {#each legals as { name, href }}
-              <li>
-                <a {href} class="hover:underline">{name}</a>
-              </li>
-            {/each}
-          </ul>
-        </div>
-        <div>
-          <h2 class="mb-6 text-sm font-semibold uppercase text-gray-900 dark:text-white">Resources</h2>
-          <ul class="flex flex-col gap-4 text-gray-600 dark:text-gray-400">
-            {#each resources as { name, href }}
-              <li>
-                <a {href} class="hover:underline">{name}</a>
-              </li>
-            {/each}
-          </ul>
-        </div>
+        {#each sections as { name, data }}
+          <div>
+            <h2 class="mb-6 text-sm font-semibold uppercase text-gray-900 dark:text-white">{name}</h2>
+            <ul class="flex flex-col gap-4 text-gray-600 dark:text-gray-400">
+              {#each data as { name, href }}
+                <li>
+                  <a {href} class="hover:underline">{name}</a>
+                </li>
+              {/each}
+            </ul>
+          </div>
+        {/each}
       </div>
     </div>
     <hr class="my-6 border-gray-200 dark:border-gray-700 sm:mx-auto lg:my-8" />
