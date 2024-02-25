@@ -9,9 +9,9 @@ const resources = [
 ];
 
 const legals = [
-  { name: "Privacy Policy", href: "#" },
-  { name: "Terms & Conditions", href: "#" },
-  { name: "Cookie Policy", href: "#" }
+  { name: "Privacy Policy", href: route("/legal/privacy-policy") },
+  { name: "Terms & Conditions", href: route("/legal/terms-and-conditions") },
+  { name: "Cookie Policy", href: route("/legal/cookie-policy") }
 ];
 
 export const sections = [
