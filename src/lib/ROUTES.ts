@@ -34,7 +34,11 @@ const ACTIONS = {
  * LINKS
  */
 const LINKS = {
-  github: `https://github.com/yverek/kit-saas-starter`
+  facebook: `https://facebook.com/`,
+  github: `https://github.com/yverek/kit-saas-starter`,
+  instagram: `https://instagram.com/`,
+  tiktok: `https://tiktok.com/`,
+  twitter: `https://twitter.com/`
 };
 
 type ParamValue = string | number | undefined;
@@ -140,6 +144,6 @@ export type KIT_ROUTES = {
   PAGES: { "/": never; "/dashboard": never; "/auth/login": never; "/auth/password-reset": never; "/auth/register": never };
   SERVERS: Record<string, never>;
   ACTIONS: { "default /auth/login": never; "default /auth/logout": never; "default /auth/register": never };
-  LINKS: { github: never };
+  LINKS: { facebook: never; github: never; instagram: never; tiktok: never; twitter: never };
   Params: Record<string, never>;
 };
