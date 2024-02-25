@@ -9,7 +9,11 @@ export default defineConfig({
     kitRoutes<KIT_ROUTES>({
       post_update_run: "npm exec prettier ./src/lib/ROUTES.ts -- -w",
       LINKS: {
-        github: "https://github.com/yverek/kit-saas-starter"
+        facebook: "https://facebook.com/",
+        github: "https://github.com/yverek/kit-saas-starter",
+        instagram: "https://instagram.com/",
+        tiktok: "https://tiktok.com/",
+        twitter: "https://twitter.com/"
       }
     })
   ],
