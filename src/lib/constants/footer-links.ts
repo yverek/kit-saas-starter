@@ -1,4 +1,4 @@
-import { Facebook, GitHub, Instagram, TikTok, Twitter } from "$components/icons";
+import { Facebook, GitHub, Instagram, TikTok, Twitter, Discord } from "$components/icons";
 import { route } from "$lib/ROUTES";
 
 export const footerLinks = [
@@ -21,5 +21,9 @@ export const footerLinks = [
   {
     href: route("tiktok"),
     component: TikTok
+  },
+  {
+    href: route("discord"),
+    component: Discord
   }
 ];

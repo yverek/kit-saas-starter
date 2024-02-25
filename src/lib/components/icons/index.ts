@@ -1,5 +1,6 @@
 export { default as Apple } from "./apple.svelte";
 export { default as Cloudflare } from "./cloudflare.svelte";
+export { default as Discord } from "./discord.svelte";
 export { default as Drizzle } from "./drizzle.svelte";
 export { default as Facebook } from "./facebook.svelte";
 export { default as GitHub } from "./github.svelte";

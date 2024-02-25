@@ -34,6 +34,7 @@ const ACTIONS = {
  * LINKS
  */
 const LINKS = {
+  discord: `https://discord.com`,
   facebook: `https://facebook.com/`,
   github: `https://github.com/yverek/kit-saas-starter`,
   instagram: `https://instagram.com/`,
@@ -144,6 +145,6 @@ export type KIT_ROUTES = {
   PAGES: { "/": never; "/dashboard": never; "/auth/login": never; "/auth/password-reset": never; "/auth/register": never };
   SERVERS: Record<string, never>;
   ACTIONS: { "default /auth/login": never; "default /auth/logout": never; "default /auth/register": never };
-  LINKS: { facebook: never; github: never; instagram: never; tiktok: never; twitter: never };
+  LINKS: { discord: never; facebook: never; github: never; instagram: never; tiktok: never; twitter: never };
   Params: Record<string, never>;
 };
