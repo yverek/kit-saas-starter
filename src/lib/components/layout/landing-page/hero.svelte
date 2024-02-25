@@ -5,8 +5,8 @@
   import { route } from "$lib/ROUTES";
 </script>
 
-<section>
-  <div class="mx-auto max-w-screen-xl px-4 py-8 text-center lg:px-12 lg:py-16">
+<section id="hero">
+  <div class="py-8 text-center lg:py-16">
     <Button
       href={route("github")}
       class="mb-7 inline-flex items-center justify-between rounded-full px-1 py-1 pr-2 text-sm"
@@ -18,7 +18,7 @@
       <ChevronRight class="ml-2 size-4" />
     </Button>
     <h1 class="mb-4 text-4xl font-extrabold tracking-tight md:text-5xl lg:text-6xl">Go live in minutes</h1>
-    <p class="mb-8 text-lg font-normal text-gray-500 dark:text-gray-400 sm:px-16 lg:text-xl xl:px-48">
+    <p class="mb-8 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
       Bootstrap your next SaaS project with this open source SvelteKit template. 🚀
     </p>
     <div class="mb-8 flex flex-row items-center justify-center space-x-4 lg:mb-16">
@@ -29,7 +29,7 @@
         Get started <ChevronRight class="size-5" />
       </Button>
     </div>
-    <div class="mx-auto px-4 text-center md:max-w-screen-md lg:max-w-screen-lg lg:px-36">
+    <div class="mx-auto text-center lg:max-w-screen-lg lg:px-36">
       <span class="font-semibold uppercase text-gray-400">Tools</span>
       <div class="mb-8 mt-8 flex flex-wrap items-center justify-center sm:justify-between">
         <Button href="https://svelte.dev/" variant="link" class="flex h-16 flex-row items-center gap-2 text-black dark:text-white">

@@ -1,11 +1,13 @@
 <script lang="ts">
-  import { Header, Hero, Footer } from "$components/layout/landing-page";
+  import { Features, Footer, Header, Hero } from "$components/layout/landing-page";
 
   let { data } = $props();
 </script>
 
-<Header user={data.user} />
-
-<Hero />
-
-<Footer />
+<div class="container">
+  <Header user={data.user} />
+  <Hero />
+  <hr class="border-gray-200 dark:border-gray-800" />
+  <Features />
+  <Footer />
+</div>

@@ -12,7 +12,7 @@
   let { user } = $props<{ user: User | null }>();
 </script>
 
-<header class="border-b py-2.5">
+<header class="border-b border-gray-500 py-4 dark:border-gray-600">
   <nav class="flex justify-between">
     <a href={route("/")} class="flex items-center gap-3">
       <img src="/logo.png" class="size-9" alt={`${APP_NAME} Logo`} />
