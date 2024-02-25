@@ -1,6 +1,6 @@
 <script>
-  import { GitHub, Facebook, Instagram, TikTok, Twitter } from "$components/icons";
   import { route } from "$lib/ROUTES";
+  import { footerLinks } from "$lib/constants/footer-links";
   import { APP_NAME } from "$lib/constants/general";
 </script>
 
@@ -53,21 +53,11 @@
         © 2024 <a href={route("/")} class="hover:underline">KSS</a>™. All Rights Reserved.
       </span>
       <div class="flex gap-6">
-        <a href={route("facebook")}>
-          <Facebook class="size-5 text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white" />
-        </a>
-        <a href={route("instagram")}>
-          <Instagram class="size-5 text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white" />
-        </a>
-        <a href={route("twitter")}>
-          <Twitter class="size-5 text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white" />
-        </a>
-        <a href={route("github")}>
-          <GitHub class="size-5 text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white" />
-        </a>
-        <a href={route("tiktok")}>
-          <TikTok class="size-5 text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white" />
-        </a>
+        {#each footerLinks as { href, component }}
+          <a {href}>
+            <svelte:component this={component} class="size-5 text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white" />
+          </a>
+        {/each}
       </div>
     </div>
   </div>
