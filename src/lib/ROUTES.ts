@@ -35,11 +35,15 @@ const ACTIONS = {
  */
 const LINKS = {
   discord: `https://discord.com`,
-  facebook: `https://facebook.com/`,
+  facebook: `https://facebook.com`,
   github: `https://github.com/yverek/kit-saas-starter`,
-  instagram: `https://instagram.com/`,
-  tiktok: `https://tiktok.com/`,
-  twitter: `https://twitter.com/`
+  instagram: `https://instagram.com`,
+  tiktok: `https://tiktok.com`,
+  twitter: `https://twitter.com`,
+  svelte: `https://svelte.dev`,
+  tailwind: `https://tailwindcss.com`,
+  drizzle: `https://orm.drizzle.team`,
+  lucia: `https://lucia-auth.com`
 };
 
 type ParamValue = string | number | undefined;
@@ -145,6 +149,17 @@ export type KIT_ROUTES = {
   PAGES: { "/": never; "/dashboard": never; "/auth/login": never; "/auth/password-reset": never; "/auth/register": never };
   SERVERS: Record<string, never>;
   ACTIONS: { "default /auth/login": never; "default /auth/logout": never; "default /auth/register": never };
-  LINKS: { discord: never; facebook: never; github: never; instagram: never; tiktok: never; twitter: never };
+  LINKS: {
+    discord: never;
+    facebook: never;
+    github: never;
+    instagram: never;
+    tiktok: never;
+    twitter: never;
+    svelte: never;
+    tailwind: never;
+    drizzle: never;
+    lucia: never;
+  };
   Params: Record<string, never>;
 };

@@ -1,6 +1,25 @@
 import { Facebook, GitHub, Instagram, TikTok, Twitter, Discord } from "$components/icons";
 import { route } from "$lib/ROUTES";
 
+export const resources = [
+  {
+    name: "Svelte",
+    href: route("svelte")
+  },
+  {
+    name: "Tailwind CSS",
+    href: route("tailwind")
+  },
+  {
+    name: "Drizzle ORM",
+    href: route("drizzle")
+  },
+  {
+    name: "Lucia",
+    href: route("lucia")
+  }
+];
+
 export const legals = [
   {
     name: "Privacy Policy",

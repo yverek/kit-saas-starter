@@ -9,12 +9,19 @@ export default defineConfig({
     kitRoutes<KIT_ROUTES>({
       post_update_run: "npm exec prettier ./src/lib/ROUTES.ts -- -w",
       LINKS: {
+        // socials
         discord: "https://discord.com",
-        facebook: "https://facebook.com/",
+        facebook: "https://facebook.com",
         github: "https://github.com/yverek/kit-saas-starter",
-        instagram: "https://instagram.com/",
-        tiktok: "https://tiktok.com/",
-        twitter: "https://twitter.com/"
+        instagram: "https://instagram.com",
+        tiktok: "https://tiktok.com",
+        twitter: "https://twitter.com",
+
+        // tools
+        svelte: "https://svelte.dev",
+        tailwind: "https://tailwindcss.com",
+        drizzle: "https://orm.drizzle.team",
+        lucia: "https://lucia-auth.com"
       }
     })
   ],
