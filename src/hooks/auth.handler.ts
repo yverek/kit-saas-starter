@@ -9,8 +9,6 @@ export const auth: Handle = async ({ event, resolve }) => {
   const lucia = event.locals.lucia;
   const sessionId = event.cookies.get(lucia.sessionCookieName);
 
-  logger.debug(`Session ID: ${sessionId}`);
-
   if (!sessionId) {
     event.locals.user = null;
     event.locals.session = null;
@@ -34,8 +32,8 @@ export const auth: Handle = async ({ event, resolve }) => {
   event.locals.user = user;
   event.locals.session = session;
 
-  logger.debug(`User: ${JSON.stringify(user)}`);
-  logger.debug(`Session: ${JSON.stringify(session)}`);
+  logger.debug(user, "User");
+  logger.debug(session, "Session");
 
   return resolve(event);
 };
