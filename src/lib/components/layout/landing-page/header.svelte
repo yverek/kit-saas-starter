@@ -15,7 +15,7 @@
 <header class="border-b px-4 py-2.5">
   <nav class="mx-auto flex max-w-screen-xl justify-between">
     <a href={route("/")} class="flex items-center gap-3">
-      <img src="/logo.png" class="size-10" alt={`${APP_NAME} Logo`} />
+      <img src="/logo.png" class="size-8" alt={`${APP_NAME} Logo`} />
       <span class="hidden text-xl font-bold text-black dark:text-white sm:block">{APP_NAME}</span>
     </a>
     <ul class="hidden lg:flex lg:flex-row lg:font-medium">
@@ -29,6 +29,11 @@
       {/each}
     </ul>
     <div class="mr-2 flex gap-2">
+      <Button on:click={toggleMode} variant="secondary" size="icon">
+        <Sun class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+        <Moon class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        <span class="sr-only">Toggle theme</span>
+      </Button>
       {#if user}
         <form method="post" action="/auth/logout" use:enhance>
           <Button type="submit" variant="outline">Logout</Button>
@@ -38,11 +43,6 @@
           <span class="sr-only">Dashboard</span>
         </Button>
       {:else}
-        <Button on:click={toggleMode} variant="secondary" size="icon">
-          <Sun class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          <span class="sr-only">Toggle theme</span>
-        </Button>
         <Button href={route("/auth/login")} variant="secondary">
           Login
           <span class="sr-only">Login</span>
