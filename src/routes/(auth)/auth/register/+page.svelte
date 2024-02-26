@@ -10,10 +10,18 @@
   import Apple from "$components/icons/apple.svelte";
   import Google from "$components/icons/google.svelte";
   import { route } from "$lib/ROUTES";
+  import * as flashModule from "sveltekit-flash-message/client";
 
   export let data: PageData;
 
-  const form = superForm(data.form, { validators: zodClient(registerFormSchema) });
+  const form = superForm(data.form, {
+    validators: zodClient(registerFormSchema),
+    invalidateAll: true,
+    delayMs: 500,
+    multipleSubmits: "prevent",
+    syncFlashMessage: true,
+    flashMessage: { module: flashModule }
+  });
   const { form: formData, enhance } = form;
 </script>
 
@@ -42,34 +50,50 @@
         <span class="bg-card px-2 text-muted-foreground"> or register with </span>
       </div>
     </div>
-    <form class="flex flex-col" method="post" use:enhance>
-      <Form.Field {form} name="name">
+    <form class="flex flex-col gap-2" method="post" use:enhance>
+      <Form.Field {form} name="name" class="space-y-1">
         <Form.Control let:attrs>
           <Form.Label>Name</Form.Label>
           <Input {...attrs} type="name" bind:value={$formData.name} />
         </Form.Control>
-        <Form.FieldErrors />
+        <Form.FieldErrors let:errors class="h-4 text-xs">
+          {#if errors[0]}
+            {errors[0]}
+          {/if}
+        </Form.FieldErrors>
       </Form.Field>
-      <Form.Field {form} name="email">
+      <Form.Field {form} name="email" class="space-y-1">
         <Form.Control let:attrs>
           <Form.Label>Email</Form.Label>
           <Input {...attrs} type="email" bind:value={$formData.email} />
         </Form.Control>
-        <Form.FieldErrors />
+        <Form.FieldErrors let:errors class="h-4 text-xs">
+          {#if errors[0]}
+            {errors[0]}
+          {/if}
+        </Form.FieldErrors>
       </Form.Field>
-      <Form.Field {form} name="password">
+      <Form.Field {form} name="password" class="space-y-1">
         <Form.Control let:attrs>
           <Form.Label>Password</Form.Label>
           <Input {...attrs} type="password" bind:value={$formData.password} />
         </Form.Control>
-        <Form.FieldErrors />
+        <Form.FieldErrors let:errors class="h-4 text-xs">
+          {#if errors[0]}
+            {errors[0]}
+          {/if}
+        </Form.FieldErrors>
       </Form.Field>
-      <Form.Field {form} name="passwordConfirm">
+      <Form.Field {form} name="passwordConfirm" class="space-y-1">
         <Form.Control let:attrs>
           <Form.Label>Password Confirm</Form.Label>
           <Input {...attrs} type="password" bind:value={$formData.passwordConfirm} />
         </Form.Control>
-        <Form.FieldErrors />
+        <Form.FieldErrors let:errors class="h-4 text-xs">
+          {#if errors[0]}
+            {errors[0]}
+          {/if}
+        </Form.FieldErrors>
       </Form.Field>
       <Form.Button type="submit" class="mt-4">Create account</Form.Button>
     </form>

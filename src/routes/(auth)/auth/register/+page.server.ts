@@ -25,6 +25,7 @@ export const actions: Actions = {
     if (!form.valid) {
       form.data.password = "";
       form.data.passwordConfirm = "";
+
       logger.debug(form, "Invalid register form");
 
       return message(form, { status: "error", text: "Invalid form" });
@@ -38,13 +39,21 @@ export const actions: Actions = {
     try {
       const newUser = await createNewUser(db, { id: userId, name, email, password: hashedPassword });
       if (!newUser) {
+        form.data.password = "";
+        form.data.passwordConfirm = "";
+
         logger.error("Failed to insert new user: email already used");
+
         return message(form, { status: "error", text: "Email already used" }, { status: 400 });
       }
 
       const res = await sendWelcomeEmail(email, name);
       if (!res) {
+        form.data.password = "";
+        form.data.passwordConfirm = "";
+
         logger.error(`Failed to send welcome email to ${email}`);
+
         return message(form, { status: "error", text: "Email not sent" }, { status: 400 });
       }
 
@@ -54,7 +63,11 @@ export const actions: Actions = {
         cookies.set(name, value, { ...attributes, path: "/" });
       }
     } catch (e) {
+      form.data.password = "";
+      form.data.passwordConfirm = "";
+
       logger.error(e, "Something went wrong using register form");
+
       return message(form, { status: "error", text: "An unknown error occurred" }, { status: 500 });
     }
 
