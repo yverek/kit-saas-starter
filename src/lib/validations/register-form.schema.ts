@@ -19,7 +19,7 @@ const registerFormSchema = loginFormSchema
     passwordConfirm: z.string({ required_error: "Password confirm is required" })
   })
   .superRefine(({ password, passwordConfirm }, ctx) => {
-    if (password !== passwordConfirm) {
+    if (passwordConfirm.length > 0 && password !== passwordConfirm) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Password and password confirm must match",
