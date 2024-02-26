@@ -1,12 +1,12 @@
 import type { PageServerLoad, Actions } from "./$types";
-import { eq } from "drizzle-orm";
-import { users } from "$lib/server/db/schema";
 import { verifyPasswordHash } from "$lib/server/lucia/auth-utils";
 import loginFormSchema from "$validations/login-form.schema";
 import { type Infer, message, superValidate } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { redirect } from "sveltekit-flash-message/server";
 import { route } from "$lib/ROUTES";
+import { getUserByEmail } from "$lib/server/db/user";
+import { logger } from "$lib/logger";
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
   if (locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
@@ -22,19 +22,24 @@ export const actions: Actions = {
 
     if (!form.valid) {
       form.data.password = "";
+      logger.debug(`Invalid login form ${form}`);
 
       return message(form, { status: "error", text: "Invalid form" });
     }
 
     const { email, password } = form.data;
 
-    const existingUser = await db.query.users.findFirst({ where: eq(users.email, email) });
+    const existingUser = await getUserByEmail(db, email);
     if (!existingUser) {
+      logger.debug(`User not found`);
+
       return message(form, { status: "error", text: "Incorrect username or password" }, { status: 400 });
     }
 
     const validPassword = await verifyPasswordHash(password, existingUser.password);
     if (!validPassword) {
+      logger.debug(`Invalid password`);
+
       return message(form, { status: "error", text: "Incorrect username or password" }, { status: 400 });
     }
 
