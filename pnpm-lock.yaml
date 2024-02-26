@@ -11,6 +11,9 @@ dependencies:
   bits-ui:
     specifier: ^0.18.1
     version: 0.18.1(svelte@5.0.0-next.64)
+  check-password-strength:
+    specifier: ^2.0.7
+    version: 2.0.7
   clsx:
     specifier: ^2.1.0
     version: 2.1.0
@@ -2553,6 +2556,10 @@ packages:
     dependencies:
       get-func-name: 2.0.2
     dev: true
+
+  /check-password-strength@2.0.7:
+    resolution: {integrity: sha512-VyklBkB6dOKnCIh63zdVr7QKVMN9/npwUqNAXxWrz8HabVZH/n/d+lyNm1O/vbXFJlT/Hytb5ouYKYGkoeZirQ==}
+    dev: false
 
   /chokidar@3.6.0:
     resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}

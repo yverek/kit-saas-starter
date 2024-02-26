@@ -4,15 +4,18 @@
   import { Input } from "$lib/components/ui/input";
   import * as Card from "$lib/components/ui/card";
   import { zodClient } from "sveltekit-superforms/adapters";
-  import type { PageData } from "./$types";
   import registerFormSchema from "$validations/register-form.schema";
   import Button from "$components/ui/button/button.svelte";
   import Apple from "$components/icons/apple.svelte";
   import Google from "$components/icons/google.svelte";
   import { route } from "$lib/ROUTES";
   import * as flashModule from "sveltekit-flash-message/client";
+  import PasswordStrength from "$components/layout/PasswordStrength.svelte";
+  import { passwordStrength, type FirstOption, type Result, type Option } from "check-password-strength";
 
-  export let data: PageData;
+  let { data } = $props();
+
+  let popoverOpen = $state(false);
 
   const form = superForm(data.form, {
     validators: zodClient(registerFormSchema),
@@ -23,6 +26,26 @@
     flashMessage: { module: flashModule }
   });
   const { form: formData, enhance } = form;
+
+  const customOptions: [FirstOption<string>, ...Option<string>[]] = [
+    { id: 0, value: "Too weak", minDiversity: 0, minLength: 0 },
+    { id: 1, value: "Weak", minDiversity: 2, minLength: 6 },
+    { id: 2, value: "Medium", minDiversity: 3, minLength: 8 },
+    { id: 3, value: "Strong", minDiversity: 4, minLength: 10 }
+  ];
+
+  let pwd: Result<string> = $state(passwordStrength($formData.password, customOptions));
+  let myData: Array<{ name: string; isDone: boolean }> = $derived([
+    { name: "Minimum number of characters is 10.", isDone: pwd.length >= 10 },
+    { name: "Should contain lowercase.", isDone: pwd.contains.includes("lowercase") },
+    { name: "Should contain uppercase.", isDone: pwd.contains.includes("uppercase") },
+    { name: "Should contain numbers.", isDone: pwd.contains.includes("number") },
+    { name: "Should contain special characters.", isDone: pwd.contains.includes("symbol") }
+  ]);
+
+  $effect(() => {
+    pwd = passwordStrength($formData.password, customOptions);
+  });
 </script>
 
 <Card.Root class="w-96">
@@ -76,7 +99,16 @@
       <Form.Field {form} name="password" class="space-y-1">
         <Form.Control let:attrs>
           <Form.Label>Password</Form.Label>
-          <Input {...attrs} type="password" bind:value={$formData.password} />
+          <Input
+            {...attrs}
+            type="password"
+            bind:value={$formData.password}
+            onfocus={() => (popoverOpen = true)}
+            onblur={() => (popoverOpen = false)}
+          />
+          {#if popoverOpen}
+            <PasswordStrength {pwd} {myData}></PasswordStrength>
+          {/if}
         </Form.Control>
         <Form.FieldErrors let:errors class="h-4 text-xs">
           {#if errors[0]}
