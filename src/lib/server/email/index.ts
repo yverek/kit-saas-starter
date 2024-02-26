@@ -1,10 +1,9 @@
 // import { dev } from "$app/environment";
 import { RESEND_API_KEY, RESEND_MAIL } from "$env/static/private";
-import type { EmailSentResult } from "./types";
 // import type { ContentItem, EmailAddress, MailSendBody, Personalization } from "./types";
 // import { HOST, DKIM_PRIVATE_KEY, SENDER_EMAIL, DKIM_DOMAIN } from "$env/static/private";
 
-export async function sendEmail(email: string, subject: string, body: string): Promise<EmailSentResult> {
+export async function sendEmail(email: string, subject: string, body: string): Promise<boolean> {
   // const toEmailAddress: EmailAddress = { email };
 
   // const fromEmailAddress: EmailAddress = {
@@ -46,18 +45,7 @@ export async function sendEmail(email: string, subject: string, body: string): P
     })
   });
 
-  let data: string;
-  const { headers, status } = response;
-  if (status === 200) {
-    const contentType = headers.get("content-type") || "";
-    const isJsonResponse = contentType.includes("application/json");
-
-    data = isJsonResponse ? JSON.stringify(await response.json()) : await response.text();
-
-    return { success: true, data };
-  }
-
-  return { success: false, error: "Failed to send email!" };
+  return response.status === 200;
 
   // TODO use mailchannels (it's free) when you get the domain
   // const response = await fetch("https://api.mailchannels.net/tx/v1/send", {

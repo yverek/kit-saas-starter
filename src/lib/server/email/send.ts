@@ -1,15 +1,10 @@
 import WelcomeHtml from "./templates/welcome.html?raw";
 import { sendEmail } from ".";
-import type { EmailSentResult } from "./types";
 
-export async function sendWelcomeEmail(email: string): Promise<EmailSentResult> {
-  const body = WelcomeHtml.replace("{{name}}", "Mauro");
+export async function sendWelcomeEmail(email: string, name: string): Promise<boolean> {
+  if (!email || !name) return false;
 
-  const res = await sendEmail(email, "Welcome buddy!", body);
+  const body = WelcomeHtml.replace("{{name}}", name);
 
-  if (!res.success) {
-    res.error = `Failed to sent welcome mail to ${email}`;
-  }
-
-  return res;
+  return await sendEmail(email, "Welcome buddy!", body);
 }

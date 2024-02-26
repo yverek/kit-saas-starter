@@ -29,8 +29,3 @@ export type MailSendBody = {
   content: [ContentItem, ...ContentItem[]];
   headers?: Record<string, string>;
 };
-
-type EmailSentSuccess = { success: true; data: string };
-type EmailSentError = { success: false; error: string };
-
-export type EmailSentResult = EmailSentSuccess | EmailSentError;
