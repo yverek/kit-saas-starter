@@ -2,7 +2,7 @@ import type { PageServerLoad, Actions } from "./$types";
 import { generateId } from "lucia";
 import { users } from "$lib/server/db/schema";
 import { createPasswordHash } from "$lib/server/lucia/auth-utils";
-import registerFormSchema from "$lib/zod-schemas/register-form.schema";
+import registerFormSchema from "$validations/register-form.schema";
 import { superValidate, message, type Infer } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { sendWelcomeEmail } from "$lib/server/email/send";

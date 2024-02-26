@@ -2,7 +2,7 @@ import type { PageServerLoad, Actions } from "./$types";
 import { eq } from "drizzle-orm";
 import { users } from "$lib/server/db/schema";
 import { verifyPasswordHash } from "$lib/server/lucia/auth-utils";
-import loginFormSchema from "$lib/zod-schemas/login-form.schema";
+import loginFormSchema from "$validations/login-form.schema";
 import { type Infer, message, superValidate } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { redirect } from "sveltekit-flash-message/server";

@@ -5,7 +5,7 @@
   import * as Card from "$lib/components/ui/card";
   import { zodClient } from "sveltekit-superforms/adapters";
   import type { PageData } from "./$types";
-  import registerFormSchema from "$lib/zod-schemas/register-form.schema";
+  import registerFormSchema from "$validations/register-form.schema";
   import Button from "$components/ui/button/button.svelte";
   import Apple from "$components/icons/apple.svelte";
   import Google from "$components/icons/google.svelte";
