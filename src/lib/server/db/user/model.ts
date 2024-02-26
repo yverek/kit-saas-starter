@@ -1,8 +1,7 @@
 import { eq } from "drizzle-orm";
 import { users } from "$lib/server/db/schema";
 import { type Database } from "$lib/server/db/types";
-import type { DbUpdateUser, DbUser } from "./types";
-import { logger } from "$lib/logger";
+import type { DbUser } from "./types";
 
 /*
  * CREATE
@@ -10,10 +9,7 @@ import { logger } from "$lib/logger";
 export async function createNewUser(db: Database, newUser: DbUser) {
   const res = await db.insert(users).values(newUser).onConflictDoNothing().returning();
 
-  if (res.length === 0) {
-    logger.error(newUser, "Fail to insert new user!");
-    return;
-  }
+  if (res.length === 0) return;
 
   return res[0];
 }
