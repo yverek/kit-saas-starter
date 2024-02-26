@@ -2,13 +2,15 @@ import { z } from "zod";
 import { EMAIL_MIN_LEN, EMAIL_MAX_LEN, PASSWORD_MIN_LEN, PASSWORD_MAX_LEN } from "$configs/fields-length";
 
 /**
- * This regex checks if the password is at least 8 characters.
+ * This regex checks if the password is between 10 and 100 characters.
  * Moreover, it must contain at least
- *  - One capital letter
- *  - One number
- *  - One special character from @ $ ! % * ? & . # ' " : ; , * + = ^ < > _ ` ~
+ *  - (?=.*[a-z]) 1 lowercase alphabetical character
+ *  - (?=.*[A-Z]) 1 uppercase alphabetical character
+ *  - (?=.*[0-9]) 1 numeric character
+ *  - (?=.*[!@#$%^&*"'()+,\-./:;<=>?[\]^_`{|}~]) 1 special character
  */
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#'":;,*+=^<>_`~])[A-Za-z\d@$!%*?&.#'":;,*+=^<>_`~]{8,}$/;
+const passwordRegex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*"'()+,\-./:;<=>?[\]^_`{|}~])[A-Za-z0-9!@#$%^&*"'()+,\-./:;<=>?[\]^_`{|}~]{10,100}$/;
 
 // TODO translate this
 const loginFormSchema = z.object({
