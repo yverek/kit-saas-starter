@@ -9,11 +9,11 @@
  * PAGES
  */
 const PAGES = {
-  "/": `/`,
   "/dashboard": `/dashboard`,
   "/auth/login": `/auth/login`,
   "/auth/password-reset": `/auth/password-reset`,
   "/auth/register": `/auth/register`,
+  "/": `/`,
   "/legal/cookie-policy": `/legal/cookie-policy`,
   "/legal/privacy-policy": `/legal/privacy-policy`,
   "/legal/terms-and-conditions": `/legal/terms-and-conditions`
@@ -150,11 +150,11 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
  */
 export type KIT_ROUTES = {
   PAGES: {
-    "/": never;
     "/dashboard": never;
     "/auth/login": never;
     "/auth/password-reset": never;
     "/auth/register": never;
+    "/": never;
     "/legal/cookie-policy": never;
     "/legal/privacy-policy": never;
     "/legal/terms-and-conditions": never;
