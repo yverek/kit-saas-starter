@@ -49,7 +49,7 @@
         <span class="bg-card px-2 text-muted-foreground"> or login with </span>
       </div>
     </div>
-    <form class="flex flex-col gap-4" method="post" use:enhance>
+    <form class="flex flex-col gap-2" method="post" use:enhance>
       <Form.Field {form} name="email" class="space-y-1">
         <Form.Control let:attrs>
           <Form.Label>Email</Form.Label>
