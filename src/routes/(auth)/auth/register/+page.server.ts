@@ -1,6 +1,5 @@
 import type { PageServerLoad, Actions } from "./$types";
 import { generateId } from "lucia";
-import { users } from "$lib/server/db/schema";
 import { createPasswordHash } from "$lib/server/lucia/auth-utils";
 import registerFormSchema from "$validations/register-form.schema";
 import { superValidate, message, type Infer } from "sveltekit-superforms/server";
@@ -8,6 +7,8 @@ import { zod } from "sveltekit-superforms/adapters";
 import { sendWelcomeEmail } from "$lib/server/email/send";
 import { redirect } from "sveltekit-flash-message/server";
 import { route } from "$lib/ROUTES";
+import { logger } from "$lib/logger";
+import { createNewUser } from "$lib/server/db/user";
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
   if (locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
@@ -24,6 +25,7 @@ export const actions: Actions = {
     if (!form.valid) {
       form.data.password = "";
       form.data.passwordConfirm = "";
+      logger.debug(form, "Invalid register form");
 
       return message(form, { status: "error", text: "Invalid form" });
     }
@@ -34,13 +36,16 @@ export const actions: Actions = {
     const userId = generateId(15);
 
     try {
-      await db.insert(users).values({ id: userId, name, email, password: hashedPassword });
+      const newUser = await createNewUser(db, { id: userId, name, email, password: hashedPassword });
+      if (!newUser) {
+        logger.error("Failed to insert new user: email already used");
+        return message(form, { status: "error", text: "Email already used" }, { status: 400 });
+      }
 
-      const res = await sendWelcomeEmail(email);
-
-      if (!res.success) {
-        // TODO we need to log this using a library
-        console.error(res.error);
+      const res = await sendWelcomeEmail(email, name);
+      if (!res) {
+        logger.error(`Failed to send welcome email to ${email}`);
+        return message(form, { status: "error", text: "Email not sent" }, { status: 400 });
       }
 
       const session = await lucia.createSession(userId, {});
@@ -49,10 +54,7 @@ export const actions: Actions = {
         cookies.set(name, value, { ...attributes, path: "/" });
       }
     } catch (e) {
-      if (e instanceof Error && e.message === `D1_ERROR: UNIQUE constraint failed: users.email`) {
-        return message(form, { status: "error", text: "Email already used" }, { status: 400 });
-      }
-
+      logger.error(e, "Something went wrong using register form");
       return message(form, { status: "error", text: "An unknown error occurred" }, { status: 500 });
     }
 
