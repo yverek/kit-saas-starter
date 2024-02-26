@@ -2,7 +2,7 @@ import { z } from "zod";
 import { EMAIL_MIN_LEN, EMAIL_MAX_LEN, PASSWORD_MIN_LEN, PASSWORD_MAX_LEN } from "$configs/fields-length";
 
 /**
- * This regex checks if the password is at least characters.
+ * This regex checks if the password is at least 8 characters.
  * Moreover, it must contain at least
  *  - One capital letter
  *  - One number
