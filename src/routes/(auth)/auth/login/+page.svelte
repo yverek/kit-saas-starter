@@ -10,10 +10,19 @@
   import Apple from "$components/icons/apple.svelte";
   import Google from "$components/icons/google.svelte";
   import { route } from "$lib/ROUTES.js";
+  import * as flashModule from "sveltekit-flash-message/client";
 
   let { data } = $props();
 
-  const form = superForm(data.form, { validators: zodClient(loginFormSchema) });
+  const form = superForm(data.form, {
+    validators: zodClient(loginFormSchema),
+    invalidateAll: true,
+    delayMs: 500,
+    multipleSubmits: "prevent",
+    syncFlashMessage: true,
+    flashMessage: { module: flashModule }
+  });
+
   const { form: formData, enhance } = form;
 </script>
 
@@ -40,20 +49,28 @@
         <span class="bg-card px-2 text-muted-foreground"> or login with </span>
       </div>
     </div>
-    <form class="flex flex-col" method="post" use:enhance>
-      <Form.Field {form} name="email">
+    <form class="flex flex-col gap-4" method="post" use:enhance>
+      <Form.Field {form} name="email" class="space-y-1">
         <Form.Control let:attrs>
           <Form.Label>Email</Form.Label>
           <Input {...attrs} type="email" bind:value={$formData.email} />
         </Form.Control>
-        <Form.FieldErrors />
+        <Form.FieldErrors let:errors class="h-4 text-xs">
+          {#if errors[0]}
+            Invalid email
+          {/if}
+        </Form.FieldErrors>
       </Form.Field>
-      <Form.Field {form} name="password">
+      <Form.Field {form} name="password" class="space-y-1">
         <Form.Control let:attrs>
           <Form.Label>Password</Form.Label>
           <Input {...attrs} type="password" bind:value={$formData.password} />
         </Form.Control>
-        <Form.FieldErrors />
+        <Form.FieldErrors let:errors class="h-4 text-xs">
+          {#if errors[0]}
+            Invalid password
+          {/if}
+        </Form.FieldErrors>
       </Form.Field>
       <a href={route("/auth/password-reset")} class="flex- text-right text-sm font-medium hover:underline">Forgot password?</a>
       <Form.Button type="submit" class="mt-4">Login</Form.Button>
