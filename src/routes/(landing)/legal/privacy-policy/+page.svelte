@@ -1,8 +1,5 @@
 <script lang="ts">
   import { APP_NAME } from "$configs/general";
-  import type { PageData } from "./$types";
-
-  export let data: PageData;
 </script>
 
 <div class="py-8 lg:py-16">
