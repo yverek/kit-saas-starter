@@ -3,8 +3,6 @@
   import { route } from "$lib/ROUTES";
 
   let { data, form } = $props();
-  console.log("🚀 ~ form:", form);
-  console.log("🚀 ~ data:", data);
 </script>
 
 <Card.Root class="w-1/3">
@@ -16,7 +14,7 @@
   </Card.Content>
   <Card.Footer>
     <p class="text-sm">
-      You can now <a href={route("/auth/login")} class="underline">login</a>
+      You can now go to your <a href={route("/dashboard")} class="underline">dashboard</a>
     </p>
   </Card.Footer>
 </Card.Root>
