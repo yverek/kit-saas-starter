@@ -13,6 +13,10 @@ const PAGES = {
   "/auth/login": `/auth/login`,
   "/auth/password-reset": `/auth/password-reset`,
   "/auth/register": `/auth/register`,
+  "/auth/verify-email": `/auth/verify-email`,
+  "/auth/verify-email/[tokenId=tokenId]": (params: { tokenId: Parameters<typeof import("../params/tokenId.ts").match>[0] }) => {
+    return `/auth/verify-email/${params.tokenId}`;
+  },
   "/": `/`,
   "/legal/cookie-policy": `/legal/cookie-policy`,
   "/legal/privacy-policy": `/legal/privacy-policy`,
@@ -154,6 +158,8 @@ export type KIT_ROUTES = {
     "/auth/login": never;
     "/auth/password-reset": never;
     "/auth/register": never;
+    "/auth/verify-email": never;
+    "/auth/verify-email/[tokenId=tokenId]": "tokenId";
     "/": never;
     "/legal/cookie-policy": never;
     "/legal/privacy-policy": never;
@@ -173,5 +179,5 @@ export type KIT_ROUTES = {
     drizzle: never;
     lucia: never;
   };
-  Params: Record<string, never>;
+  Params: { tokenId: never };
 };
