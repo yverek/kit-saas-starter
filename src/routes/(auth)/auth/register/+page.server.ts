@@ -4,11 +4,12 @@ import { createPasswordHash } from "$lib/server/lucia/auth-utils";
 import registerFormSchema from "$validations/register-form.schema";
 import { superValidate, message, type Infer } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
-import { sendWelcomeEmail } from "$lib/server/email/send";
+import { sendVerificationEmail } from "$lib/server/email/send";
 import { redirect } from "sveltekit-flash-message/server";
 import { route } from "$lib/ROUTES";
 import { logger } from "$lib/logger";
 import { createNewUser } from "$lib/server/db/user";
+import { TOKEN_ID_LEN, USER_ID_LEN } from "$configs/fields-length";
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
   if (locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
@@ -34,10 +35,11 @@ export const actions: Actions = {
     const { name, email, password } = form.data;
 
     const hashedPassword = await createPasswordHash(password);
-    const userId = generateId(15);
+    const userId = generateId(USER_ID_LEN);
+    const token = generateId(TOKEN_ID_LEN);
 
     try {
-      const newUser = await createNewUser(db, { id: userId, name, email, password: hashedPassword });
+      const newUser = await createNewUser(db, { id: userId, name, email, password: hashedPassword, token, verified: 0 });
       if (!newUser) {
         form.data.password = "";
         form.data.passwordConfirm = "";
@@ -47,21 +49,13 @@ export const actions: Actions = {
         return message(form, { status: "error", text: "Email already used" }, { status: 400 });
       }
 
-      const res = await sendWelcomeEmail(email, name);
-      if (!res) {
-        form.data.password = "";
-        form.data.passwordConfirm = "";
-
-        logger.error(`Failed to send welcome email to ${email}`);
-
-        return message(form, { status: "error", text: "Email not sent" }, { status: 400 });
-      }
-
       const session = await lucia.createSession(userId, {});
       if (session) {
         const { name, value, attributes } = lucia.createSessionCookie(session.id);
         cookies.set(name, value, { ...attributes, path: "/" });
       }
+
+      sendVerificationEmail(email, name, token);
     } catch (e) {
       form.data.password = "";
       form.data.passwordConfirm = "";
@@ -71,6 +65,10 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "An unknown error occurred" }, { status: 500 });
     }
 
-    redirect(302, route("/"));
+    redirect(
+      route("/auth/verify-email"),
+      { status: "success", text: "Ciaoooo Account created. Please check your email to verify your account." },
+      cookies
+    );
   }
 };

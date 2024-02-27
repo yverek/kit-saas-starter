@@ -8,15 +8,16 @@
   <body>
     <h4>Welcome {{user}}!</h4>
     <p>Thank you for joining us at {{appName}}.</p>
-    <p>Insert the following token to verify your email</p>
-    <code>{{token}}</code>
-    <p>Or click on the button below</p>
-    <p>
-      <a href="{{url}}" target="_blank" rel="noopener">Verify</a>
-    </p>
+    <p>Visit our <a href="{{url}}" target="_blank" rel="noopener">dashboard</a></p>
     <p>
       Thanks,<br />
       {{appName}} team
     </p>
   </body>
 </html>
+
+Thanks for verifying your account with ${APP_NAME}.\nYou can now sign in to your account at the link below.\n\n${BASE_URL}/auth/sign-in`; const
+htmlEmail = `
+<p>Thanks for verifying your account with ${APP_NAME}.</p>
+<p>You can now <a href="${BASE_URL}/auth/sign-in">sign in</a> to your account.</p>
+`; const subject = `Welcome to ${APP_NAME}`;

@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { users } from "$lib/server/db/schema";
 import { type Database } from "$lib/server/db/types";
-import type { DbUser } from "./types";
+import type { DbUpdateUser, DbUser } from "./types";
 
 /*
  * CREATE
@@ -55,18 +55,15 @@ export const getUserByToken = async (db: Database, token: string): Promise<DbUse
 //   return res[0];
 // }
 
-// export async function updateUserById(db: Database, id: string, userData: DbUpdateUser): Promise<DbUser | undefined> {
-//   if (!id) return;
+export async function updateUserById(db: Database, id: string, userData: DbUpdateUser): Promise<DbUser | undefined> {
+  if (!id) return;
 
-//   const res = await db.update(users).set(userData).where(eq(users.id, id)).returning();
+  const res = await db.update(users).set(userData).where(eq(users.id, id)).returning();
 
-//   if (res.length === 0) {
-//     logger.error(`Failed to update User with id=${id}!`);
-//     return;
-//   }
+  if (res.length === 0) return;
 
-//   return res[0];
-// }
+  return res[0];
+}
 
 /*
  * DELETE
