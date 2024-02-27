@@ -34,7 +34,7 @@
     <div class="grid grid-cols-2 gap-6">
       <Button variant="outline">
         <Apple class="mr-2 h-4 w-4" />
-        GitHub
+        Apple
       </Button>
       <Button variant="outline">
         <Google class="mr-2 h-4 w-4" />

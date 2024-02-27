@@ -57,7 +57,7 @@
       <!-- TODO change this href -->
       <Button variant="outline" href="#">
         <Apple class="mr-2 h-4 w-4" />
-        GitHub
+        Apple
       </Button>
       <!-- TODO change this href -->
       <Button variant="outline" href="#">
