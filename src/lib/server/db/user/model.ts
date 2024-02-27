@@ -27,6 +27,12 @@ export async function getUserByEmail(db: Database, email: string): Promise<DbUse
   return await db.query.users.findFirst({ where: eq(users.email, email) });
 }
 
+export const getUserByToken = async (db: Database, token: string): Promise<DbUser | undefined> => {
+  if (!token) return;
+
+  return await db.query.users.findFirst({ where: eq(users.token, token) });
+};
+
 // export async function getUserById(db: Database, id: string): Promise<DbUser | undefined> {
 //   if (!id) return;
 

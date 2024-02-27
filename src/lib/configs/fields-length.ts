@@ -12,3 +12,5 @@ export const EMAIL_MAX_LEN = 50;
 
 export const MESSAGE_MIN_LEN = 4;
 export const MESSAGE_MAX_LEN = 1000;
+
+export const TOKEN_ID_LEN = 15;

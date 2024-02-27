@@ -14,8 +14,8 @@ const PAGES = {
   "/auth/password-reset": `/auth/password-reset`,
   "/auth/register": `/auth/register`,
   "/auth/verify-email": `/auth/verify-email`,
-  "/auth/verify-email/[tokenId=tokenId]": (params: { tokenId: Parameters<typeof import("../params/tokenId.ts").match>[0] }) => {
-    return `/auth/verify-email/${params.tokenId}`;
+  "/auth/verify-email/[token=token]": (params: { token: Parameters<typeof import("../params/token.ts").match>[0] }) => {
+    return `/auth/verify-email/${params.token}`;
   },
   "/": `/`,
   "/legal/cookie-policy": `/legal/cookie-policy`,
@@ -34,7 +34,8 @@ const SERVERS = {};
 const ACTIONS = {
   "default /auth/login": `/auth/login`,
   "default /auth/logout": `/auth/logout`,
-  "default /auth/register": `/auth/register`
+  "default /auth/register": `/auth/register`,
+  "default /auth/verify-email": `/auth/verify-email`
 };
 
 /**
@@ -159,14 +160,14 @@ export type KIT_ROUTES = {
     "/auth/password-reset": never;
     "/auth/register": never;
     "/auth/verify-email": never;
-    "/auth/verify-email/[tokenId=tokenId]": "tokenId";
+    "/auth/verify-email/[token=token]": "token";
     "/": never;
     "/legal/cookie-policy": never;
     "/legal/privacy-policy": never;
     "/legal/terms-and-conditions": never;
   };
   SERVERS: Record<string, never>;
-  ACTIONS: { "default /auth/login": never; "default /auth/logout": never; "default /auth/register": never };
+  ACTIONS: { "default /auth/login": never; "default /auth/logout": never; "default /auth/register": never; "default /auth/verify-email": never };
   LINKS: {
     discord: never;
     facebook: never;
@@ -179,5 +180,5 @@ export type KIT_ROUTES = {
     drizzle: never;
     lucia: never;
   };
-  Params: { tokenId: never };
+  Params: { token: never };
 };

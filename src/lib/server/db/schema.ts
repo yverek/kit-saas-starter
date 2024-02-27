@@ -4,7 +4,9 @@ export const users = sqliteTable("users", {
   id: text("id").notNull().primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
-  password: text("password").notNull()
+  password: text("password").notNull(),
+  verified: integer("verified").notNull().default(0),
+  token: text("token").unique()
 });
 
 export const sessions = sqliteTable("sessions", {
