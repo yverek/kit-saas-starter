@@ -65,10 +65,6 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "An unknown error occurred" }, { status: 500 });
     }
 
-    redirect(
-      route("/auth/verify-email"),
-      { status: "success", text: "Ciaoooo Account created. Please check your email to verify your account." },
-      cookies
-    );
+    redirect(route("/auth/verify-email"), { status: "success", text: "Account created. Please check your email to verify your account." }, cookies);
   }
 };
