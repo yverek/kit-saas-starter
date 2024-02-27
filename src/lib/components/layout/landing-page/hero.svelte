@@ -26,7 +26,7 @@
         <GitHub class="mr-2 size-5" />GitHub
       </Button>
       <Button href={route("/auth/register")} class="text-md h-12 w-36 font-bold">
-        Get started <ChevronRight class="size-5" />
+        Get started <ChevronRight class="size-5 !text-primary-foreground" />
       </Button>
     </div>
     <div class="mx-auto text-center lg:max-w-screen-lg lg:px-36">
