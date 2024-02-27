@@ -17,7 +17,7 @@ export const load = (async ({ params, locals: { db } }) => {
 
     if (res) {
       const { email, name } = user;
-      sendWelcomeEmail(email, name);
+      await sendWelcomeEmail(email, name);
       title = "Email verified";
       message = "Your email has been verified!";
     }
