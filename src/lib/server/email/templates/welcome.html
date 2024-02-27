@@ -3,9 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome</title>
+    <title>Verify your {{appName}} email</title>
   </head>
   <body>
-    <h1>Welcome {{name}}!</h1>
+    <h4>Welcome {{user}}!</h4>
+    <p>Thank you for joining us at {{appName}}.</p>
+    <p>Insert the following token to verify your email</p>
+    <code>{{token}}</code>
+    <p>Or click on the button below</p>
+    <p>
+      <a href="{{url}}" target="_blank" rel="noopener">Verify</a>
+    </p>
+    <p>
+      Thanks,<br />
+      {{appName}} team
+    </p>
   </body>
 </html>
