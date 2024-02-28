@@ -25,7 +25,7 @@
         <Table.Cell class="font-medium">{user.id}</Table.Cell>
         <Table.Cell>{user.name}</Table.Cell>
         <Table.Cell>{user.email}</Table.Cell>
-        <Table.Cell class="text-right ">{user.verified ? "yes" : "no"}</Table.Cell>
+        <Table.Cell class="text-right ">{user.isVerified ? "yes" : "no"}</Table.Cell>
         <Table.Cell class="text-right ">
           <form method="post" action={route("default /admin/dashboard")} use:enhance>
             <input type="hidden" name="userId" value={user.id} />

@@ -12,8 +12,8 @@ export const load = (async ({ params, locals: { db } }) => {
   const user = await getUserByToken(db, token);
 
   if (user) {
-    if (user.verified) redirect(302, route("/dashboard"));
-    const res = await updateUserById(db, user.id, { verified: 1 });
+    if (user.isVerified) redirect(302, route("/dashboard"));
+    const res = await updateUserById(db, user.id, { isVerified: 1 });
 
     if (res) {
       const { email, name } = user;

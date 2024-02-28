@@ -3,7 +3,7 @@ import { logger } from "$lib/logger";
 import type { Handle } from "@sveltejs/kit";
 import { drizzle } from "drizzle-orm/d1";
 
-import * as schema from "$lib/server/db/schema";
+import { schema } from "$lib/server/db";
 
 /*
  * When developing, this hook will add proxy objects to the `platform` object which

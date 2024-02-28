@@ -39,7 +39,7 @@ export const actions: Actions = {
     const token = generateId(TOKEN_ID_LEN);
 
     try {
-      const newUser = await createNewUser(db, { id: userId, name, email, password: hashedPassword, token, verified: 0 });
+      const newUser = await createNewUser(db, { id: userId, name, email, password: hashedPassword, token, isVerified: 0, isAdmin: 0 });
       if (!newUser) {
         form.data.password = "";
         form.data.passwordConfirm = "";

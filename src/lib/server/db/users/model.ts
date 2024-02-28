@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
-import { users } from "$lib/server/db/schema";
-import { type Database } from "$lib/server/db/types";
+import { users } from "$lib/server/db/users";
+import { type Database } from "$lib/server/db";
 import type { DbUpdateUser, DbUser } from "./types";
 
 /*
