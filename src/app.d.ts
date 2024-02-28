@@ -12,7 +12,7 @@ declare global {
     interface Locals {
       db: Database;
       lucia: Lucia;
-      user?: User | null;
+      user: User | null;
       session: Session | null;
     }
     interface Platform {

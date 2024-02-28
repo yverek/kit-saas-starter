@@ -1,6 +1,7 @@
 import { Lucia } from "lucia";
 import { D1Adapter } from "@lucia-auth/adapter-sqlite";
 import { dev } from "$app/environment";
+import { type DbUser } from "../db/users";
 
 export function initializeLucia(db: D1Database) {
   const adapter = new D1Adapter(db, {
@@ -10,13 +11,13 @@ export function initializeLucia(db: D1Database) {
 
   return new Lucia(adapter, {
     sessionCookie: { attributes: { secure: !dev } },
-    getUserAttributes: ({ name, email }) => ({ name, email })
+    getUserAttributes: ({ id, name, email, verified }) => ({ id, name, email, verified })
   });
 }
 
 declare module "lucia" {
   export interface Register {
-    exportAuth: ReturnType<typeof initializeLucia>;
-    DatabaseUserAttributes: { name: string; email: string };
+    Lucia: ReturnType<typeof initializeLucia>;
+    DatabaseUserAttributes: Omit<DbUser, "token" | "password">;
   }
 }
