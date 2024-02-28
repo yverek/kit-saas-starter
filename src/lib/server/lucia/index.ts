@@ -1,7 +1,6 @@
 import { Lucia } from "lucia";
 import { D1Adapter } from "@lucia-auth/adapter-sqlite";
 import { dev } from "$app/environment";
-import { type DbUser } from "../db/users";
 
 export function initializeLucia(db: D1Database) {
   const adapter = new D1Adapter(db, {
@@ -11,13 +10,27 @@ export function initializeLucia(db: D1Database) {
 
   return new Lucia(adapter, {
     sessionCookie: { attributes: { secure: !dev } },
-    getUserAttributes: ({ id, name, email, verified }) => ({ id, name, email, verified })
+    getUserAttributes: (data) => {
+      return { id: data.id, name: data.name, email: data.email, isVerified: data.is_verified, isAdmin: data.is_admin };
+    }
   });
+}
+
+// TODO this is an hardcoded interface, can we retrieve it from drizzle?
+interface DatabaseUserAttributes {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  token: string;
+  is_verified: number;
+  is_admin: number;
 }
 
 declare module "lucia" {
   export interface Register {
     Lucia: ReturnType<typeof initializeLucia>;
-    DatabaseUserAttributes: Omit<DbUser, "token" | "password">;
+    Auth: ReturnType<typeof initializeLucia>;
+    DatabaseUserAttributes: DatabaseUserAttributes;
   }
 }

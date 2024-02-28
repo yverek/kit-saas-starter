@@ -5,14 +5,15 @@ export const users = sqliteTable("users", {
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
-  verified: integer("verified").notNull().default(0),
-  token: text("token").unique()
+  token: text("token").notNull().unique(),
+  isVerified: integer("is_verified").notNull().default(0),
+  isAdmin: integer("is_admin").notNull().default(0)
 });
 
 export const sessions = sqliteTable("sessions", {
   id: text("id").notNull().primaryKey(),
+  expiresAt: integer("expires_at").notNull(),
   userId: text("user_id")
     .notNull()
-    .references(() => users.id),
-  expiresAt: integer("expires_at").notNull()
+    .references(() => users.id)
 });
