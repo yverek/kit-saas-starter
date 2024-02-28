@@ -6,9 +6,9 @@ import { drizzle } from "drizzle-orm/d1";
 import * as schema from "$lib/server/db/schema";
 
 /*
-When developing, this hook will add proxy objects to the `platform` object which
-will emulate any bindings defined in `wrangler.toml`.
-*/
+ * When developing, this hook will add proxy objects to the `platform` object which
+ * will emulate any bindings defined in `wrangler.toml`.
+ **/
 let platform: App.Platform;
 
 if (dev) {

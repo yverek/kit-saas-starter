@@ -17,9 +17,9 @@ export async function createNewUser(db: Database, newUser: DbUser) {
 /*
  * READ
  **/
-// export async function getAllUsers(db: Database): Promise<DbUser[] | []> {
-//   return await db.query.users.findMany();
-// }
+export async function getAllUsers(db: Database): Promise<DbUser[] | []> {
+  return await db.query.users.findMany();
+}
 
 export async function getUserByEmail(db: Database, email: string): Promise<DbUser | undefined> {
   if (!email) return;
@@ -81,15 +81,12 @@ export async function updateUserById(db: Database, id: string, userData: DbUpdat
 //   return res[0];
 // }
 
-// export async function deleteUserById(db: Database, id: string): Promise<DbUser | undefined> {
-//   if (!id) return;
+export async function deleteUserById(db: Database, id: string): Promise<DbUser | undefined> {
+  if (!id) return;
 
-//   const res = await db.delete(users).where(eq(users.id, id)).returning();
+  const res = await db.delete(users).where(eq(users.id, id)).returning();
 
-//   if (res.length === 0) {
-//     logger.error(`Failed to delete User with id=${id}!`);
-//     return;
-//   }
+  if (res.length === 0) return;
 
-//   return res[0];
-// }
+  return res[0];
+}

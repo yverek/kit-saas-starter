@@ -9,6 +9,7 @@
  * PAGES
  */
 const PAGES = {
+  "/admin/dashboard": `/admin/dashboard`,
   "/dashboard": `/dashboard`,
   "/auth/login": `/auth/login`,
   "/auth/password-reset": `/auth/password-reset`,
@@ -32,6 +33,7 @@ const SERVERS = {};
  * ACTIONS
  */
 const ACTIONS = {
+  "default /admin/dashboard": `/admin/dashboard`,
   "default /auth/login": `/auth/login`,
   "default /auth/logout": `/auth/logout`,
   "default /auth/register": `/auth/register`,
@@ -155,6 +157,7 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
  */
 export type KIT_ROUTES = {
   PAGES: {
+    "/admin/dashboard": never;
     "/dashboard": never;
     "/auth/login": never;
     "/auth/password-reset": never;
@@ -167,7 +170,13 @@ export type KIT_ROUTES = {
     "/legal/terms-and-conditions": never;
   };
   SERVERS: Record<string, never>;
-  ACTIONS: { "default /auth/login": never; "default /auth/logout": never; "default /auth/register": never; "default /auth/verify-email": never };
+  ACTIONS: {
+    "default /admin/dashboard": never;
+    "default /auth/login": never;
+    "default /auth/logout": never;
+    "default /auth/register": never;
+    "default /auth/verify-email": never;
+  };
   LINKS: {
     discord: never;
     facebook: never;

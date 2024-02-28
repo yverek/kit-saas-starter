@@ -1,4 +1,4 @@
-import type { Lucia } from "lucia";
+import type { Lucia, Session, User } from "lucia";
 
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
@@ -12,8 +12,8 @@ declare global {
     interface Locals {
       db: Database;
       lucia: Lucia;
-      user: import("lucia").User | null;
-      session: import("lucia").Session | null;
+      user?: User | null;
+      session: Session | null;
     }
     interface Platform {
       env: Env;
