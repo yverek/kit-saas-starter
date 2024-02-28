@@ -3,7 +3,7 @@ import type { Handle } from "@sveltejs/kit";
 
 import { initializeLucia } from "$lib/server/lucia";
 
-export const auth: Handle = async ({ event, resolve }) => {
+export const authentication: Handle = async ({ event, resolve }) => {
   event.locals.lucia = initializeLucia(event.platform?.env.DB as D1Database);
 
   const lucia = event.locals.lucia;
