@@ -5,7 +5,7 @@ import { type Infer, message, superValidate } from "sveltekit-superforms/server"
 import { zod } from "sveltekit-superforms/adapters";
 import { redirect } from "sveltekit-flash-message/server";
 import { route } from "$lib/ROUTES";
-import { getUserByEmail } from "$lib/server/db/user";
+import { getUserByEmail } from "$lib/server/db/users";
 import { logger } from "$lib/logger";
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {

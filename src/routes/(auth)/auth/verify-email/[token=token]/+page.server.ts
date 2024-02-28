@@ -1,4 +1,4 @@
-import { getUserByToken, updateUserById } from "$lib/server/db/user";
+import { getUserByToken, updateUserById } from "$lib/server/db/users";
 import { sendWelcomeEmail } from "$lib/server/email/send";
 import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";

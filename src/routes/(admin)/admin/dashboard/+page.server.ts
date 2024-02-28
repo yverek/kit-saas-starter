@@ -1,5 +1,5 @@
 import { route } from "$lib/ROUTES";
-import { deleteUserById, getAllUsers } from "$lib/server/db/user";
+import { deleteUserById, getAllUsers } from "$lib/server/db/users";
 import { type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { redirect, setFlash } from "sveltekit-flash-message/server";
