@@ -5,7 +5,6 @@ export const users = sqliteTable("users", {
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
-  token: text("token").notNull().unique(),
   isVerified: integer("is_verified", { mode: "boolean" }).notNull().default(false),
   isAdmin: integer("is_admin", { mode: "boolean" }).notNull().default(false)
 });
