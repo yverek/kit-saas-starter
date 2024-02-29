@@ -6,7 +6,7 @@ import { redirect, setFlash } from "sveltekit-flash-message/server";
 
 export const load = (async ({ locals, cookies }) => {
   if (!locals.user) redirect(route("/auth/login"), { status: "error", text: "You must be logged in to view the dashboard." }, cookies);
-  // if (locals.user.admin) redirect(302, route("/dashboard"));
+  if (!locals.user.isAdmin) redirect(302, route("/dashboard"));
 
   const users = await getAllUsers(locals.db);
 
@@ -15,9 +15,10 @@ export const load = (async ({ locals, cookies }) => {
 
 export const actions: Actions = {
   default: async ({ request, cookies, locals: { db } }) => {
+    // TODO switch to zod
     const data = await request.formData();
     const userId = data.get("userId") as string;
-    console.log("🚀 ~ userId:", userId);
+
     const res = await deleteUserById(db, userId);
     if (res) {
       setFlash({ status: "success", text: "Success!" }, cookies);
