@@ -55,7 +55,7 @@ export const actions: Actions = {
         cookies.set(name, value, { ...attributes, path: "/" });
       }
 
-      sendVerificationEmail(email, name, token);
+      await sendVerificationEmail(email, name, token);
     } catch (e) {
       form.data.password = "";
       form.data.passwordConfirm = "";

@@ -7,10 +7,8 @@ import { route } from "$lib/ROUTES";
 export async function sendVerificationEmail(email: string, name: string, token: string): Promise<boolean> {
   if (!email || !name || !token) return false;
 
-  const body = EmailVerificationHtml.replaceAll("{{appName}}", APP_NAME)
-    .replace("{{user}}", name)
-    .replace("{{token}}", token)
-    .replace("{{url}}", APP_URL + route("/auth/verify-email/[token=token]", { token }));
+  const body = EmailVerificationHtml.replaceAll("{{appName}}", APP_NAME).replace("{{user}}", name).replace("{{token}}", token);
+  // .replace("{{url}}", APP_URL + route("/auth/verify-email/[token=token]", { token }));
 
   return await sendEmail(email, `Verify your ${APP_NAME} email`, body);
 }
