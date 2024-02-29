@@ -23,8 +23,8 @@ interface DatabaseUserAttributes {
   email: string;
   password: string;
   token: string;
-  is_verified: number;
-  is_admin: number;
+  is_verified: boolean;
+  is_admin: boolean;
 }
 
 declare module "lucia" {

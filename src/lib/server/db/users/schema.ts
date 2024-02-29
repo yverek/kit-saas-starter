@@ -6,6 +6,6 @@ export const users = sqliteTable("users", {
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
   token: text("token").notNull().unique(),
-  isVerified: integer("is_verified").notNull().default(0),
-  isAdmin: integer("is_admin").notNull().default(0)
+  isVerified: integer("is_verified", { mode: "boolean" }).notNull().default(false),
+  isAdmin: integer("is_admin", { mode: "boolean" }).notNull().default(false)
 });

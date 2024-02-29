@@ -13,7 +13,7 @@ export const load = (async ({ params, locals: { db } }) => {
 
   if (user) {
     if (user.isVerified) redirect(302, route("/dashboard"));
-    const res = await updateUserById(db, user.id, { isVerified: 1 });
+    const res = await updateUserById(db, user.id, { isVerified: true });
 
     if (res) {
       const { email, name } = user;
