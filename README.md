@@ -4,6 +4,35 @@ Bootstrap your next SaaS project with this SvelteKit template. 🚀
 
 🌍 Live: https://kit-saas-starter.pages.dev/
 
+Entirely hosted on [Cloudflare](https://www.cloudflare.com/). Why?
+
+1. They have a [generous free tier](https://www.cloudflare.com/plans/developer-platform/#overview). For real.
+2. Deploying is really easy and they have a great support.
+3. A lot of built-in tools, like D1 (database), R2 (storage), cache, DNS ecc.
+4. [It's easy to get out](https://youtu.be/4Wa5DivljOM), if you want, because [egress costs are the lowest among the competitors](https://cf-assets.www.cloudflare.com/slt3lc6tev37/5fz2zMzj6ZqgwFsQype2Cy/d14e589b1a8fb5fcdd4834e35e017554/Say-goodbye-to-egress-fees_ebook.pdf).
+
+## Features
+
+❤️ [SvelteKit](https://github.com/sveltejs/kit) - Full stack JS meta framework
+
+🪶 [Drizzle ORM](https://github.com/drizzle-team/drizzle-orm) - Next gen, lightweight TypeScript ORM.
+
+🛆 [Lucia](https://github.com/lucia-auth/lucia) - A fully typed auth library
+
+💅🏻 [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss) - For styling
+
+[Bits UI](https://github.com/huntabyte/bits-ui) + [shadcn-svelte](https://github.com/huntabyte/shadcn-svelte)
+
+🔄 [@total-typescript/ts-reset](https://github.com/total-typescript/ts-reset) - A 'CSS reset' for TypeScript, improving types for common JavaScript API's
+
+🛣️ [vite-plugin-kit-routes](https://github.com/jycouet/kitql/tree/main/packages/vite-plugin-kit-routes) - Fully typed routes!
+
+⚡ [formsnap](https://github.com/svecosystem/formsnap) + [sveltekit-superforms](https://github.com/ciscoheat/sveltekit-superforms) + [zod](https://github.com/colinhacks/zod) = Amazing forms
+
+🌀 [lucide](https://github.com/lucide-icons/lucide) - Beautiful and simple icons
+
+🌲 [pino](https://github.com/pinojs/pino) - Logging for client and server side
+
 ## How to use
 
 Clone this repo with
