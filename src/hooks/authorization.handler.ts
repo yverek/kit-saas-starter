@@ -11,8 +11,8 @@ export const authorization: Handle = async ({ event, resolve }) => {
   const isAuthenticated = !!locals.user;
   const isVerified = !!locals.user?.isVerified;
   const isAdmin = !!locals.user?.isAdmin;
-  const isAdminRoute = id?.startsWith("/(admin)");
-  const isUserRoute = id?.startsWith("/(app)");
+  const isAdminRoute = !!id?.startsWith("/(admin)");
+  const isUserRoute = !!id?.startsWith("/(app)");
   const isProtectedRoute = isUserRoute || isAdminRoute;
 
   // if user is trying to access a protected route and it's not verified
