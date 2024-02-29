@@ -1,3 +1,14 @@
+import { TimeSpan, createDate, isWithinExpirationDate } from "oslo";
+import { generateRandomString, alphabet } from "oslo/crypto";
+import {
+  createNewVerificationCode,
+  deleteAllCodesByUserId,
+  deleteVerificationCodeByCode,
+  getVerificationCodeByUserId
+} from "../db/verification-codes";
+import type { Database } from "../db";
+import { VERIFICATION_CODE_LEN } from "$configs/fields-length";
+
 const encoder = new TextEncoder();
 
 // TODO write documentation
@@ -35,4 +46,36 @@ export async function verifyPasswordHash(password: string, hashedPasswordWithSal
   const hashedPassword = await createPasswordHash(password, salt);
 
   return hashedPassword === hashedPasswordWithSalt;
+}
+
+export async function generateEmailVerificationCode(db: Database, userId: string, email: string): Promise<string> {
+  await deleteAllCodesByUserId(db, userId);
+
+  const code = generateRandomString(VERIFICATION_CODE_LEN, alphabet("0-9", "A-Z"));
+  const expiresAt = createDate(new TimeSpan(5, "m")); // 5 minutes
+
+  await createNewVerificationCode(db, { userId, email, code, expiresAt });
+
+  return code;
+}
+
+export async function verifyVerificationCode(db: Database, userId: string, email: string, code: string): Promise<boolean> {
+  const codeFromDatabase = await getVerificationCodeByUserId(db, userId);
+  if (!codeFromDatabase || codeFromDatabase.code !== code) {
+    return false;
+  }
+
+  const res = await deleteVerificationCodeByCode(db, code);
+  if (!res) {
+    return false;
+  }
+
+  const isExpired = !isWithinExpirationDate(codeFromDatabase.expiresAt);
+  const isDifferentUser = codeFromDatabase.email !== email;
+
+  if (isExpired || isDifferentUser) {
+    return false;
+  }
+
+  return true;
 }

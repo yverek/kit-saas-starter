@@ -1,15 +1,15 @@
 import type { PageServerLoad, Actions } from "./$types";
 import { generateId } from "lucia";
-import { createPasswordHash } from "$lib/server/lucia/auth-utils";
+import { createPasswordHash, generateEmailVerificationCode } from "$lib/server/lucia/auth-utils";
 import registerFormSchema from "$validations/register-form.schema";
 import { superValidate, message, type Infer } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
-import { sendVerificationEmail } from "$lib/server/email/send";
+import { sendEmailVerificationEmail } from "$lib/server/email/send";
 import { redirect } from "sveltekit-flash-message/server";
 import { route } from "$lib/ROUTES";
 import { logger } from "$lib/logger";
 import { createNewUser } from "$lib/server/db/users";
-import { TOKEN_ID_LEN, USER_ID_LEN } from "$configs/fields-length";
+import { USER_ID_LEN } from "$configs/fields-length";
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
   if (locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
@@ -36,10 +36,9 @@ export const actions: Actions = {
 
     const hashedPassword = await createPasswordHash(password);
     const userId = generateId(USER_ID_LEN);
-    const token = generateId(TOKEN_ID_LEN);
 
     try {
-      const newUser = await createNewUser(db, { id: userId, name, email, password: hashedPassword, token, isVerified: false, isAdmin: false });
+      const newUser = await createNewUser(db, { id: userId, name, email, password: hashedPassword, isVerified: false, isAdmin: false });
       if (!newUser) {
         form.data.password = "";
         form.data.passwordConfirm = "";
@@ -49,13 +48,14 @@ export const actions: Actions = {
         return message(form, { status: "error", text: "Email already used" }, { status: 400 });
       }
 
+      const code = await generateEmailVerificationCode(db, userId, email);
+      await sendEmailVerificationEmail(email, name, code);
+
       const session = await lucia.createSession(userId, {});
       if (session) {
         const { name, value, attributes } = lucia.createSessionCookie(session.id);
         cookies.set(name, value, { ...attributes, path: "/" });
       }
-
-      await sendVerificationEmail(email, name, token);
     } catch (e) {
       form.data.password = "";
       form.data.passwordConfirm = "";

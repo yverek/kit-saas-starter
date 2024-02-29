@@ -2,7 +2,7 @@
   import * as Card from "$lib/components/ui/card";
   import { route } from "$lib/ROUTES";
 
-  let { data, form } = $props();
+  let { data } = $props();
 </script>
 
 <Card.Root class="w-1/3">

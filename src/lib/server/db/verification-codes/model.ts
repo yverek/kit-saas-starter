@@ -17,6 +17,11 @@ export async function createNewVerificationCode(db: Database, newVerificationCod
 /*
  * READ
  **/
+export async function getVerificationCodeByUserId(db: Database, userId: string): Promise<DbVerificationCode | undefined> {
+  if (!userId) return;
+
+  return await db.query.verificationCodes.findFirst({ where: eq(verificationCodes.userId, userId) });
+}
 
 /*
  * UPDATE
@@ -25,14 +30,24 @@ export async function createNewVerificationCode(db: Database, newVerificationCod
 /*
  * DELETE
  **/
-export async function deleteAllTokensByUserId(db: Database, userId: string): Promise<DbVerificationCode | undefined> {
+export async function deleteAllCodesByUserId(db: Database, userId: string): Promise<DbVerificationCode | undefined> {
   if (!userId) return;
 
-  // TODO this function deletes all tokens?
+  // TODO this function deletes all codes?
   const res = await db.delete(verificationCodes).where(eq(verificationCodes.userId, userId)).returning();
 
   if (res.length === 0) return;
 
   // TODO should I return only one?
+  return res[0];
+}
+
+export async function deleteVerificationCodeByCode(db: Database, code: string): Promise<DbVerificationCode | undefined> {
+  if (!code) return;
+
+  const res = await db.delete(verificationCodes).where(eq(verificationCodes.code, code)).returning();
+
+  if (res.length === 0) return;
+
   return res[0];
 }

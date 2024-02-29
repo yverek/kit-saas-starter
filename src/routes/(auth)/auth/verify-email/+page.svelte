@@ -32,10 +32,10 @@
       Please check your email account for a message to confirm your email address for {APP_NAME}.
     </div>
     <form class="flex flex-col" method="post" use:enhance>
-      <Form.Field {form} name="token" class="space-y-1">
+      <Form.Field {form} name="code" class="space-y-1">
         <Form.Control let:attrs>
-          <Form.Label>Token</Form.Label>
-          <Input {...attrs} type="text" bind:value={$formData.token} />
+          <Form.Label>Code</Form.Label>
+          <Input {...attrs} type="text" bind:value={$formData.code} />
         </Form.Control>
         <Form.FieldErrors class="h-4 text-xs" />
       </Form.Field>

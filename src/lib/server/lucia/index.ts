@@ -22,7 +22,6 @@ interface DatabaseUserAttributes {
   name: string;
   email: string;
   password: string;
-  token: string;
   is_verified: boolean;
   is_admin: boolean;
 }

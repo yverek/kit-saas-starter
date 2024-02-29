@@ -15,8 +15,8 @@ const PAGES = {
   "/auth/password-reset": `/auth/password-reset`,
   "/auth/register": `/auth/register`,
   "/auth/verify-email": `/auth/verify-email`,
-  "/auth/verify-email/[token=token]": (params: { token: Parameters<typeof import("../params/token.ts").match>[0] }) => {
-    return `/auth/verify-email/${params.token}`;
+  "/auth/verify-email/[code=code]": (params: { code: Parameters<typeof import("../params/code.ts").match>[0] }) => {
+    return `/auth/verify-email/${params.code}`;
   },
   "/": `/`,
   "/legal/cookie-policy": `/legal/cookie-policy`,
@@ -163,7 +163,7 @@ export type KIT_ROUTES = {
     "/auth/password-reset": never;
     "/auth/register": never;
     "/auth/verify-email": never;
-    "/auth/verify-email/[token=token]": "token";
+    "/auth/verify-email/[code=code]": "code";
     "/": never;
     "/legal/cookie-policy": never;
     "/legal/privacy-policy": never;
@@ -189,5 +189,5 @@ export type KIT_ROUTES = {
     drizzle: never;
     lucia: never;
   };
-  Params: { token: never };
+  Params: { code: never };
 };

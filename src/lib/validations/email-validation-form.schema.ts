@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { TOKEN_ID_LEN } from "$configs/fields-length";
+import { VERIFICATION_CODE_LEN } from "$configs/fields-length";
 
 // TODO translate this
 const emailValidationFormSchema = z.object({
-  token: z
-    .string({ required_error: "Token is required" })
+  code: z
+    .string({ required_error: "Code is required" })
     .trim()
-    .length(TOKEN_ID_LEN, { message: `Token must be ${TOKEN_ID_LEN} characters` })
+    .length(VERIFICATION_CODE_LEN, { message: `Code must be ${VERIFICATION_CODE_LEN} characters` })
 });
 
 export default emailValidationFormSchema;

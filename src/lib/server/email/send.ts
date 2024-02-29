@@ -4,11 +4,10 @@ import { sendEmail } from ".";
 import { APP_NAME, APP_URL } from "$configs/general";
 import { route } from "$lib/ROUTES";
 
-export async function sendVerificationEmail(email: string, name: string, token: string): Promise<boolean> {
-  if (!email || !name || !token) return false;
+export async function sendEmailVerificationEmail(email: string, name: string, code: string): Promise<boolean> {
+  if (!email || !name || !code) return false;
 
-  const body = EmailVerificationHtml.replaceAll("{{appName}}", APP_NAME).replace("{{user}}", name).replace("{{token}}", token);
-  // .replace("{{url}}", APP_URL + route("/auth/verify-email/[token=token]", { token }));
+  const body = EmailVerificationHtml.replaceAll("{{appName}}", APP_NAME).replace("{{user}}", name).replace("{{code}}", code);
 
   return await sendEmail(email, `Verify your ${APP_NAME} email`, body);
 }
