@@ -16,10 +16,10 @@ const passwordRegex =
 const loginFormSchema = z.object({
   email: z
     .string({ required_error: "Email is required" })
+    .trim()
     .email({ message: "Email must be a valid email address" })
     .min(EMAIL_MIN_LEN, { message: `Email must be at least ${EMAIL_MIN_LEN} characters` })
-    .max(EMAIL_MAX_LEN, { message: `Email must not exceed ${EMAIL_MAX_LEN} characters` })
-    .trim(),
+    .max(EMAIL_MAX_LEN, { message: `Email must not exceed ${EMAIL_MAX_LEN} characters` }),
   password: z
     .string({ required_error: "Password is required" })
     .regex(passwordRegex, {

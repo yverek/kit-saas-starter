@@ -12,10 +12,10 @@ const registerFormSchema = loginFormSchema
   .extend({
     name: z
       .string({ required_error: "Name is required" })
+      .trim()
       .regex(nameRegex, { message: "Name can only contain letters and spaces" })
       .min(NAME_MIN_LEN, { message: `Name must be at least ${NAME_MIN_LEN} characters` })
-      .max(NAME_MAX_LEN, { message: `Name must not exceed ${NAME_MAX_LEN} characters` })
-      .trim(),
+      .max(NAME_MAX_LEN, { message: `Name must not exceed ${NAME_MAX_LEN} characters` }),
     passwordConfirm: z.string({ required_error: "Password confirm is required" })
   })
   .superRefine(({ password, passwordConfirm }, ctx) => {
