@@ -1,7 +1,7 @@
 import { route } from "$lib/ROUTES";
 import type { PageServerLoad } from "./$types";
 import { redirect, type Actions } from "@sveltejs/kit";
-import emailValidationFormSchema from "$validations/email-validation-form.schema";
+import { emailValidationFormSchema } from "$validations/auth";
 import { superValidate, type Infer, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { logger } from "$lib/logger";

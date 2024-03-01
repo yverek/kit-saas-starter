@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { NAME_MIN_LEN, NAME_MAX_LEN } from "$configs/fields-length";
-import loginFormSchema from "./login-form.schema";
+import { loginFormSchema } from "./login-form.schema";
 
 /**
  * This regex checks if name contain only letters and spaces

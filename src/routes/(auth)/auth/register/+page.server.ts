@@ -1,7 +1,7 @@
 import type { PageServerLoad, Actions } from "./$types";
 import { generateId } from "lucia";
 import { createPasswordHash, generateEmailVerificationCode } from "$lib/server/lucia/auth-utils";
-import registerFormSchema from "$validations/register-form.schema";
+import { registerFormSchema } from "$validations/auth";
 import { superValidate, message, type Infer } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { sendEmailVerificationEmail } from "$lib/server/email/send";

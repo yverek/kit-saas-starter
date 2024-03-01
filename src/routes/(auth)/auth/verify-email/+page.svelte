@@ -7,7 +7,7 @@
   import { superForm } from "sveltekit-superforms";
   import { zodClient } from "sveltekit-superforms/adapters";
   import * as flashModule from "sveltekit-flash-message/client";
-  import emailValidationFormSchema from "$validations/email-validation-form.schema";
+  import { emailValidationFormSchema } from "$validations/auth";
 
   let { data } = $props();
 
@@ -45,6 +45,7 @@
   <Card.Footer>
     <p class="text-sm">
       If you did not receive the email,
+      <!-- Implement this route -->
       <a href={route("/")} class="underline">click here</a> to resend it.
     </p>
   </Card.Footer>
