@@ -9,4 +9,4 @@ const emailValidationFormSchema = z.object({
     .length(VERIFICATION_CODE_LEN, { message: `Email validation code must be ${VERIFICATION_CODE_LEN} characters` })
 });
 
-export default emailValidationFormSchema;
+export { emailValidationFormSchema };

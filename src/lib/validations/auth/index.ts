@@ -1,4 +1,4 @@
-export { default as emailValidationFormSchema } from "./email-validation-form.schema";
-export { default as loginFormSchema } from "./login-form.schema";
-export { default as passwordResetFormSchema } from "./password-reset-form.schema";
-export { default as registerFormSchema } from "./register-form.schema";
+export * from "./email-validation-form.schema";
+export * from "./login-form.schema";
+export * from "./password-reset-form.schema";
+export * from "./register-form.schema";

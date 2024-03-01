@@ -12,4 +12,4 @@ const passwordResetFormSchema = loginFormSchema
       .length(PASSWORD_RESET_CODE_LEN, { message: `Password reset code must be ${PASSWORD_RESET_CODE_LEN} characters` })
   });
 
-export default passwordResetFormSchema;
+export { passwordResetFormSchema };

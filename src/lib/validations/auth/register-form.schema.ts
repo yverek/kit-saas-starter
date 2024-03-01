@@ -33,4 +33,4 @@ const registerFormSchema = loginFormSchema
     }
   });
 
-export default registerFormSchema;
+export { registerFormSchema };

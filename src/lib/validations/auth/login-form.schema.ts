@@ -29,4 +29,4 @@ const loginFormSchema = z.object({
     .max(PASSWORD_MAX_LEN, { message: `Password must not exceed ${PASSWORD_MAX_LEN} characters` })
 });
 
-export default loginFormSchema;
+export { loginFormSchema };
