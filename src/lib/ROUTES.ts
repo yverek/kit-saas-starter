@@ -12,8 +12,14 @@ const PAGES = {
   "/admin/dashboard": `/admin/dashboard`,
   "/dashboard": `/dashboard`,
   "/auth/login": `/auth/login`,
-  "/auth/password-reset": `/auth/password-reset`,
   "/auth/register": `/auth/register`,
+  "/auth/reset-password": `/auth/reset-password`,
+  "/auth/reset-password/[code=code]": (params: { code: Parameters<typeof import("../params/code.ts").match>[0] }) => {
+    return `/auth/reset-password/${params.code}`;
+  },
+  "/auth/reset-password/[email=email]": (params: { email: Parameters<typeof import("../params/email.ts").match>[0] }) => {
+    return `/auth/reset-password/${params.email}`;
+  },
   "/auth/verify-email": `/auth/verify-email`,
   "/auth/verify-email/[code=code]": (params: { code: Parameters<typeof import("../params/code.ts").match>[0] }) => {
     return `/auth/verify-email/${params.code}`;
@@ -37,6 +43,7 @@ const ACTIONS = {
   "default /auth/login": `/auth/login`,
   "default /auth/logout": `/auth/logout`,
   "default /auth/register": `/auth/register`,
+  "default /auth/reset-password": `/auth/reset-password`,
   "default /auth/verify-email": `/auth/verify-email`
 };
 
@@ -160,8 +167,10 @@ export type KIT_ROUTES = {
     "/admin/dashboard": never;
     "/dashboard": never;
     "/auth/login": never;
-    "/auth/password-reset": never;
     "/auth/register": never;
+    "/auth/reset-password": never;
+    "/auth/reset-password/[code=code]": "code";
+    "/auth/reset-password/[email=email]": "email";
     "/auth/verify-email": never;
     "/auth/verify-email/[code=code]": "code";
     "/": never;
@@ -175,6 +184,7 @@ export type KIT_ROUTES = {
     "default /auth/login": never;
     "default /auth/logout": never;
     "default /auth/register": never;
+    "default /auth/reset-password": never;
     "default /auth/verify-email": never;
   };
   LINKS: {
@@ -189,5 +199,5 @@ export type KIT_ROUTES = {
     drizzle: never;
     lucia: never;
   };
-  Params: { code: never };
+  Params: { code: never; email: never };
 };
