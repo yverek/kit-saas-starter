@@ -20,3 +20,9 @@ export const MESSAGE_MAX_LEN = 1000;
 export const USER_ID_LEN = 15;
 // email verification code length
 export const VERIFICATION_CODE_LEN = 15;
+
+/**
+ * Password reset codes
+ **/
+export const PASSWORD_RESET_CODE_LEN = 15; // characters
+export const PASSWORD_RESET_CODE_EXPIRATION_TIME = 120; // minutes
