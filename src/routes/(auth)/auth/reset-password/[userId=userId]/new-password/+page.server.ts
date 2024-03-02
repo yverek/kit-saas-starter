@@ -5,6 +5,8 @@ import type { Actions, PageServerLoad } from "./$types";
 import { superValidate, message } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
 import { route } from "$lib/ROUTES";
+import { createPasswordHash } from "$lib/server/lucia/auth-utils";
+import { updateUserById } from "$lib/server/db/users";
 
 export const load = (async () => {
   const form = await superValidate<PasswordResetFormSchemaThirdStep, FlashMessage>(zod(passwordResetFormSchemaThirdStep));
@@ -13,7 +15,7 @@ export const load = (async () => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  default: async ({ request, cookies, locals: { db } }) => {
+  default: async ({ params, request, cookies, locals: { db, lucia } }) => {
     const form = await superValidate<PasswordResetFormSchemaThirdStep, FlashMessage>(request, zod(passwordResetFormSchemaThirdStep));
 
     if (!form.valid) {
@@ -25,11 +27,20 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Invalid form" });
     }
 
-    // update db
-    // redirect
-    const status = "success";
-    const text = "ok";
+    const { password } = form.data;
+    const { userId } = params;
 
-    redirect(route("/auth/reset-password/success"), { status, text }, cookies);
+    await lucia.invalidateUserSessions(userId);
+
+    const hashedPassword = await createPasswordHash(password);
+    const res = await updateUserById(db, userId, { password: hashedPassword });
+    if (!res) {
+      return message(form, { status: "error", text: "Error while changing password" }, { status: 500 });
+    }
+
+    const status = "success";
+    const text = "Password changed successfully. You can now login.";
+
+    redirect(route("/auth/login"), { status, text }, cookies);
   }
 };

@@ -14,11 +14,11 @@ const PAGES = {
   "/auth/login": `/auth/login`,
   "/auth/register": `/auth/register`,
   "/auth/reset-password": `/auth/reset-password`,
-  "/auth/reset-password/token=[token=token]": (params: { token: Parameters<typeof import("../params/token.ts").match>[0] }) => {
-    return `/auth/reset-password/token=${params.token}`;
+  "/auth/reset-password/[userId=userId]": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
+    return `/auth/reset-password/${params.userId}`;
   },
-  "/auth/reset-password/userId=[userId=userId]": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
-    return `/auth/reset-password/userId=${params.userId}`;
+  "/auth/reset-password/[userId=userId]/new-password": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
+    return `/auth/reset-password/${params.userId}/new-password`;
   },
   "/auth/verify-email": `/auth/verify-email`,
   "/auth/verify-email/token=[token=token]": (params: { token: Parameters<typeof import("../params/token.ts").match>[0] }) => {
@@ -44,11 +44,11 @@ const ACTIONS = {
   "default /auth/logout": `/auth/logout`,
   "default /auth/register": `/auth/register`,
   "default /auth/reset-password": `/auth/reset-password`,
-  "default /auth/reset-password/token=[token=token]": (params: { token: Parameters<typeof import("../params/token.ts").match>[0] }) => {
-    return `/auth/reset-password/token=${params.token}`;
+  "default /auth/reset-password/[userId=userId]": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
+    return `/auth/reset-password/${params.userId}`;
   },
-  "default /auth/reset-password/userId=[userId=userId]": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
-    return `/auth/reset-password/userId=${params.userId}`;
+  "default /auth/reset-password/[userId=userId]/new-password": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
+    return `/auth/reset-password/${params.userId}/new-password`;
   },
   "default /auth/verify-email": `/auth/verify-email`
 };
@@ -175,8 +175,8 @@ export type KIT_ROUTES = {
     "/auth/login": never;
     "/auth/register": never;
     "/auth/reset-password": never;
-    "/auth/reset-password/token=[token=token]": "token";
-    "/auth/reset-password/userId=[userId=userId]": "userId";
+    "/auth/reset-password/[userId=userId]": "userId";
+    "/auth/reset-password/[userId=userId]/new-password": "userId";
     "/auth/verify-email": never;
     "/auth/verify-email/token=[token=token]": "token";
     "/": never;
@@ -191,8 +191,8 @@ export type KIT_ROUTES = {
     "default /auth/logout": never;
     "default /auth/register": never;
     "default /auth/reset-password": never;
-    "default /auth/reset-password/token=[token=token]": "token";
-    "default /auth/reset-password/userId=[userId=userId]": "userId";
+    "default /auth/reset-password/[userId=userId]": "userId";
+    "default /auth/reset-password/[userId=userId]/new-password": "userId";
     "default /auth/verify-email": never;
   };
   LINKS: {
@@ -207,5 +207,5 @@ export type KIT_ROUTES = {
     drizzle: never;
     lucia: never;
   };
-  Params: { token: never; userId: never };
+  Params: { userId: never; token: never };
 };

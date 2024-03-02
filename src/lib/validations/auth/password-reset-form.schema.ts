@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { Infer } from "sveltekit-superforms";
-import { userIdField, tokenField, emailField, passwordField, passwordConfirmField, passwordConfirmMustBeEqualToPassword } from "$validations/core";
+import { tokenField, emailField, passwordField, passwordConfirmField, passwordConfirmMustBeEqualToPassword } from "$validations/core";
 
 /**
  * First step
@@ -11,9 +11,9 @@ type PasswordResetFormSchemaFirstStep = Infer<typeof passwordResetFormSchemaFirs
 
 /**
  * Second step
- * We need to verify password and passwordConfirm submitted by user
+ * We need to verify token submitted by user
  */
-const passwordResetFormSchemaSecondStep = z.object({ userId: userIdField, token: tokenField });
+const passwordResetFormSchemaSecondStep = z.object({ token: tokenField });
 type PasswordResetFormSchemaSecondStep = Infer<typeof passwordResetFormSchemaSecondStep>;
 
 /**

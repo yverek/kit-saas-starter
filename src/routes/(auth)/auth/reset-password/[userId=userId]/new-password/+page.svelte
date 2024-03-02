@@ -73,7 +73,7 @@
           {/if}
         </Form.FieldErrors>
       </Form.Field>
-      <Form.Field {form} name="passwordConfirm" class="space-y-1">
+      <Form.Field {form} name="passwordConfirm" class="mt-2 space-y-1">
         <Form.Control let:attrs>
           <Form.Label>Password Confirm</Form.Label>
           <Input {...attrs} type="password" bind:value={$formData.passwordConfirm} />
@@ -84,7 +84,7 @@
           {/if}
         </Form.FieldErrors>
       </Form.Field>
-      <Form.Button type="submit" class="mt-4">Change password</Form.Button>
+      <Form.Button type="submit">Change password</Form.Button>
     </form>
   </Card.Content>
 </Card.Root>

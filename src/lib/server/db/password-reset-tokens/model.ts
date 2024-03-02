@@ -17,6 +17,12 @@ export async function createPasswordResetToken(db: Database, newPasswordResetTok
 /*
  * READ
  **/
+export async function getPasswordResetToken(db: Database, token: string): Promise<DbPasswordResetToken | undefined> {
+  if (!token) return;
+
+  return await db.query.passwordResetTokens.findFirst({ where: eq(passwordResetTokens.token, token) });
+}
+
 export async function getPasswordResetTokenByUserId(db: Database, userId: string): Promise<DbPasswordResetToken | undefined> {
   if (!userId) return;
 

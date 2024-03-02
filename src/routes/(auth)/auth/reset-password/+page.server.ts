@@ -46,6 +46,6 @@ export const actions: Actions = {
     }
 
     // TODO fix this, can't see toast message
-    redirect(route("/auth/reset-password/userId=[userId=userId]", { userId }), { status: "success", text: "Email send successfully" }, cookies);
+    redirect(route("/auth/reset-password/[userId=userId]", { userId }), { status: "success", text: "Email send successfully" }, cookies);
   }
 };

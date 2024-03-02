@@ -6,7 +6,7 @@
   import { superForm } from "sveltekit-superforms";
   import { zodClient } from "sveltekit-superforms/adapters";
   import * as flashModule from "sveltekit-flash-message/client";
-  import { passwordResetFormSchemaSecondStep } from "$validations/auth";
+  import { passwordResetFormSchemaSecondStep, type PasswordResetFormSchemaSecondStep } from "$validations/auth";
 
   let { data } = $props();
 
@@ -39,11 +39,6 @@
             {errors[0]}
           {/if}
         </Form.FieldErrors>
-      </Form.Field>
-      <Form.Field {form} name="userId" class="space-y-1">
-        <Form.Control let:attrs>
-          <Input {...attrs} type="hidden" bind:value={$formData.userId} />
-        </Form.Control>
       </Form.Field>
       <Form.Button type="submit" class="mt-2">Confirm</Form.Button>
     </form>
