@@ -18,16 +18,17 @@ export const actions: Actions = {
   default: async ({ params, request, cookies, locals: { db, lucia } }) => {
     const form = await superValidate<PasswordResetFormSchemaThirdStep, FlashMessage>(request, zod(passwordResetFormSchemaThirdStep));
 
-    if (!form.valid) {
-      form.data.password = "";
-      form.data.passwordConfirm = "";
+    const { password } = form.data;
 
+    form.data.password = "";
+    form.data.passwordConfirm = "";
+
+    if (!form.valid) {
       logger.debug("Invalid form");
 
       return message(form, { status: "error", text: "Invalid form" });
     }
 
-    const { password } = form.data;
     const { userId } = params;
 
     await lucia.invalidateUserSessions(userId);
