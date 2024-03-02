@@ -23,47 +23,44 @@ export const actions: Actions = {
   default: async ({ request, cookies, locals: { lucia, db } }) => {
     const form = await superValidate<RegisterFormSchema, FlashMessage>(request, zod(registerFormSchema));
 
-    if (!form.valid) {
-      form.data.password = "";
-      form.data.passwordConfirm = "";
+    const { name, email, password } = form.data;
 
+    form.data.password = "";
+    form.data.passwordConfirm = "";
+
+    if (!form.valid) {
       logger.debug("Invalid form");
 
       return message(form, { status: "error", text: "Invalid form" });
     }
 
-    const { name, email, password } = form.data;
-
     const hashedPassword = await createPasswordHash(password);
     const userId = generateId(USER_ID_LEN);
 
-    try {
-      const newUser = await createNewUser(db, { id: userId, name, email, password: hashedPassword, isVerified: false, isAdmin: false });
-      if (!newUser) {
-        form.data.password = "";
-        form.data.passwordConfirm = "";
+    // try {
+    const newUser = await createNewUser(db, { id: userId, name, email, password: hashedPassword, isVerified: false, isAdmin: false });
+    if (!newUser) {
+      logger.debug("Failed to insert new user: email already used");
 
-        logger.debug("Failed to insert new user: email already used");
-
-        return message(form, { status: "error", text: "Email already used" }, { status: 400 });
-      }
-
-      const token = await generateEmailVerificationToken(db, userId, email);
-      await sendEmailVerificationEmail(email, name, token);
-
-      const session = await lucia.createSession(userId, {});
-      if (session) {
-        const { name, value, attributes } = lucia.createSessionCookie(session.id);
-        cookies.set(name, value, { ...attributes, path: "/" });
-      }
-    } catch (e) {
-      form.data.password = "";
-      form.data.passwordConfirm = "";
-
-      logger.error(e, "Something went wrong using register form");
-
-      return message(form, { status: "error", text: "An unknown error occurred" }, { status: 500 });
+      return message(form, { status: "error", text: "Email already used" }, { status: 400 });
     }
+
+    const token = await generateEmailVerificationToken(db, userId, email);
+    if (!token) {
+      logger.debug("Failed to generate email verification token");
+
+      return message(form, { status: "error", text: "Failed to generate email verification token" }, { status: 500 });
+    }
+
+    const res = await sendEmailVerificationEmail(email, name, token);
+    if (!res) {
+      logger.debug("Failed to send email");
+
+      return message(form, { status: "error", text: "Failed to send email" }, { status: 500 });
+    }
+    const session = await lucia.createSession(userId, {});
+    const { name: cookieName, value, attributes } = lucia.createSessionCookie(session.id);
+    cookies.set(cookieName, value, { ...attributes, path: "/" });
 
     redirect(route("/auth/verify-email"), { status: "success", text: "Account created. Please check your email to verify your account." }, cookies);
   }
