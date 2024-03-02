@@ -1,3 +1,10 @@
+CREATE TABLE `password_reset_tokens` (
+	`token` text(15) PRIMARY KEY NOT NULL,
+	`expires_at` integer NOT NULL,
+	`user_id` text NOT NULL,
+	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
 CREATE TABLE `users` (
 	`id` text(15) PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
@@ -14,8 +21,8 @@ CREATE TABLE `sessions` (
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE TABLE `verification_codes` (
-	`code` text(15) PRIMARY KEY NOT NULL,
+CREATE TABLE `email_verification_tokens` (
+	`token` text(15) PRIMARY KEY NOT NULL,
 	`email` text NOT NULL,
 	`expires_at` integer NOT NULL,
 	`user_id` text NOT NULL,
@@ -23,4 +30,4 @@ CREATE TABLE `verification_codes` (
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `users_email_unique` ON `users` (`email`);--> statement-breakpoint
-CREATE UNIQUE INDEX `verification_codes_email_unique` ON `verification_codes` (`email`);
+CREATE UNIQUE INDEX `email_verification_tokens_email_unique` ON `email_verification_tokens` (`email`);

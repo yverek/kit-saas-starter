@@ -5,7 +5,7 @@ import type { Actions } from "@sveltejs/kit";
 import { logger } from "$lib/logger";
 import { route } from "$lib/ROUTES";
 import { redirect } from "sveltekit-flash-message/server";
-import { verifyPasswordResetCode } from "$lib/server/lucia/auth-utils";
+import { verifyPasswordResetToken } from "$lib/server/lucia/auth-utils";
 import type { PageServerLoad } from "./$types";
 
 export const load = (async ({ params }) => {
@@ -27,12 +27,12 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Invalid form" });
     }
 
-    const { code, userId } = form.data;
+    const { token, userId } = form.data;
 
-    const res = await verifyPasswordResetCode(db, userId, code);
+    const res = await verifyPasswordResetToken(db, userId, token);
     const status = res ? "success" : "error";
     const text = res ? "Email sent successfully" : "Error while sending your email";
 
-    redirect(route("/auth/reset-password/code=[code=code]", { code }), { status, text }, cookies);
+    redirect(route("/auth/reset-password/token=[token=token]", { token }), { status, text }, cookies);
   }
 };

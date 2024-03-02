@@ -1,25 +1,20 @@
+import { generateId } from "lucia";
 import { TimeSpan, createDate, isWithinExpirationDate } from "oslo";
 import { generateRandomString, alphabet } from "oslo/crypto";
 import {
-  createNewVerificationCode,
-  deleteAllVerificationCodesByUserId,
-  deleteVerificationCodeByCode,
-  getVerificationCodeByUserId
-} from "../db/verification-codes";
+  createEmailVerificationToken,
+  deleteAllEmailVerificationTokensByUserId,
+  deleteEmailVerificationToken,
+  getEmailVerificationTokenByUserId
+} from "../db/email-verification-tokens";
 import type { Database } from "../db";
+import { TOKEN_EXPIRATION_TIME, TOKEN_LEN } from "$configs/fields-length";
 import {
-  PASSWORD_RESET_CODE_EXPIRATION_TIME,
-  PASSWORD_RESET_CODE_LEN,
-  VERIFICATION_CODE_EXPIRATION_TIME,
-  VERIFICATION_CODE_LEN
-} from "$configs/fields-length";
-import {
-  createNewPasswordResetCode,
-  deleteAllPasswordResetCodesByUserId,
-  deletePasswordResetCodeByCode,
-  getPasswordResetCodeByUserId
-} from "../db/password-reset-codes";
-import { generateId } from "lucia";
+  createPasswordResetToken,
+  deleteAllPasswordResetTokensByUserId,
+  deletePasswordResetToken,
+  getPasswordResetTokenByUserId
+} from "../db/password-reset-tokens";
 
 const encoder = new TextEncoder();
 
@@ -60,31 +55,31 @@ export async function verifyPasswordHash(password: string, hashedPasswordWithSal
   return hashedPassword === hashedPasswordWithSalt;
 }
 
-export async function generateEmailVerificationCode(db: Database, userId: string, email: string): Promise<string> {
-  await deleteAllVerificationCodesByUserId(db, userId);
+export async function generateEmailVerificationToken(db: Database, userId: string, email: string): Promise<string> {
+  await deleteAllEmailVerificationTokensByUserId(db, userId);
 
-  const code = generateRandomString(VERIFICATION_CODE_LEN, alphabet("0-9", "A-Z"));
-  const expiresAt = createDate(new TimeSpan(VERIFICATION_CODE_EXPIRATION_TIME, "m")); // 5 minutes
+  const token = generateRandomString(TOKEN_LEN, alphabet("0-9", "a-z", "A-Z"));
+  const expiresAt = createDate(new TimeSpan(TOKEN_EXPIRATION_TIME, "m"));
 
-  await createNewVerificationCode(db, { userId, email, code, expiresAt });
+  await createEmailVerificationToken(db, { userId, email, token, expiresAt });
 
-  return code;
+  return token;
 }
 
-export async function verifyVerificationCode(db: Database, userId: string, email: string, code: string): Promise<boolean> {
-  const codeFromDatabase = await getVerificationCodeByUserId(db, userId);
-  if (!codeFromDatabase || codeFromDatabase.code !== code) {
+export async function verifyEmailVerificationToken(db: Database, userId: string, email: string, token: string): Promise<boolean> {
+  const tokenFromDatabase = await getEmailVerificationTokenByUserId(db, userId);
+  if (!tokenFromDatabase || tokenFromDatabase.token !== token) {
     return false;
   }
 
-  const res = await deleteVerificationCodeByCode(db, code);
+  const res = await deleteEmailVerificationToken(db, token);
   if (!res) {
     return false;
   }
 
-  const isExpired = !isWithinExpirationDate(codeFromDatabase.expiresAt);
+  const isExpired = !isWithinExpirationDate(tokenFromDatabase.expiresAt);
   // TODO this is unnecessary, delete email field from the table and all the logic
-  const isDifferentUser = codeFromDatabase.email !== email;
+  const isDifferentUser = tokenFromDatabase.email !== email;
 
   if (isExpired || isDifferentUser) {
     return false;
@@ -93,29 +88,29 @@ export async function verifyVerificationCode(db: Database, userId: string, email
   return true;
 }
 
-export async function generatePasswordResetCode(db: Database, userId: string): Promise<string | undefined> {
-  await deleteAllPasswordResetCodesByUserId(db, userId);
-  const code = generateId(PASSWORD_RESET_CODE_LEN);
-  const expiresAt = createDate(new TimeSpan(PASSWORD_RESET_CODE_EXPIRATION_TIME, "m"));
+export async function generatePasswordResetToken(db: Database, userId: string): Promise<string | undefined> {
+  await deleteAllPasswordResetTokensByUserId(db, userId);
+  const token = generateId(TOKEN_LEN);
+  const expiresAt = createDate(new TimeSpan(TOKEN_EXPIRATION_TIME, "m"));
 
-  const res = await createNewPasswordResetCode(db, { code, userId, expiresAt });
+  const res = await createPasswordResetToken(db, { token, userId, expiresAt });
   if (!res) return;
 
-  return code;
+  return token;
 }
 
-export async function verifyPasswordResetCode(db: Database, userId: string, code: string): Promise<boolean> {
-  const codeFromDatabase = await getPasswordResetCodeByUserId(db, userId);
-  if (!codeFromDatabase || codeFromDatabase.code !== code) {
+export async function verifyPasswordResetToken(db: Database, userId: string, token: string): Promise<boolean> {
+  const tokenFromDatabase = await getPasswordResetTokenByUserId(db, userId);
+  if (!tokenFromDatabase || tokenFromDatabase.token !== token) {
     return false;
   }
 
-  const res = await deletePasswordResetCodeByCode(db, code);
+  const res = await deletePasswordResetToken(db, token);
   if (!res) {
     return false;
   }
 
-  const isExpired = !isWithinExpirationDate(codeFromDatabase.expiresAt);
+  const isExpired = !isWithinExpirationDate(tokenFromDatabase.expiresAt);
   if (isExpired) {
     return false;
   }

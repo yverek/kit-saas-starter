@@ -23,7 +23,7 @@ export const actions: Actions = {
     if (!form.valid) {
       form.data.password = "";
 
-      logger.debug(`Invalid login form ${form}`);
+      logger.debug("Invalid form");
 
       return message(form, { status: "error", text: "Invalid form" });
     }
@@ -34,7 +34,7 @@ export const actions: Actions = {
     if (!existingUser) {
       form.data.password = "";
 
-      logger.debug(`User not found`);
+      logger.debug("User not found");
 
       return message(form, { status: "error", text: "Incorrect username or password" }, { status: 400 });
     }
@@ -43,7 +43,7 @@ export const actions: Actions = {
     if (!validPassword) {
       form.data.password = "";
 
-      logger.debug(`Invalid password`);
+      logger.debug("Invalid password");
 
       return message(form, { status: "error", text: "Incorrect username or password" }, { status: 400 });
     }

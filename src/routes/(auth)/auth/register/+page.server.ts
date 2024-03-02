@@ -1,6 +1,6 @@
 import type { PageServerLoad, Actions } from "./$types";
 import { generateId } from "lucia";
-import { createPasswordHash, generateEmailVerificationCode } from "$lib/server/lucia/auth-utils";
+import { createPasswordHash, generateEmailVerificationToken } from "$lib/server/lucia/auth-utils";
 import { registerFormSchema } from "$validations/auth";
 import { superValidate, message, type Infer } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
@@ -27,7 +27,7 @@ export const actions: Actions = {
       form.data.password = "";
       form.data.passwordConfirm = "";
 
-      logger.debug(form, "Invalid register form");
+      logger.debug("Invalid form");
 
       return message(form, { status: "error", text: "Invalid form" });
     }
@@ -43,13 +43,13 @@ export const actions: Actions = {
         form.data.password = "";
         form.data.passwordConfirm = "";
 
-        logger.error("Failed to insert new user: email already used");
+        logger.debug("Failed to insert new user: email already used");
 
         return message(form, { status: "error", text: "Email already used" }, { status: 400 });
       }
 
-      const code = await generateEmailVerificationCode(db, userId, email);
-      await sendEmailVerificationEmail(email, name, code);
+      const token = await generateEmailVerificationToken(db, userId, email);
+      await sendEmailVerificationEmail(email, name, token);
 
       const session = await lucia.createSession(userId, {});
       if (session) {

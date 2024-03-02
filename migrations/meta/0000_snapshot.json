@@ -1,9 +1,53 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "58f4f248-6953-48ec-852b-741277cb9d34",
+  "id": "7209a42b-9b17-4f29-a4c8-91037c25995a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "password_reset_tokens": {
+      "name": "password_reset_tokens",
+      "columns": {
+        "token": {
+          "name": "token",
+          "type": "text(15)",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "password_reset_tokens_user_id_users_id_fk": {
+          "name": "password_reset_tokens_user_id_users_id_fk",
+          "tableFrom": "password_reset_tokens",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "users": {
       "name": "users",
       "columns": {
@@ -109,11 +153,11 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "verification_codes": {
-      "name": "verification_codes",
+    "email_verification_tokens": {
+      "name": "email_verification_tokens",
       "columns": {
-        "code": {
-          "name": "code",
+        "token": {
+          "name": "token",
           "type": "text(15)",
           "primaryKey": true,
           "notNull": true,
@@ -142,8 +186,8 @@
         }
       },
       "indexes": {
-        "verification_codes_email_unique": {
-          "name": "verification_codes_email_unique",
+        "email_verification_tokens_email_unique": {
+          "name": "email_verification_tokens_email_unique",
           "columns": [
             "email"
           ],
@@ -151,9 +195,9 @@
         }
       },
       "foreignKeys": {
-        "verification_codes_user_id_users_id_fk": {
-          "name": "verification_codes_user_id_users_id_fk",
-          "tableFrom": "verification_codes",
+        "email_verification_tokens_user_id_users_id_fk": {
+          "name": "email_verification_tokens_user_id_users_id_fk",
+          "tableFrom": "email_verification_tokens",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"

@@ -5,6 +5,7 @@ import { error, redirect } from "@sveltejs/kit";
 export const actions: Actions = {
   default: async ({ locals: { lucia, session }, cookies }) => {
     if (!session) {
+      // TODO check this error
       error(401);
     }
 

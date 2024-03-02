@@ -29,10 +29,10 @@
   <Card.Content class="grid gap-4">
     <div class="text-muted-foreground">Please check your email account for a message to reset your password.</div>
     <form class="flex flex-col" method="post" use:enhance>
-      <Form.Field {form} name="code" class="space-y-1">
+      <Form.Field {form} name="token" class="space-y-1">
         <Form.Control let:attrs>
-          <Form.Label>Code</Form.Label>
-          <Input {...attrs} type="text" bind:value={$formData.code} />
+          <Form.Label>Token</Form.Label>
+          <Input {...attrs} type="text" bind:value={$formData.token} />
         </Form.Control>
         <Form.FieldErrors let:errors class="h-4 text-xs">
           {#if errors[0]}

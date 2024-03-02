@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { toast } from "svelte-sonner";
   import { superForm } from "sveltekit-superforms";
   import * as Form from "$lib/components/ui/form";
   import { Input } from "$lib/components/ui/input";
@@ -7,8 +6,7 @@
   import { zodClient } from "sveltekit-superforms/adapters";
   import { loginFormSchema } from "$validations/auth";
   import Button from "$components/ui/button/button.svelte";
-  import Apple from "$components/icons/apple.svelte";
-  import Google from "$components/icons/google.svelte";
+  import { Apple, Google } from "$components/icons";
   import { route } from "$lib/ROUTES.js";
   import * as flashModule from "sveltekit-flash-message/client";
 

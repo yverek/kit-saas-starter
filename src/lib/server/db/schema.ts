@@ -1,4 +1,4 @@
-export * from "./password-reset-codes/schema";
+export * from "./password-reset-tokens/schema";
 export * from "./users/schema";
 export * from "./sessions/schema";
-export * from "./verification-codes/schema";
+export * from "./email-verification-tokens/schema";

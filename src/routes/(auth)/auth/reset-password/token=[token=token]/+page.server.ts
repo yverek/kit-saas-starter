@@ -17,11 +17,13 @@ export const actions: Actions = {
     const form = await superValidate<PasswordResetFormSchemaThirdStep, FlashMessage>(request, zod(passwordResetFormSchemaThirdStep));
 
     if (!form.valid) {
-      logger.debug(form, "Invalid code for password reset form");
+      form.data.password = "";
+      form.data.passwordConfirm = "";
+
+      logger.debug("Invalid form");
 
       return message(form, { status: "error", text: "Invalid form" });
     }
-    console.log("🚀 ~ form:", form.data);
 
     // update db
     // redirect

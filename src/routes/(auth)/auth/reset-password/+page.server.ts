@@ -5,7 +5,7 @@ import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { logger } from "$lib/logger";
 import { passwordResetFormSchemaFirstStep, type PasswordResetFormSchemaFirstStep } from "$validations/auth";
-import { generatePasswordResetCode } from "$lib/server/lucia/auth-utils";
+import { generatePasswordResetToken } from "$lib/server/lucia/auth-utils";
 import { getUserByEmail } from "$lib/server/db/users";
 import { sendPasswordResetEmail } from "$lib/server/email/send";
 import { redirect } from "sveltekit-flash-message/server";
@@ -35,7 +35,7 @@ export const actions: Actions = {
 
     const { id: userId } = user;
 
-    const code = await generatePasswordResetCode(db, userId);
+    const code = await generatePasswordResetToken(db, userId);
     if (!code) {
       return message(form, { status: "error", text: "Failed to generate password reset code" }, { status: 500 });
     }

@@ -25,8 +25,8 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Invalid form" });
     }
 
-    const { code } = form.data;
+    const { token } = form.data;
 
-    redirect(302, route("/auth/verify-email/[code=code]", { code }));
+    redirect(302, route("/auth/verify-email/token=[token=token]", { token }));
   }
 };
