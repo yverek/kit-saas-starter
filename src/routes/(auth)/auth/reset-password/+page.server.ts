@@ -35,12 +35,12 @@ export const actions: Actions = {
 
     const { id: userId } = user;
 
-    const code = await generatePasswordResetToken(db, userId);
-    if (!code) {
-      return message(form, { status: "error", text: "Failed to generate password reset code" }, { status: 500 });
+    const token = await generatePasswordResetToken(db, userId);
+    if (!token) {
+      return message(form, { status: "error", text: "Failed to generate password reset token" }, { status: 500 });
     }
 
-    const mail = await sendPasswordResetEmail(email, code);
+    const mail = await sendPasswordResetEmail(email, token);
     if (!mail) {
       return message(form, { status: "error", text: "Failed to send password reset mail" }, { status: 500 });
     }

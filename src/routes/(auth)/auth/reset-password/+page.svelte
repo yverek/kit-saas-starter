@@ -26,7 +26,7 @@
     <Card.Title class="text-2xl">Reset your password</Card.Title>
   </Card.Header>
   <Card.Content class="grid gap-4">
-    <div class="text-muted-foreground">Please insert your email to receive a code to reset your password.</div>
+    <div class="text-muted-foreground">Please insert your email to receive a token to reset your password.</div>
     <form class="flex flex-col" method="post" use:enhance>
       <Form.Field {form} name="email" class="space-y-1">
         <Form.Control let:attrs>

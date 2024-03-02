@@ -19,7 +19,7 @@ export const actions: Actions = {
     const form = await superValidate<PasswordResetFormSchemaSecondStep, FlashMessage>(request, zod(passwordResetFormSchemaSecondStep));
 
     if (!form.valid) {
-      logger.debug(form, "Invalid code for password reset form");
+      logger.debug("Invalid form");
 
       return message(form, { status: "error", text: "Invalid form" });
     }

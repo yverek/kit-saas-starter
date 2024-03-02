@@ -5,10 +5,10 @@ import { sendEmail } from ".";
 import { APP_NAME, APP_URL } from "$configs/general";
 import { route } from "$lib/ROUTES";
 
-export async function sendEmailVerificationEmail(email: string, name: string, code: string): Promise<boolean> {
-  if (!email || !name || !code) return false;
+export async function sendEmailVerificationEmail(email: string, name: string, token: string): Promise<boolean> {
+  if (!email || !name || !token) return false;
 
-  const body = EmailVerificationHtml.replaceAll("{{appName}}", APP_NAME).replace("{{user}}", name).replace("{{code}}", code);
+  const body = EmailVerificationHtml.replaceAll("{{appName}}", APP_NAME).replace("{{user}}", name).replace("{{token}}", token);
 
   return await sendEmail(email, `Verify your ${APP_NAME} email`, body);
 }
@@ -23,10 +23,10 @@ export async function sendWelcomeEmail(email: string, name: string): Promise<boo
   return await sendEmail(email, `Welcome to ${APP_NAME}`, body);
 }
 
-export async function sendPasswordResetEmail(email: string, code: string): Promise<boolean> {
-  if (!email || !code) return false;
+export async function sendPasswordResetEmail(email: string, token: string): Promise<boolean> {
+  if (!email || !token) return false;
 
-  const body = PasswordResetHtml.replaceAll("{{appName}}", APP_NAME).replace("{{code}}", code);
+  const body = PasswordResetHtml.replaceAll("{{appName}}", APP_NAME).replace("{{token}}", token);
 
   return await sendEmail(email, `Reset your password for ${APP_NAME}`, body);
 }

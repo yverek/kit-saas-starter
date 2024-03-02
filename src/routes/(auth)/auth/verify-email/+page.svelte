@@ -34,7 +34,7 @@
     <form class="flex flex-col" method="post" use:enhance>
       <Form.Field {form} name="token" class="space-y-1">
         <Form.Control let:attrs>
-          <Form.Label>Code</Form.Label>
+          <Form.Label>Token</Form.Label>
           <Input {...attrs} type="text" bind:value={$formData.token} />
         </Form.Control>
         <Form.FieldErrors class="h-4 text-xs" />
