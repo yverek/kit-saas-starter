@@ -14,7 +14,6 @@ const PAGES = {
   "/auth/login": `/auth/login`,
   "/auth/register": `/auth/register`,
   "/auth/reset-password": `/auth/reset-password`,
-  "/auth/reset-password/success": `/auth/reset-password/success`,
   "/auth/reset-password/token=[token=token]": (params: { token: Parameters<typeof import("../params/token.ts").match>[0] }) => {
     return `/auth/reset-password/token=${params.token}`;
   },
@@ -176,7 +175,6 @@ export type KIT_ROUTES = {
     "/auth/login": never;
     "/auth/register": never;
     "/auth/reset-password": never;
-    "/auth/reset-password/success": never;
     "/auth/reset-password/token=[token=token]": "token";
     "/auth/reset-password/userId=[userId=userId]": "userId";
     "/auth/verify-email": never;
