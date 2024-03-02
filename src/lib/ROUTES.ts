@@ -14,15 +14,16 @@ const PAGES = {
   "/auth/login": `/auth/login`,
   "/auth/register": `/auth/register`,
   "/auth/reset-password": `/auth/reset-password`,
-  "/auth/reset-password/code=[code=code]": (params: { code: Parameters<typeof import("../params/code.ts").match>[0] }) => {
-    return `/auth/reset-password/code=${params.code}`;
+  "/auth/reset-password/success": `/auth/reset-password/success`,
+  "/auth/reset-password/token=[token=token]": (params: { token: Parameters<typeof import("../params/token.ts").match>[0] }) => {
+    return `/auth/reset-password/token=${params.token}`;
   },
   "/auth/reset-password/userId=[userId=userId]": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
     return `/auth/reset-password/userId=${params.userId}`;
   },
   "/auth/verify-email": `/auth/verify-email`,
-  "/auth/verify-email/[code=code]": (params: { code: Parameters<typeof import("../params/code.ts").match>[0] }) => {
-    return `/auth/verify-email/${params.code}`;
+  "/auth/verify-email/token=[token=token]": (params: { token: Parameters<typeof import("../params/token.ts").match>[0] }) => {
+    return `/auth/verify-email/token=${params.token}`;
   },
   "/": `/`,
   "/legal/cookie-policy": `/legal/cookie-policy`,
@@ -44,6 +45,9 @@ const ACTIONS = {
   "default /auth/logout": `/auth/logout`,
   "default /auth/register": `/auth/register`,
   "default /auth/reset-password": `/auth/reset-password`,
+  "default /auth/reset-password/token=[token=token]": (params: { token: Parameters<typeof import("../params/token.ts").match>[0] }) => {
+    return `/auth/reset-password/token=${params.token}`;
+  },
   "default /auth/reset-password/userId=[userId=userId]": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
     return `/auth/reset-password/userId=${params.userId}`;
   },
@@ -172,10 +176,11 @@ export type KIT_ROUTES = {
     "/auth/login": never;
     "/auth/register": never;
     "/auth/reset-password": never;
-    "/auth/reset-password/code=[code=code]": "code";
+    "/auth/reset-password/success": never;
+    "/auth/reset-password/token=[token=token]": "token";
     "/auth/reset-password/userId=[userId=userId]": "userId";
     "/auth/verify-email": never;
-    "/auth/verify-email/[code=code]": "code";
+    "/auth/verify-email/token=[token=token]": "token";
     "/": never;
     "/legal/cookie-policy": never;
     "/legal/privacy-policy": never;
@@ -188,6 +193,7 @@ export type KIT_ROUTES = {
     "default /auth/logout": never;
     "default /auth/register": never;
     "default /auth/reset-password": never;
+    "default /auth/reset-password/token=[token=token]": "token";
     "default /auth/reset-password/userId=[userId=userId]": "userId";
     "default /auth/verify-email": never;
   };
@@ -203,5 +209,5 @@ export type KIT_ROUTES = {
     drizzle: never;
     lucia: never;
   };
-  Params: { code: never; userId: never };
+  Params: { token: never; userId: never };
 };
