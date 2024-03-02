@@ -1,4 +1,4 @@
-import { emailValidationFormSchema } from "$validations";
+import { emailValidationFormSchema } from "$validations/auth";
 import type { ParamMatcher } from "@sveltejs/kit";
 
 export const match: ParamMatcher = (param) => {
