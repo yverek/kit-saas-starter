@@ -13,7 +13,12 @@ import {
   VERIFICATION_CODE_EXPIRATION_TIME,
   VERIFICATION_CODE_LEN
 } from "$configs/fields-length";
-import { createNewPasswordResetCode, deleteAllPasswordResetCodesByUserId } from "../db/password-reset-codes";
+import {
+  createNewPasswordResetCode,
+  deleteAllPasswordResetCodesByUserId,
+  deletePasswordResetCodeByCode,
+  getPasswordResetCodeByUserId
+} from "../db/password-reset-codes";
 import { generateId } from "lucia";
 
 const encoder = new TextEncoder();
@@ -78,6 +83,7 @@ export async function verifyVerificationCode(db: Database, userId: string, email
   }
 
   const isExpired = !isWithinExpirationDate(codeFromDatabase.expiresAt);
+  // TODO this is unnecessary, delete email field from the table and all the logic
   const isDifferentUser = codeFromDatabase.email !== email;
 
   if (isExpired || isDifferentUser) {
@@ -96,4 +102,23 @@ export async function generatePasswordResetCode(db: Database, userId: string): P
   if (!res) return;
 
   return code;
+}
+
+export async function verifyPasswordResetCode(db: Database, userId: string, code: string): Promise<boolean> {
+  const codeFromDatabase = await getPasswordResetCodeByUserId(db, userId);
+  if (!codeFromDatabase || codeFromDatabase.code !== code) {
+    return false;
+  }
+
+  const res = await deletePasswordResetCodeByCode(db, code);
+  if (!res) {
+    return false;
+  }
+
+  const isExpired = !isWithinExpirationDate(codeFromDatabase.expiresAt);
+  if (isExpired) {
+    return false;
+  }
+
+  return true;
 }

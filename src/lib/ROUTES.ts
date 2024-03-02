@@ -14,11 +14,11 @@ const PAGES = {
   "/auth/login": `/auth/login`,
   "/auth/register": `/auth/register`,
   "/auth/reset-password": `/auth/reset-password`,
-  "/auth/reset-password/[code=code]": (params: { code: Parameters<typeof import("../params/code.ts").match>[0] }) => {
-    return `/auth/reset-password/${params.code}`;
+  "/auth/reset-password/code=[code=code]": (params: { code: Parameters<typeof import("../params/code.ts").match>[0] }) => {
+    return `/auth/reset-password/code=${params.code}`;
   },
-  "/auth/reset-password/[email=email]": (params: { email: Parameters<typeof import("../params/email.ts").match>[0] }) => {
-    return `/auth/reset-password/${params.email}`;
+  "/auth/reset-password/userId=[userId=userId]": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
+    return `/auth/reset-password/userId=${params.userId}`;
   },
   "/auth/verify-email": `/auth/verify-email`,
   "/auth/verify-email/[code=code]": (params: { code: Parameters<typeof import("../params/code.ts").match>[0] }) => {
@@ -44,6 +44,9 @@ const ACTIONS = {
   "default /auth/logout": `/auth/logout`,
   "default /auth/register": `/auth/register`,
   "default /auth/reset-password": `/auth/reset-password`,
+  "default /auth/reset-password/userId=[userId=userId]": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
+    return `/auth/reset-password/userId=${params.userId}`;
+  },
   "default /auth/verify-email": `/auth/verify-email`
 };
 
@@ -169,8 +172,8 @@ export type KIT_ROUTES = {
     "/auth/login": never;
     "/auth/register": never;
     "/auth/reset-password": never;
-    "/auth/reset-password/[code=code]": "code";
-    "/auth/reset-password/[email=email]": "email";
+    "/auth/reset-password/code=[code=code]": "code";
+    "/auth/reset-password/userId=[userId=userId]": "userId";
     "/auth/verify-email": never;
     "/auth/verify-email/[code=code]": "code";
     "/": never;
@@ -185,6 +188,7 @@ export type KIT_ROUTES = {
     "default /auth/logout": never;
     "default /auth/register": never;
     "default /auth/reset-password": never;
+    "default /auth/reset-password/userId=[userId=userId]": "userId";
     "default /auth/verify-email": never;
   };
   LINKS: {
@@ -199,5 +203,5 @@ export type KIT_ROUTES = {
     drizzle: never;
     lucia: never;
   };
-  Params: { code: never; email: never };
+  Params: { code: never; userId: never };
 };
