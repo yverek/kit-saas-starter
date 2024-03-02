@@ -8,6 +8,8 @@ export const authorization: Handle = async ({ event, resolve }) => {
     route: { id }
   } = event;
 
+  logger.debug(`ROUTE: ${id}`);
+
   const isAuthenticated = !!locals.user;
   const isVerified = !!locals.user?.isVerified;
   const isAdmin = !!locals.user?.isAdmin;
