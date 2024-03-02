@@ -6,7 +6,7 @@ import type { DbUpdateUser, DbUser } from "./types";
 /*
  * CREATE
  **/
-export async function createNewUser(db: Database, newUser: DbUser): Promise<DbUser | undefined> {
+export async function createUser(db: Database, newUser: DbUser): Promise<DbUser | undefined> {
   const res = await db.insert(users).values(newUser).onConflictDoNothing().returning();
 
   if (res.length === 0) return;

@@ -8,7 +8,7 @@ import { sendEmailVerificationEmail } from "$lib/server/email/send";
 import { redirect } from "sveltekit-flash-message/server";
 import { route } from "$lib/ROUTES";
 import { logger } from "$lib/logger";
-import { createNewUser } from "$lib/server/db/users";
+import { createUser } from "$lib/server/db/users";
 import { USER_ID_LEN } from "$configs/fields-length";
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
@@ -38,7 +38,7 @@ export const actions: Actions = {
     const userId = generateId(USER_ID_LEN);
 
     // try {
-    const newUser = await createNewUser(db, { id: userId, name, email, password: hashedPassword, isVerified: false, isAdmin: false });
+    const newUser = await createUser(db, { id: userId, name, email, password: hashedPassword, isVerified: false, isAdmin: false });
     if (!newUser) {
       logger.debug("Failed to insert new user: email already used");
 

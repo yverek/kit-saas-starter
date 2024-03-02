@@ -36,16 +36,14 @@ export async function getPasswordResetTokenByUserId(db: Database, userId: string
 /*
  * DELETE
  **/
-export async function deleteAllPasswordResetTokensByUserId(db: Database, userId: string): Promise<DbPasswordResetToken | undefined> {
+export async function deleteAllPasswordResetTokensByUserId(db: Database, userId: string): Promise<DbPasswordResetToken[] | undefined> {
   if (!userId) return;
 
-  // TODO this function deletes all tokens?
   const res = await db.delete(passwordResetTokens).where(eq(passwordResetTokens.userId, userId)).returning();
 
   if (res.length === 0) return;
 
-  // TODO should I return only one?
-  return res[0];
+  return res;
 }
 
 export async function deletePasswordResetToken(db: Database, token: string): Promise<DbPasswordResetToken | undefined> {

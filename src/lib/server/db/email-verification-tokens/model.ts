@@ -30,16 +30,14 @@ export async function getEmailVerificationTokenByUserId(db: Database, userId: st
 /*
  * DELETE
  **/
-export async function deleteAllEmailVerificationTokensByUserId(db: Database, userId: string): Promise<DbEmailVerificationToken | undefined> {
+export async function deleteAllEmailVerificationTokensByUserId(db: Database, userId: string): Promise<DbEmailVerificationToken[] | undefined> {
   if (!userId) return;
 
-  // TODO this function deletes all tokens?
   const res = await db.delete(emailVerificationTokens).where(eq(emailVerificationTokens.userId, userId)).returning();
 
   if (res.length === 0) return;
 
-  // TODO should I return only one?
-  return res[0];
+  return res;
 }
 
 export async function deleteEmailVerificationToken(db: Database, token: string): Promise<DbEmailVerificationToken | undefined> {
