@@ -18,8 +18,12 @@ export const MESSAGE_MAX_LEN = 1000;
  */
 // user id length
 export const USER_ID_LEN = 15;
-// email verification code length
-export const VERIFICATION_CODE_LEN = 15;
+
+/**
+ * Email verification codes
+ */
+export const VERIFICATION_CODE_LEN = 15; // characters
+export const VERIFICATION_CODE_EXPIRATION_TIME = 15; // minutes
 
 /**
  * Password reset codes

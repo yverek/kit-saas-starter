@@ -2,12 +2,19 @@ import { TimeSpan, createDate, isWithinExpirationDate } from "oslo";
 import { generateRandomString, alphabet } from "oslo/crypto";
 import {
   createNewVerificationCode,
-  deleteAllCodesByUserId,
+  deleteAllVerificationCodesByUserId,
   deleteVerificationCodeByCode,
   getVerificationCodeByUserId
 } from "../db/verification-codes";
 import type { Database } from "../db";
-import { VERIFICATION_CODE_LEN } from "$configs/fields-length";
+import {
+  PASSWORD_RESET_CODE_EXPIRATION_TIME,
+  PASSWORD_RESET_CODE_LEN,
+  VERIFICATION_CODE_EXPIRATION_TIME,
+  VERIFICATION_CODE_LEN
+} from "$configs/fields-length";
+import { createNewPasswordResetCode, deleteAllPasswordResetCodesByUserId } from "../db/password-reset-codes";
+import { generateId } from "lucia";
 
 const encoder = new TextEncoder();
 
@@ -49,10 +56,10 @@ export async function verifyPasswordHash(password: string, hashedPasswordWithSal
 }
 
 export async function generateEmailVerificationCode(db: Database, userId: string, email: string): Promise<string> {
-  await deleteAllCodesByUserId(db, userId);
+  await deleteAllVerificationCodesByUserId(db, userId);
 
   const code = generateRandomString(VERIFICATION_CODE_LEN, alphabet("0-9", "A-Z"));
-  const expiresAt = createDate(new TimeSpan(5, "m")); // 5 minutes
+  const expiresAt = createDate(new TimeSpan(VERIFICATION_CODE_EXPIRATION_TIME, "m")); // 5 minutes
 
   await createNewVerificationCode(db, { userId, email, code, expiresAt });
 
@@ -78,4 +85,15 @@ export async function verifyVerificationCode(db: Database, userId: string, email
   }
 
   return true;
+}
+
+export async function generatePasswordResetCode(db: Database, userId: string): Promise<string | undefined> {
+  await deleteAllPasswordResetCodesByUserId(db, userId);
+  const code = generateId(PASSWORD_RESET_CODE_LEN);
+  const expiresAt = createDate(new TimeSpan(PASSWORD_RESET_CODE_EXPIRATION_TIME, "m"));
+
+  const res = await createNewPasswordResetCode(db, { code, userId, expiresAt });
+  if (!res) return;
+
+  return code;
 }

@@ -6,8 +6,8 @@ import { passwordResetCodes } from ".";
 /*
  * CREATE
  **/
-export async function createNewVerificationCode(db: Database, newVerificationCode: DbPasswordResetCode) {
-  const res = await db.insert(passwordResetCodes).values(newVerificationCode).onConflictDoNothing().returning();
+export async function createNewPasswordResetCode(db: Database, newPasswordResetCode: DbPasswordResetCode) {
+  const res = await db.insert(passwordResetCodes).values(newPasswordResetCode).onConflictDoNothing().returning();
 
   if (res.length === 0) return;
 
@@ -17,7 +17,7 @@ export async function createNewVerificationCode(db: Database, newVerificationCod
 /*
  * READ
  **/
-export async function getVerificationCodeByUserId(db: Database, userId: string): Promise<DbPasswordResetCode | undefined> {
+export async function getPasswordResetCodeByUserId(db: Database, userId: string): Promise<DbPasswordResetCode | undefined> {
   if (!userId) return;
 
   return await db.query.passwordResetCodes.findFirst({ where: eq(passwordResetCodes.userId, userId) });
@@ -30,7 +30,7 @@ export async function getVerificationCodeByUserId(db: Database, userId: string):
 /*
  * DELETE
  **/
-export async function deleteAllCodesByUserId(db: Database, userId: string): Promise<DbPasswordResetCode | undefined> {
+export async function deleteAllPasswordResetCodesByUserId(db: Database, userId: string): Promise<DbPasswordResetCode | undefined> {
   if (!userId) return;
 
   // TODO this function deletes all codes?
@@ -42,7 +42,7 @@ export async function deleteAllCodesByUserId(db: Database, userId: string): Prom
   return res[0];
 }
 
-export async function deleteVerificationCodeByCode(db: Database, code: string): Promise<DbPasswordResetCode | undefined> {
+export async function deletePasswordResetCodeByCode(db: Database, code: string): Promise<DbPasswordResetCode | undefined> {
   if (!code) return;
 
   const res = await db.delete(passwordResetCodes).where(eq(passwordResetCodes.code, code)).returning();

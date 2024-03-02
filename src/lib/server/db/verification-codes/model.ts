@@ -30,7 +30,7 @@ export async function getVerificationCodeByUserId(db: Database, userId: string):
 /*
  * DELETE
  **/
-export async function deleteAllCodesByUserId(db: Database, userId: string): Promise<DbVerificationCode | undefined> {
+export async function deleteAllVerificationCodesByUserId(db: Database, userId: string): Promise<DbVerificationCode | undefined> {
   if (!userId) return;
 
   // TODO this function deletes all codes?

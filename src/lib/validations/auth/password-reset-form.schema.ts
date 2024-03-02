@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { PASSWORD_RESET_CODE_LEN } from "$configs/fields-length";
 import { loginFormSchema } from ".";
+import type { Infer } from "sveltekit-superforms";
 
 // TODO translate this
 const passwordResetFormSchema = loginFormSchema
@@ -12,4 +13,7 @@ const passwordResetFormSchema = loginFormSchema
       .length(PASSWORD_RESET_CODE_LEN, { message: `Password reset code must be ${PASSWORD_RESET_CODE_LEN} characters` })
   });
 
-export { passwordResetFormSchema };
+type PasswordResetFormSchemaWithoutEmailField = Omit<Infer<typeof passwordResetFormSchema>, "email">;
+type PasswordResetFormSchemaWithoutCodeField = Omit<Infer<typeof passwordResetFormSchema>, "code">;
+
+export { passwordResetFormSchema, type PasswordResetFormSchemaWithoutEmailField, type PasswordResetFormSchemaWithoutCodeField };
