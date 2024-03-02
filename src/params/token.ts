@@ -1,8 +1,8 @@
 import type { ParamMatcher } from "@sveltejs/kit";
-import { userIdSchema } from "$validations/params";
+import { tokenSchema } from "$validations/params";
 
 export const match: ParamMatcher = (param) => {
-  const res = userIdSchema.safeParse({ userId: param });
+  const res = tokenSchema.safeParse({ code: param });
 
   return res.success;
 };
