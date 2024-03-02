@@ -72,7 +72,7 @@
           {/if}
         </Form.FieldErrors>
       </Form.Field>
-      <a href={route("/auth/password-reset")} class="flex- text-right text-sm font-medium hover:underline">Forgot password?</a>
+      <a href={route("/auth/reset-password")} class="flex- text-right text-sm font-medium hover:underline">Forgot password?</a>
       <Form.Button type="submit" class="mt-4">Login</Form.Button>
     </form>
   </Card.Content>
