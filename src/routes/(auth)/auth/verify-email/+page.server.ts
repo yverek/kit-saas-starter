@@ -8,6 +8,7 @@ import { logger } from "$lib/logger";
 
 export const load = (async ({ locals: { user } }) => {
   if (!user) redirect(302, route("/auth/login"));
+  if (user.isVerified) redirect(302, route("/dashboard"));
 
   const form = await superValidate(zod(emailValidationFormSchema));
 
