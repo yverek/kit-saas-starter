@@ -13,20 +13,10 @@ export const EMAIL_MAX_LEN = 50;
 export const MESSAGE_MIN_LEN = 4;
 export const MESSAGE_MAX_LEN = 1000;
 
-/**
- * If you change the value below, you must change values in database schemas
- */
-// user id length
 export const USER_ID_LEN = 15;
 
 /**
- * Email verification codes
+ * Token for email verifications, password resets, etc
  */
-export const VERIFICATION_CODE_LEN = 15; // characters
-export const VERIFICATION_CODE_EXPIRATION_TIME = 15; // minutes
-
-/**
- * Password reset codes
- **/
-export const PASSWORD_RESET_CODE_LEN = 15; // characters
-export const PASSWORD_RESET_CODE_EXPIRATION_TIME = 120; // minutes
+export const TOKEN_LEN = 15; // characters
+export const TOKEN_EXPIRATION_TIME = 30; // minutes
