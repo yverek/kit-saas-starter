@@ -5,6 +5,9 @@ import { emailValidationFormSchema, type EmailValidationFormSchema } from "$vali
 import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { logger } from "$lib/logger";
+import { verifyEmailVerificationToken } from "$lib/server/lucia/auth-utils";
+import { updateUserById } from "$lib/server/db/users";
+import { sendWelcomeEmail } from "$lib/server/email/send";
 
 export const load = (async ({ locals: { user } }) => {
   if (!user) redirect(302, route("/auth/login"));
@@ -16,17 +19,36 @@ export const load = (async ({ locals: { user } }) => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  default: async ({ request }) => {
+  default: async ({ cookies, request, locals: { db, user, lucia } }) => {
     const form = await superValidate<EmailValidationFormSchema, FlashMessage>(request, zod(emailValidationFormSchema));
 
     if (!form.valid) {
-      logger.debug(form, "Invalid email verification form");
+      logger.debug("Invalid form");
 
       return message(form, { status: "error", text: "Invalid form" });
     }
 
     const { token } = form.data;
+    if (!user) redirect(302, route("/auth/login"));
 
-    redirect(302, route("/auth/verify-email/token=[token=token]", { token }));
+    const isValidToken = await verifyEmailVerificationToken(db, user.id, user.email, token);
+    if (!isValidToken) {
+      return message(form, { status: "error", text: "Invalid token" }, { status: 500 });
+    }
+
+    await lucia.invalidateUserSessions(user.id);
+
+    const res = await updateUserById(db, user.id, { isVerified: true });
+    if (!res) {
+      return message(form, { status: "error", text: "User not found" }, { status: 404 });
+    }
+
+    const session = await lucia.createSession(user.id, {});
+    const { name, value, attributes } = lucia.createSessionCookie(session.id);
+    cookies.set(name, value, { ...attributes, path: "/" });
+
+    await sendWelcomeEmail(user.email, user.name);
+
+    redirect(302, route("/dashboard"));
   }
 };

@@ -21,9 +21,6 @@ const PAGES = {
     return `/auth/reset-password/${params.userId}/new-password`;
   },
   "/auth/verify-email": `/auth/verify-email`,
-  "/auth/verify-email/token=[token=token]": (params: { token: Parameters<typeof import("../params/token.ts").match>[0] }) => {
-    return `/auth/verify-email/token=${params.token}`;
-  },
   "/": `/`,
   "/legal/cookie-policy": `/legal/cookie-policy`,
   "/legal/privacy-policy": `/legal/privacy-policy`,
@@ -178,7 +175,6 @@ export type KIT_ROUTES = {
     "/auth/reset-password/[userId=userId]": "userId";
     "/auth/reset-password/[userId=userId]/new-password": "userId";
     "/auth/verify-email": never;
-    "/auth/verify-email/token=[token=token]": "token";
     "/": never;
     "/legal/cookie-policy": never;
     "/legal/privacy-policy": never;
@@ -207,5 +203,5 @@ export type KIT_ROUTES = {
     drizzle: never;
     lucia: never;
   };
-  Params: { userId: never; token: never };
+  Params: { userId: never };
 };
