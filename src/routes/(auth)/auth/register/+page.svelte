@@ -4,7 +4,7 @@
   import { Input } from "$lib/components/ui/input";
   import * as Card from "$lib/components/ui/card";
   import { zodClient } from "sveltekit-superforms/adapters";
-  import { registerFormSchema } from "$validations/auth";
+  import { registerFormSchema, type RegisterFormSchema } from "$validations/auth";
   import Button from "$components/ui/button/button.svelte";
   import Apple from "$components/icons/apple.svelte";
   import Google from "$components/icons/google.svelte";

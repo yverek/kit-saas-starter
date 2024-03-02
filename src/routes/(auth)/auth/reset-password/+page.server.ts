@@ -11,7 +11,7 @@ import { sendPasswordResetEmail } from "$lib/server/email/send";
 import { redirect } from "sveltekit-flash-message/server";
 
 export const load = (async () => {
-  const form = await superValidate(zod(passwordResetFormSchemaFirstStep));
+  const form = await superValidate<PasswordResetFormSchemaFirstStep, FlashMessage>(zod(passwordResetFormSchemaFirstStep));
 
   return { form };
 }) satisfies PageServerLoad;

@@ -5,6 +5,7 @@ import type { PageServerLoad } from "./$types";
 import { route } from "$lib/ROUTES";
 import { verifyEmailVerificationToken } from "$lib/server/lucia/auth-utils";
 
+// TODO move this load function code into verify-email action
 export const load = (async ({ cookies, params, locals: { db, lucia, user } }) => {
   if (!user) redirect(302, route("/auth/login"));
   if (user.isVerified) redirect(302, route("/dashboard"));

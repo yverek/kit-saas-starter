@@ -1,7 +1,7 @@
 import type { PageServerLoad, Actions } from "./$types";
 import { verifyPasswordHash } from "$lib/server/lucia/auth-utils";
-import { loginFormSchema } from "$validations/auth";
-import { type Infer, message, superValidate } from "sveltekit-superforms/server";
+import { loginFormSchema, type LoginFormSchema } from "$validations/auth";
+import { message, superValidate } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { redirect } from "sveltekit-flash-message/server";
 import { route } from "$lib/ROUTES";
@@ -11,14 +11,14 @@ import { logger } from "$lib/logger";
 export const load: PageServerLoad = async ({ locals, cookies }) => {
   if (locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
 
-  const form = await superValidate(zod(loginFormSchema));
+  const form = await superValidate<LoginFormSchema, FlashMessage>(zod(loginFormSchema));
 
   return { form };
 };
 
 export const actions: Actions = {
   default: async ({ request, cookies, url, locals: { db, lucia } }) => {
-    const form = await superValidate<Infer<typeof loginFormSchema>, FlashMessage>(request, zod(loginFormSchema));
+    const form = await superValidate<LoginFormSchema, FlashMessage>(request, zod(loginFormSchema));
 
     if (!form.valid) {
       form.data.password = "";

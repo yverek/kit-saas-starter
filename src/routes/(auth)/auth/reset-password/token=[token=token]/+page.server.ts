@@ -7,7 +7,7 @@ import { zod } from "sveltekit-superforms/adapters";
 import { route } from "$lib/ROUTES";
 
 export const load = (async () => {
-  const form = await superValidate(zod(passwordResetFormSchemaThirdStep));
+  const form = await superValidate<PasswordResetFormSchemaThirdStep, FlashMessage>(zod(passwordResetFormSchemaThirdStep));
 
   return { form };
 }) satisfies PageServerLoad;

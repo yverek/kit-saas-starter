@@ -11,7 +11,7 @@ import type { PageServerLoad } from "./$types";
 export const load = (async ({ params }) => {
   const { userId } = params;
 
-  const form = await superValidate(zod(passwordResetFormSchemaSecondStep));
+  const form = await superValidate<PasswordResetFormSchemaSecondStep, FlashMessage>(zod(passwordResetFormSchemaSecondStep));
   form.data.userId = userId;
 
   return { form };
