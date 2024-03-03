@@ -13,10 +13,19 @@ export const EMAIL_MAX_LEN = 50;
 export const MESSAGE_MIN_LEN = 4;
 export const MESSAGE_MAX_LEN = 1000;
 
-export const USER_ID_LEN = 15;
+/**
+ * Users constants
+ */
+export const USER_ID_LEN = 15; // characters
 
 /**
- * Token for email verifications, password resets, etc
+ * Sessions constants
+ */
+export const SESSION_ID_LEN = 40; // characters
+export const SESSION_EXPIRATION_TIME = 30; // days
+
+/**
+ * Token constants for email verifications, password resets, etc
  */
 export const TOKEN_LEN = 15; // characters
 export const TOKEN_EXPIRATION_TIME = 30; // minutes

@@ -1,6 +1,8 @@
-import { Lucia } from "lucia";
+import { Lucia, TimeSpan } from "lucia";
 import { D1Adapter } from "@lucia-auth/adapter-sqlite";
 import { dev } from "$app/environment";
+import { SESSION_EXPIRATION_TIME } from "$configs/fields-length";
+import { SESSION_COOKIE_NAME } from "$configs/general";
 
 export function initializeLucia(db: D1Database) {
   const adapter = new D1Adapter(db, {
@@ -9,7 +11,13 @@ export function initializeLucia(db: D1Database) {
   });
 
   return new Lucia(adapter, {
-    sessionCookie: { attributes: { secure: !dev } },
+    sessionExpiresIn: new TimeSpan(SESSION_EXPIRATION_TIME, "d"),
+    sessionCookie: {
+      name: SESSION_COOKIE_NAME,
+      attributes: {
+        secure: !dev
+      }
+    },
     getUserAttributes: (data) => {
       return { id: data.id, name: data.name, email: data.email, isVerified: data.is_verified, isAdmin: data.is_admin };
     }
