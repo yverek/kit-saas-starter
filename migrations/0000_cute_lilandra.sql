@@ -11,11 +11,13 @@ CREATE TABLE `users` (
 	`email` text NOT NULL,
 	`password` text NOT NULL,
 	`is_verified` integer DEFAULT false NOT NULL,
-	`is_admin` integer DEFAULT false NOT NULL
+	`is_admin` integer DEFAULT false NOT NULL,
+	`created_at` integer NOT NULL,
+	`modified_at` integer
 );
 --> statement-breakpoint
 CREATE TABLE `sessions` (
-	`id` text PRIMARY KEY NOT NULL,
+	`id` text(40) PRIMARY KEY NOT NULL,
 	`expires_at` integer NOT NULL,
 	`user_id` text NOT NULL,
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
