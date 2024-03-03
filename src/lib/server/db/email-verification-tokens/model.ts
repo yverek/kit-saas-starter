@@ -1,12 +1,12 @@
 import { eq } from "drizzle-orm";
 import { type Database } from "$lib/server/db";
-import type { DbEmailVerificationToken } from "./types";
+import type { DbEmailVerificationToken, DbInsertEmailVerificationToken } from "./types";
 import { emailVerificationTokens } from ".";
 
 /*
  * CREATE
  **/
-export async function createEmailVerificationToken(db: Database, newEmailVerificationToken: DbEmailVerificationToken) {
+export async function createEmailVerificationToken(db: Database, newEmailVerificationToken: DbInsertEmailVerificationToken) {
   const res = await db.insert(emailVerificationTokens).values(newEmailVerificationToken).onConflictDoNothing().returning();
 
   if (res.length === 0) return;

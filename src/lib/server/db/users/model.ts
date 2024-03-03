@@ -1,12 +1,12 @@
 import { eq } from "drizzle-orm";
 import { users } from "$lib/server/db/users";
 import { type Database } from "$lib/server/db";
-import type { DbUpdateUser, DbUser } from "./types";
+import type { DbInsertUser, DbUpdateUser, DbUser } from "./types";
 
 /*
  * CREATE
  **/
-export async function createUser(db: Database, newUser: DbUser): Promise<DbUser | undefined> {
+export async function createUser(db: Database, newUser: DbInsertUser): Promise<DbUser | undefined> {
   const res = await db.insert(users).values(newUser).onConflictDoNothing().returning();
 
   if (res.length === 0) return;

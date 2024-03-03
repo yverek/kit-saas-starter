@@ -1,12 +1,12 @@
 import { eq } from "drizzle-orm";
 import { type Database } from "$lib/server/db";
-import type { DbPasswordResetToken } from "./types";
+import type { DbInsertPasswordResetToken, DbPasswordResetToken } from "./types";
 import { passwordResetTokens } from ".";
 
 /*
  * CREATE
  **/
-export async function createPasswordResetToken(db: Database, newPasswordResetToken: DbPasswordResetToken) {
+export async function createPasswordResetToken(db: Database, newPasswordResetToken: DbInsertPasswordResetToken) {
   const res = await db.insert(passwordResetTokens).values(newPasswordResetToken).onConflictDoNothing().returning();
 
   if (res.length === 0) return;
