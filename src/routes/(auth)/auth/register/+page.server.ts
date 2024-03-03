@@ -9,7 +9,7 @@ import { redirect } from "sveltekit-flash-message/server";
 import { route } from "$lib/ROUTES";
 import { logger } from "$lib/logger";
 import { createUser } from "$lib/server/db/users";
-import { USER_ID_LEN } from "$configs/fields-length";
+import { SESSION_ID_LEN, USER_ID_LEN } from "$configs/fields-length";
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
   if (locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
@@ -36,9 +36,9 @@ export const actions: Actions = {
 
     const hashedPassword = await createPasswordHash(password);
     const userId = generateId(USER_ID_LEN);
+    const createdAt = new Date();
 
-    // try {
-    const newUser = await createUser(db, { id: userId, name, email, password: hashedPassword, isVerified: false, isAdmin: false });
+    const newUser = await createUser(db, { id: userId, name, email, password: hashedPassword, isVerified: false, isAdmin: false, createdAt });
     if (!newUser) {
       logger.debug("Failed to insert new user: email already used");
 
@@ -58,7 +58,9 @@ export const actions: Actions = {
 
       return message(form, { status: "error", text: "Failed to send email" }, { status: 500 });
     }
-    const session = await lucia.createSession(userId, {});
+
+    const sessionId = generateId(SESSION_ID_LEN);
+    const session = await lucia.createSession(userId, {}, { sessionId });
     const { name: cookieName, value, attributes } = lucia.createSessionCookie(session.id);
     cookies.set(cookieName, value, { ...attributes, path: "/" });
 

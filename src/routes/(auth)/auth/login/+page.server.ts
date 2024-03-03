@@ -7,6 +7,8 @@ import { redirect } from "sveltekit-flash-message/server";
 import { route } from "$lib/ROUTES";
 import { getUserByEmail } from "$lib/server/db/users";
 import { logger } from "$lib/logger";
+import { generateId } from "lucia";
+import { SESSION_ID_LEN } from "$configs/fields-length";
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
   if (locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
@@ -48,7 +50,8 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Incorrect username or password" }, { status: 400 });
     }
 
-    const session = await lucia.createSession(existingUser.id, {});
+    const sessionId = generateId(SESSION_ID_LEN);
+    const session = await lucia.createSession(existingUser.id, {}, { sessionId });
     const { name, value, attributes } = lucia.createSessionCookie(session.id);
     cookies.set(name, value, { ...attributes, path: "/" });
 
