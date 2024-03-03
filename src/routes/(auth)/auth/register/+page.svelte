@@ -4,7 +4,7 @@
   import { Input } from "$lib/components/ui/input";
   import * as Card from "$lib/components/ui/card";
   import { zodClient } from "sveltekit-superforms/adapters";
-  import { registerFormSchema, type RegisterFormSchema } from "$validations/auth";
+  import { registerFormSchema } from "$validations/auth";
   import Button from "$components/ui/button/button.svelte";
   import Apple from "$components/icons/apple.svelte";
   import Google from "$components/icons/google.svelte";
@@ -12,10 +12,14 @@
   import * as flashModule from "sveltekit-flash-message/client";
   import PasswordStrength from "$components/layout/PasswordStrength.svelte";
   import { passwordStrength, type FirstOption, type Result, type Option } from "check-password-strength";
+  import { Eye, EyeOff } from "lucide-svelte";
 
   let { data } = $props();
 
-  let popoverOpen = $state(false);
+  // TODO rename this
+  let isPasswordFieldFocused = $state(false);
+  let revealPassword = $state(false);
+  let passwordInputType = $derived(revealPassword ? "text" : "password");
 
   const form = superForm(data.form, {
     validators: zodClient(registerFormSchema),
@@ -96,17 +100,24 @@
           {/if}
         </Form.FieldErrors>
       </Form.Field>
-      <Form.Field {form} name="password" class="space-y-1">
+      <Form.Field {form} name="password" class="relative mb-2 space-y-1">
         <Form.Control let:attrs>
           <Form.Label>Password</Form.Label>
           <Input
             {...attrs}
-            type="password"
+            type={passwordInputType}
             bind:value={$formData.password}
-            onfocus={() => (popoverOpen = true)}
-            onblur={() => (popoverOpen = false)}
+            onfocus={() => (isPasswordFieldFocused = true)}
+            onblur={() => (isPasswordFieldFocused = false)}
           />
-          {#if popoverOpen}
+          <Button variant="ghost" class="absolute right-1 top-7 size-8 p-0" on:click={() => (revealPassword = !revealPassword)}>
+            {#if passwordInputType === "text"}
+              <Eye size={22} />
+            {:else}
+              <EyeOff size={22} />
+            {/if}
+          </Button>
+          {#if isPasswordFieldFocused}
             <PasswordStrength {pwd} {myData}></PasswordStrength>
           {/if}
         </Form.Control>

@@ -8,10 +8,14 @@
   import Input from "$components/ui/input/input.svelte";
   import PasswordStrength from "$components/layout/PasswordStrength.svelte";
   import { passwordStrength, type FirstOption, type Result, type Option } from "check-password-strength";
+  import { Eye, EyeOff } from "lucide-svelte";
+  import Button from "$components/ui/button/button.svelte";
 
   let { data } = $props();
 
   let isPasswordFieldFocused = $state(false);
+  let revealPassword = $state(false);
+  let passwordInputType = $derived(revealPassword ? "text" : "password");
 
   const form = superForm(data.form, {
     validators: zodClient(passwordResetFormSchemaThirdStep),
@@ -53,16 +57,23 @@
   </Card.Header>
   <Card.Content class="grid gap-4">
     <form class="flex flex-col gap-3" method="post" use:enhance>
-      <Form.Field {form} name="password" class="space-y-1">
+      <Form.Field {form} name="password" class="relative space-y-1">
         <Form.Control let:attrs>
           <Form.Label>Password</Form.Label>
           <Input
             {...attrs}
-            type="password"
+            type={passwordInputType}
             bind:value={$formData.password}
             onfocus={() => (isPasswordFieldFocused = true)}
             onblur={() => (isPasswordFieldFocused = false)}
           />
+          <Button variant="ghost" class="absolute right-1 top-7 size-8 p-0" on:click={() => (revealPassword = !revealPassword)}>
+            {#if passwordInputType === "text"}
+              <Eye size={22} />
+            {:else}
+              <EyeOff size={22} />
+            {/if}
+          </Button>
           {#if isPasswordFieldFocused}
             <PasswordStrength {pwd} {myData}></PasswordStrength>
           {/if}
