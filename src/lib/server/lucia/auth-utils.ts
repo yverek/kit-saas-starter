@@ -15,6 +15,12 @@ import {
   deletePasswordResetToken,
   getPasswordResetTokenByUserId
 } from "../db/password-reset-tokens";
+import {
+  createEmailChangeToken,
+  deleteAllEmailChangeTokensByUserId,
+  deleteEmailChangeToken,
+  getEmailChangeTokenByUserId
+} from "../db/email-change-tokens";
 
 const encoder = new TextEncoder();
 
@@ -117,3 +123,36 @@ export async function verifyPasswordResetToken(db: Database, userId: string, tok
 
   return true;
 }
+
+export async function generateChangeEmailToken(db: Database, userId: string): Promise<string | undefined> {
+  await deleteAllEmailChangeTokensByUserId(db, userId);
+  const token = generateId(TOKEN_LEN);
+  const expiresAt = createDate(new TimeSpan(TOKEN_EXPIRATION_TIME, "m"));
+
+  const res = await createEmailChangeToken(db, { token, userId, expiresAt });
+  if (!res) return;
+
+  return token;
+}
+
+export async function verifyChangeEmailToken(db: Database, userId: string, token: string): Promise<boolean> {
+  const tokenFromDatabase = await getEmailChangeTokenByUserId(db, userId);
+  if (!tokenFromDatabase || tokenFromDatabase.token !== token) {
+    return false;
+  }
+
+  const res = await deleteEmailChangeToken(db, token);
+  if (!res) {
+    return false;
+  }
+
+  const isExpired = !isWithinExpirationDate(tokenFromDatabase.expiresAt);
+  if (isExpired) {
+    return false;
+  }
+
+  return true;
+}
+
+// TODO can I merge all this "generate" and "verify" functions into one?
+// TODO add getToken and deleteToken function inside a single db transaction
