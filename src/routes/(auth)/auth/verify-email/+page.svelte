@@ -7,12 +7,12 @@
   import { superForm } from "sveltekit-superforms";
   import { zodClient } from "sveltekit-superforms/adapters";
   import * as flashModule from "sveltekit-flash-message/client";
-  import { emailValidationFormSchema } from "$validations/auth";
+  import { verifyEmailFormSchema } from "$validations/auth";
 
   let { data } = $props();
 
   const form = superForm(data.form, {
-    validators: zodClient(emailValidationFormSchema),
+    validators: zodClient(verifyEmailFormSchema),
     invalidateAll: true,
     delayMs: 500,
     multipleSubmits: "prevent",
