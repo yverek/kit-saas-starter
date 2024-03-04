@@ -11,6 +11,8 @@
 const PAGES = {
   "/admin/dashboard": `/admin/dashboard`,
   "/dashboard": `/dashboard`,
+  "/auth/change-email/confirm": `/auth/change-email/confirm`,
+  "/auth/change-email/submit": `/auth/change-email/submit`,
   "/auth/login": `/auth/login`,
   "/auth/register": `/auth/register`,
   "/auth/reset-password": `/auth/reset-password`,
@@ -37,6 +39,8 @@ const SERVERS = {};
  */
 const ACTIONS = {
   "default /admin/dashboard": `/admin/dashboard`,
+  "default /auth/change-email/confirm": `/auth/change-email/confirm`,
+  "default /auth/change-email/submit": `/auth/change-email/submit`,
   "default /auth/login": `/auth/login`,
   "default /auth/logout": `/auth/logout`,
   "default /auth/register": `/auth/register`,
@@ -169,6 +173,8 @@ export type KIT_ROUTES = {
   PAGES: {
     "/admin/dashboard": never;
     "/dashboard": never;
+    "/auth/change-email/confirm": never;
+    "/auth/change-email/submit": never;
     "/auth/login": never;
     "/auth/register": never;
     "/auth/reset-password": never;
@@ -183,6 +189,8 @@ export type KIT_ROUTES = {
   SERVERS: Record<string, never>;
   ACTIONS: {
     "default /admin/dashboard": never;
+    "default /auth/change-email/confirm": never;
+    "default /auth/change-email/submit": never;
     "default /auth/login": never;
     "default /auth/logout": never;
     "default /auth/register": never;

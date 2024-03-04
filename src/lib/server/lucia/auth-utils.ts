@@ -19,7 +19,8 @@ import {
   createEmailChangeToken,
   deleteAllEmailChangeTokensByUserId,
   deleteEmailChangeToken,
-  getEmailChangeTokenByUserId
+  getEmailChangeTokenByUserId,
+  type DbEmailChangeToken
 } from "../db/email-change-tokens";
 
 const encoder = new TextEncoder();
@@ -124,34 +125,34 @@ export async function verifyPasswordResetToken(db: Database, userId: string, tok
   return true;
 }
 
-export async function generateChangeEmailToken(db: Database, userId: string): Promise<string | undefined> {
+export async function generateChangeEmailToken(db: Database, userId: string, newEmail: string): Promise<string | undefined> {
   await deleteAllEmailChangeTokensByUserId(db, userId);
   const token = generateId(TOKEN_LEN);
   const expiresAt = createDate(new TimeSpan(TOKEN_EXPIRATION_TIME, "m"));
 
-  const res = await createEmailChangeToken(db, { token, userId, expiresAt });
+  const res = await createEmailChangeToken(db, { token, userId, expiresAt, email: newEmail });
   if (!res) return;
 
   return token;
 }
 
-export async function verifyChangeEmailToken(db: Database, userId: string, token: string): Promise<boolean> {
+export async function verifyChangeEmailToken(db: Database, userId: string, token: string): Promise<DbEmailChangeToken | undefined> {
   const tokenFromDatabase = await getEmailChangeTokenByUserId(db, userId);
   if (!tokenFromDatabase || tokenFromDatabase.token !== token) {
-    return false;
+    return;
   }
 
   const res = await deleteEmailChangeToken(db, token);
   if (!res) {
-    return false;
+    return;
   }
 
   const isExpired = !isWithinExpirationDate(tokenFromDatabase.expiresAt);
   if (isExpired) {
-    return false;
+    return;
   }
 
-  return true;
+  return tokenFromDatabase;
 }
 
 // TODO can I merge all this "generate" and "verify" functions into one?
