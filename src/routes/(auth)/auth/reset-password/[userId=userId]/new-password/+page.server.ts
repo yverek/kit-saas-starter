@@ -1,5 +1,5 @@
 import { logger } from "$lib/logger";
-import { passwordResetFormSchemaThirdStep, type PasswordResetFormSchemaThirdStep } from "$validations/auth";
+import { resetPasswordFormSchemaThirdStep, type ResetPasswordFormSchemaThirdStep } from "$validations/auth";
 import { redirect } from "sveltekit-flash-message/server";
 import type { Actions, PageServerLoad } from "./$types";
 import { superValidate, message } from "sveltekit-superforms";
@@ -9,14 +9,14 @@ import { createPasswordHash } from "$lib/server/lucia/auth-utils";
 import { updateUserById } from "$lib/server/db/users";
 
 export const load = (async () => {
-  const form = await superValidate<PasswordResetFormSchemaThirdStep, FlashMessage>(zod(passwordResetFormSchemaThirdStep));
+  const form = await superValidate<ResetPasswordFormSchemaThirdStep, FlashMessage>(zod(resetPasswordFormSchemaThirdStep));
 
   return { form };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
   default: async ({ params, request, cookies, locals: { db, lucia } }) => {
-    const form = await superValidate<PasswordResetFormSchemaThirdStep, FlashMessage>(request, zod(passwordResetFormSchemaThirdStep));
+    const form = await superValidate<ResetPasswordFormSchemaThirdStep, FlashMessage>(request, zod(resetPasswordFormSchemaThirdStep));
 
     const { password } = form.data;
 

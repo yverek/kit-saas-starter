@@ -5,12 +5,12 @@
   import { superForm } from "sveltekit-superforms";
   import { zodClient } from "sveltekit-superforms/adapters";
   import * as flashModule from "sveltekit-flash-message/client";
-  import { passwordResetFormSchemaFirstStep } from "$validations/auth";
+  import { resetPasswordFormSchemaFirstStep } from "$validations/auth";
 
   let { data } = $props();
 
   const form = superForm(data.form, {
-    validators: zodClient(passwordResetFormSchemaFirstStep),
+    validators: zodClient(resetPasswordFormSchemaFirstStep),
     invalidateAll: true,
     delayMs: 2000,
     multipleSubmits: "prevent",

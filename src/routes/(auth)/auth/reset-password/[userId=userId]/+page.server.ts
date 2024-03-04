@@ -1,4 +1,4 @@
-import { passwordResetFormSchemaSecondStep, type PasswordResetFormSchemaSecondStep } from "$validations/auth";
+import { resetPasswordFormSchemaSecondStep, type ResetPasswordFormSchemaSecondStep } from "$validations/auth";
 import { superValidate, message } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
 import type { Actions } from "@sveltejs/kit";
@@ -9,14 +9,14 @@ import { verifyPasswordResetToken } from "$lib/server/lucia/auth-utils";
 import type { PageServerLoad } from "./$types";
 
 export const load = (async () => {
-  const form = await superValidate<PasswordResetFormSchemaSecondStep, FlashMessage>(zod(passwordResetFormSchemaSecondStep));
+  const form = await superValidate<ResetPasswordFormSchemaSecondStep, FlashMessage>(zod(resetPasswordFormSchemaSecondStep));
 
   return { form };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
   default: async ({ params, request, cookies, locals: { db } }) => {
-    const form = await superValidate<PasswordResetFormSchemaSecondStep, FlashMessage>(request, zod(passwordResetFormSchemaSecondStep));
+    const form = await superValidate<ResetPasswordFormSchemaSecondStep, FlashMessage>(request, zod(resetPasswordFormSchemaSecondStep));
 
     if (!form.valid) {
       logger.debug("Invalid form");

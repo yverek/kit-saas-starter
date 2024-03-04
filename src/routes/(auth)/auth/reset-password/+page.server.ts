@@ -4,21 +4,21 @@ import type { Actions } from "@sveltejs/kit";
 import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { logger } from "$lib/logger";
-import { passwordResetFormSchemaFirstStep, type PasswordResetFormSchemaFirstStep } from "$validations/auth";
+import { resetPasswordFormSchemaFirstStep, type ResetPasswordFormSchemaFirstStep } from "$validations/auth";
 import { generatePasswordResetToken } from "$lib/server/lucia/auth-utils";
 import { getUserByEmail } from "$lib/server/db/users";
 import { sendPasswordResetEmail } from "$lib/server/email/send";
 import { redirect } from "sveltekit-flash-message/server";
 
 export const load = (async () => {
-  const form = await superValidate<PasswordResetFormSchemaFirstStep, FlashMessage>(zod(passwordResetFormSchemaFirstStep));
+  const form = await superValidate<ResetPasswordFormSchemaFirstStep, FlashMessage>(zod(resetPasswordFormSchemaFirstStep));
 
   return { form };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
   default: async ({ cookies, request, locals: { db } }) => {
-    const form = await superValidate<PasswordResetFormSchemaFirstStep, FlashMessage>(request, zod(passwordResetFormSchemaFirstStep));
+    const form = await superValidate<ResetPasswordFormSchemaFirstStep, FlashMessage>(request, zod(resetPasswordFormSchemaFirstStep));
 
     if (!form.valid) {
       logger.debug(form, "Invalid email for password reset form");

@@ -4,7 +4,7 @@
   import { superForm } from "sveltekit-superforms";
   import { zodClient } from "sveltekit-superforms/adapters";
   import * as flashModule from "sveltekit-flash-message/client";
-  import { passwordResetFormSchemaThirdStep } from "$validations/auth";
+  import { resetPasswordFormSchemaThirdStep } from "$validations/auth";
   import Input from "$components/ui/input/input.svelte";
   import PasswordStrength from "$components/layout/PasswordStrength.svelte";
   import { passwordStrength, type FirstOption, type Result, type Option } from "check-password-strength";
@@ -18,7 +18,7 @@
   let passwordInputType = $derived(revealPassword ? "text" : "password");
 
   const form = superForm(data.form, {
-    validators: zodClient(passwordResetFormSchemaThirdStep),
+    validators: zodClient(resetPasswordFormSchemaThirdStep),
     invalidateAll: true,
     delayMs: 2000,
     multipleSubmits: "prevent",
