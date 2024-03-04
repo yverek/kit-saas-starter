@@ -1,3 +1,4 @@
+import EmailChangeHtml from "./templates/email-change.html?raw";
 import EmailVerificationHtml from "./templates/email-verification.html?raw";
 import PasswordResetHtml from "./templates/password-reset.html?raw";
 import WelcomeHtml from "./templates/welcome.html?raw";
@@ -23,10 +24,19 @@ export async function sendWelcomeEmail(email: string, name: string): Promise<boo
   return await sendEmail(email, `Welcome to ${APP_NAME}`, body);
 }
 
+// TODO insert welcome user in this email
 export async function sendPasswordResetEmail(email: string, token: string): Promise<boolean> {
   if (!email || !token) return false;
 
   const body = PasswordResetHtml.replaceAll("{{appName}}", APP_NAME).replace("{{token}}", token);
 
   return await sendEmail(email, `Reset your password for ${APP_NAME}`, body);
+}
+
+export async function sendEmailChangeEmail(email: string, name: string, token: string): Promise<boolean> {
+  if (!email || !name || !token) return false;
+
+  const body = EmailChangeHtml.replaceAll("{{appName}}", APP_NAME).replace("{{user}}", name).replace("{{token}}", token);
+
+  return await sendEmail(email, `Confirm your ${APP_NAME} new email address`, body);
 }
