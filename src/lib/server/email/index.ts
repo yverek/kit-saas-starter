@@ -1,5 +1,6 @@
 // import { dev } from "$app/environment";
-import { RESEND_API_KEY, RESEND_MAIL } from "$env/static/private";
+import { APP_EMAIL } from "$configs/general";
+import { RESEND_API_KEY } from "$env/static/private";
 // import type { ContentItem, EmailAddress, MailSendBody, Personalization } from "./types";
 // import { HOST, DKIM_PRIVATE_KEY, SENDER_EMAIL, DKIM_DOMAIN } from "$env/static/private";
 
@@ -38,7 +39,7 @@ export async function sendEmail(email: string, subject: string, body: string): P
       Authorization: `Bearer ${RESEND_API_KEY}`
     },
     body: JSON.stringify({
-      from: RESEND_MAIL,
+      from: APP_EMAIL,
       to: email,
       subject: subject,
       html: body

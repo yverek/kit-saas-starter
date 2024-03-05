@@ -12,8 +12,8 @@ dependencies:
     specifier: ^0.19.3
     version: 0.19.3(svelte@5.0.0-next.68)
   check-password-strength:
-    specifier: ^2.0.8
-    version: 2.0.8
+    specifier: 2.0.7
+    version: 2.0.7
   clsx:
     specifier: ^2.1.0
     version: 2.1.0
@@ -2706,8 +2706,8 @@ packages:
       get-func-name: 2.0.2
     dev: true
 
-  /check-password-strength@2.0.8:
-    resolution: {integrity: sha512-NfJAAMygKqkONRTd1tLRgBy+9b/+uzEyKrlavndsfd01XlkvvcyF6xKZASD5pI4sK5k7951Bxphf42NvP/wH2A==}
+  /check-password-strength@2.0.7:
+    resolution: {integrity: sha512-VyklBkB6dOKnCIh63zdVr7QKVMN9/npwUqNAXxWrz8HabVZH/n/d+lyNm1O/vbXFJlT/Hytb5ouYKYGkoeZirQ==}
     dev: false
 
   /chokidar@3.6.0:

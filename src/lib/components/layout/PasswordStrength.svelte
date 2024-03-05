@@ -1,6 +1,6 @@
 <script lang="ts">
   import { slide } from "svelte/transition";
-  import { type Result } from "check-password-strength";
+  import type { Result } from "check-password-strength";
   import { Check, X } from "lucide-svelte";
 
   let { pwd, myData } = $props<{ pwd: Result<string>; myData: Array<{ name: string; isDone: boolean }> }>();

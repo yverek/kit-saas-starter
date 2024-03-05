@@ -55,7 +55,7 @@
   "dependencies": {
     "@lucia-auth/adapter-sqlite": "^3.0.0",
     "bits-ui": "^0.19.3",
-    "check-password-strength": "^2.0.8",
+    "check-password-strength": "2.0.7",
     "clsx": "^2.1.0",
     "drizzle-orm": "^0.29.4",
     "formsnap": "^0.5.1",

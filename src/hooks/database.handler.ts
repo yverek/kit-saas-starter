@@ -14,6 +14,7 @@ let platform: App.Platform;
 if (dev) {
   logger.debug("Dev mode: populating platform env var");
   const { getPlatformProxy } = await import("wrangler");
+  // @ts-expect-error types mismatch
   platform = await getPlatformProxy();
 }
 

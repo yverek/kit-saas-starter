@@ -9,8 +9,9 @@ database_id = "database-id"
 # Variable bindings. These are arbitrary, plaintext strings (similar to environment variables)
 # Note: Use secrets to store sensitive data.
 # Docs: https://developers.cloudflare.com/workers/platform/environment-variables
-# [vars]
-# MY_VARIABLE = "production_value"
+[vars]
+RESEND_API_KEY="<YOUR_RESEND_API_KEY>"
+PUBLIC_CLOUDFLARE_ANALYTICS_KEY="<YOUR_CLOUDFLARE_ANALYTICS_KEY>"
 
 # Bind a KV Namespace. Use KV as persistent storage for small key-value pairs.
 # Docs: https://developers.cloudflare.com/workers/runtime-apis/kv
