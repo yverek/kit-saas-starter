@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { cn } from "$lib/utils";
+  import { cn } from "$lib/utils/style-transitions";
   import type { HTMLTdAttributes } from "svelte/elements";
 
   type $$Props = HTMLTdAttributes;

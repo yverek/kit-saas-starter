@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Label as LabelPrimitive } from "bits-ui";
-  import { cn } from "$lib/utils";
+  import { cn } from "$lib/utils/style-transitions";
 
   type $$Props = LabelPrimitive.Props;
   type $$Events = LabelPrimitive.Events;
