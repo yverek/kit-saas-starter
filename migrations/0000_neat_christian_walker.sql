@@ -14,6 +14,15 @@ CREATE TABLE `email_verification_tokens` (
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
+CREATE TABLE `oauth_accounts` (
+	`provider_id` text NOT NULL,
+	`provider_user_id` text NOT NULL,
+	`created_at` integer NOT NULL,
+	`user_id` text NOT NULL,
+	PRIMARY KEY(`provider_id`, `provider_user_id`),
+	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
 CREATE TABLE `password_reset_tokens` (
 	`token` text(15) PRIMARY KEY NOT NULL,
 	`expires_at` integer NOT NULL,
@@ -30,9 +39,11 @@ CREATE TABLE `sessions` (
 --> statement-breakpoint
 CREATE TABLE `users` (
 	`id` text(15) PRIMARY KEY NOT NULL,
-	`name` text NOT NULL,
+	`name` text,
 	`email` text NOT NULL,
-	`password` text NOT NULL,
+	`password` text,
+	`auth_methods` text NOT NULL,
+	`avatar_url` text,
 	`is_verified` integer DEFAULT false NOT NULL,
 	`is_admin` integer DEFAULT false NOT NULL,
 	`created_at` integer NOT NULL,

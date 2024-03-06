@@ -30,7 +30,8 @@ export const actions: Actions = {
 
     const user = await getUserByEmail(db, email);
     if (!user) {
-      return message(form, { status: "error", text: "User not found" }, { status: 404 });
+      // we send a success message even if the user doesn't exist to prevent email enumeration
+      redirect(route("/"), { status: "success", text: "Email sent successfully" }, cookies);
     }
 
     const { id: userId } = user;

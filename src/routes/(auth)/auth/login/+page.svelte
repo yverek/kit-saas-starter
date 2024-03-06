@@ -6,7 +6,7 @@
   import { zodClient } from "sveltekit-superforms/adapters";
   import { loginFormSchema } from "$validations/auth";
   import Button from "$components/ui/button/button.svelte";
-  import { Apple, Google } from "$components/icons";
+  import { GitHub, Google } from "$components/icons";
   import { route } from "$lib/ROUTES.js";
   import * as flashModule from "sveltekit-flash-message/client";
 
@@ -30,11 +30,11 @@
   </Card.Header>
   <Card.Content class="grid gap-4">
     <div class="grid grid-cols-2 gap-6">
-      <Button variant="outline">
-        <Apple class="mr-2 h-4 w-4" />
-        Apple
+      <Button variant="outline" href={route("GET /auth/oauth/github")}>
+        <GitHub class="mr-2 h-4 w-4" />
+        GitHub
       </Button>
-      <Button variant="outline">
+      <Button variant="outline" href={route("GET /auth/oauth/google")}>
         <Google class="mr-2 h-4 w-4" />
         Google
       </Button>

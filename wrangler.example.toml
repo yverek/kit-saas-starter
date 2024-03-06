@@ -10,8 +10,12 @@ database_id = "database-id"
 # Note: Use secrets to store sensitive data.
 # Docs: https://developers.cloudflare.com/workers/platform/environment-variables
 [vars]
-RESEND_API_KEY="<YOUR_RESEND_API_KEY>"
-PUBLIC_CLOUDFLARE_ANALYTICS_KEY="<YOUR_CLOUDFLARE_ANALYTICS_KEY>"
+RESEND_API_KEY=""
+PUBLIC_CLOUDFLARE_ANALYTICS_KEY=""
+GITHUB_CLIENT_ID=""
+GITHUB_CLIENT_SECRET=""
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
 
 # Bind a KV Namespace. Use KV as persistent storage for small key-value pairs.
 # Docs: https://developers.cloudflare.com/workers/runtime-apis/kv

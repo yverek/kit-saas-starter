@@ -54,6 +54,7 @@
   "type": "module",
   "dependencies": {
     "@lucia-auth/adapter-sqlite": "^3.0.0",
+    "arctic": "^1.2.1",
     "bits-ui": "^0.19.4",
     "check-password-strength": "2.0.7",
     "clsx": "^2.1.0",

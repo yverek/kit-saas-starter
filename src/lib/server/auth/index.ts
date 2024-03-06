@@ -3,6 +3,14 @@ import { D1Adapter } from "@lucia-auth/adapter-sqlite";
 import { dev } from "$app/environment";
 import { SESSION_EXPIRATION_TIME } from "$configs/fields-length";
 import { SESSION_COOKIE_NAME } from "$configs/general";
+import { GitHub, Google } from "arctic";
+import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from "$env/static/private";
+
+// const GOOGLE_REDIRECT_URL = dev? '' : '';
+const GOOGLE_REDIRECT_URI = "http://localhost:5173/auth/oauth/google/callback";
+
+export const githubOauth = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET);
+export const googleOauth = new Google(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI);
 
 export function initializeLucia(db: D1Database) {
   const adapter = new D1Adapter(db, {
@@ -23,6 +31,8 @@ export function initializeLucia(db: D1Database) {
         id: data.id,
         name: data.name,
         email: data.email,
+        authMethods: data.auth_methods,
+        avatarUrl: data.avatar_url,
         isVerified: !!data.is_verified,
         isAdmin: !!data.is_admin,
         createdAt: new Date(data.created_at).toISOString(),
@@ -38,6 +48,8 @@ interface DatabaseUserAttributes {
   name: string;
   email: string;
   password: string;
+  auth_methods: string[];
+  avatar_url: string;
   is_verified: boolean;
   is_admin: boolean;
   created_at: Date;

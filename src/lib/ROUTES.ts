@@ -32,7 +32,12 @@ const PAGES = {
 /**
  * SERVERS
  */
-const SERVERS = {};
+const SERVERS = {
+  "GET /auth/oauth/github": `/auth/oauth/github`,
+  "GET /auth/oauth/github/callback": `/auth/oauth/github/callback`,
+  "GET /auth/oauth/google": `/auth/oauth/google`,
+  "GET /auth/oauth/google/callback": `/auth/oauth/google/callback`
+};
 
 /**
  * ACTIONS
@@ -186,7 +191,12 @@ export type KIT_ROUTES = {
     "/legal/privacy-policy": never;
     "/legal/terms-and-conditions": never;
   };
-  SERVERS: Record<string, never>;
+  SERVERS: {
+    "GET /auth/oauth/github": never;
+    "GET /auth/oauth/github/callback": never;
+    "GET /auth/oauth/google": never;
+    "GET /auth/oauth/google/callback": never;
+  };
   ACTIONS: {
     "default /admin/dashboard": never;
     "default /auth/change-email/confirm": never;
