@@ -4,7 +4,7 @@ import { SESSION_ID_LEN } from "../../../configs/fields-length";
 
 export const sessions = sqliteTable("sessions", {
   id: text("id", { length: SESSION_ID_LEN }).notNull().primaryKey(),
-  expiresAt: integer("expires_at", { mode: 'timestamp' }).notNull(),
+  expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
   userId: text("user_id")
     .notNull()
     .references(() => users.id)

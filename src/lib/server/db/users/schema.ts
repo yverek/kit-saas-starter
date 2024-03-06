@@ -8,6 +8,6 @@ export const users = sqliteTable("users", {
   password: text("password").notNull(),
   isVerified: integer("is_verified", { mode: "boolean" }).notNull().default(false),
   isAdmin: integer("is_admin", { mode: "boolean" }).notNull().default(false),
-  createdAt: integer("created_at", { mode: 'timestamp' }).notNull(),
-  modifiedAt: integer("modified_at", { mode: 'timestamp' }),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  modifiedAt: integer("modified_at", { mode: "timestamp" })
 });
