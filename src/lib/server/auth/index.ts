@@ -19,7 +19,15 @@ export function initializeLucia(db: D1Database) {
       }
     },
     getUserAttributes: (data) => {
-      return { id: data.id, name: data.name, email: data.email, isVerified: data.is_verified, isAdmin: data.is_admin };
+      return {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        isVerified: !!data.is_verified,
+        isAdmin: !!data.is_admin,
+        createdAt: new Date(data.created_at).toISOString(),
+        modifiedAt: new Date(data.modified_at).toISOString()
+      };
     }
   });
 }
@@ -32,6 +40,8 @@ interface DatabaseUserAttributes {
   password: string;
   is_verified: boolean;
   is_admin: boolean;
+  created_at: Date;
+  modified_at: Date;
 }
 
 declare module "lucia" {
