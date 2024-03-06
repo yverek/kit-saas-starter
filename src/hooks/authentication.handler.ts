@@ -1,7 +1,7 @@
 import { logger } from "$lib/logger";
 import type { Handle } from "@sveltejs/kit";
 
-import { initializeLucia } from "$lib/server/lucia";
+import { initializeLucia } from "$lib/server/auth";
 
 export const authentication: Handle = async ({ event, resolve }) => {
   event.locals.lucia = initializeLucia(event.platform?.env.DB as D1Database);

@@ -5,7 +5,7 @@ import { verifyEmailFormSchema, type VerifyEmailFormSchema } from "$validations/
 import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { logger } from "$lib/logger";
-import { verifyEmailVerificationToken } from "$lib/server/lucia/auth-utils";
+import { verifyEmailVerificationToken } from "$lib/server/auth/auth-utils";
 import { updateUserById, type DbUser } from "$lib/server/db/users";
 import { sendWelcomeEmail } from "$lib/server/email/send";
 import { SESSION_ID_LEN } from "$configs/fields-length";

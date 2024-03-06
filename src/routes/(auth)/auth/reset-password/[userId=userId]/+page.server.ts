@@ -5,7 +5,7 @@ import type { Actions } from "@sveltejs/kit";
 import { logger } from "$lib/logger";
 import { route } from "$lib/ROUTES";
 import { redirect } from "sveltekit-flash-message/server";
-import { verifyPasswordResetToken } from "$lib/server/lucia/auth-utils";
+import { verifyPasswordResetToken } from "$lib/server/auth/auth-utils";
 import type { PageServerLoad } from "./$types";
 
 export const load = (async () => {

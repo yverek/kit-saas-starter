@@ -5,7 +5,7 @@ import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { logger } from "$lib/logger";
 import { resetPasswordFormSchemaFirstStep, type ResetPasswordFormSchemaFirstStep } from "$validations/auth";
-import { generatePasswordResetToken } from "$lib/server/lucia/auth-utils";
+import { generatePasswordResetToken } from "$lib/server/auth/auth-utils";
 import { getUserByEmail } from "$lib/server/db/users";
 import { sendPasswordResetEmail } from "$lib/server/email/send";
 import { redirect } from "sveltekit-flash-message/server";

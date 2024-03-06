@@ -5,7 +5,7 @@ import type { Actions, PageServerLoad } from "./$types";
 import { superValidate, message } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
 import { route } from "$lib/ROUTES";
-import { createPasswordHash } from "$lib/server/lucia/auth-utils";
+import { createPasswordHash } from "$lib/server/auth/auth-utils";
 import { updateUserById } from "$lib/server/db/users";
 
 export const load = (async () => {

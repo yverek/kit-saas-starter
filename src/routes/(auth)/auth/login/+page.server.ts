@@ -1,5 +1,5 @@
 import type { PageServerLoad, Actions } from "./$types";
-import { verifyPasswordHash } from "$lib/server/lucia/auth-utils";
+import { verifyPasswordHash } from "$lib/server/auth/auth-utils";
 import { loginFormSchema, type LoginFormSchema } from "$validations/auth";
 import { message, superValidate } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";

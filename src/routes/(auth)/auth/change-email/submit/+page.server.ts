@@ -5,7 +5,7 @@ import { changeEmailFormSchemaFirstStep, type ChangeEmailFormSchemaFirstStep } f
 import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { logger } from "$lib/logger";
-import { generateChangeEmailToken } from "$lib/server/lucia/auth-utils";
+import { generateChangeEmailToken } from "$lib/server/auth/auth-utils";
 import type { DbUser } from "$lib/server/db/users";
 import { sendEmailChangeEmail } from "$lib/server/email/send";
 import { redirect } from "sveltekit-flash-message/server";
