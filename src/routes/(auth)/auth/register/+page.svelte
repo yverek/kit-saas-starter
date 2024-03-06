@@ -6,13 +6,12 @@
   import { zodClient } from "sveltekit-superforms/adapters";
   import { registerFormSchema } from "$validations/auth";
   import Button from "$components/ui/button/button.svelte";
-  import Apple from "$components/icons/apple.svelte";
-  import Google from "$components/icons/google.svelte";
   import { route } from "$lib/ROUTES";
   import * as flashModule from "sveltekit-flash-message/client";
   import PasswordStrength from "$components/layout/PasswordStrength.svelte";
   import { passwordStrength, type FirstOption, type Result, type Option } from "check-password-strength";
   import { Eye, EyeOff } from "lucide-svelte";
+  import { GitHub, Google } from "$components/icons";
 
   let { data } = $props();
 
@@ -58,13 +57,11 @@
   </Card.Header>
   <Card.Content class="grid gap-4">
     <div class="grid grid-cols-2 gap-6">
-      <!-- TODO change this href -->
-      <Button variant="outline" href="#">
-        <Apple class="mr-2 h-4 w-4" />
-        Apple
+      <Button variant="outline" href={route("GET /auth/oauth/github")}>
+        <GitHub class="mr-2 h-4 w-4" />
+        GitHub
       </Button>
-      <!-- TODO change this href -->
-      <Button variant="outline" href="#">
+      <Button variant="outline" href={route("GET /auth/oauth/google")}>
         <Google class="mr-2 h-4 w-4" />
         Google
       </Button>
