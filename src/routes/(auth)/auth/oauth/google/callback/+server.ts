@@ -10,8 +10,8 @@ import { error } from "@sveltejs/kit";
 import { googleOauth } from "$lib/server/auth";
 import { redirect } from "sveltekit-flash-message/server";
 import { logger } from "$lib/logger";
-import { createUser, getUserByEmail, updateUserById } from "$lib/server/db/users";
-import { createOauthAccount, getOAuthAccountByProviderUserId } from "$lib/server/db/oauth-accounts";
+import { createUser, getUserByEmail, updateUserById, type DbUser } from "$lib/server/db/users";
+import { createOauthAccount, getOAuthAccountByProviderUserId, type DbOauthAccount } from "$lib/server/db/oauth-accounts";
 import { createAndSetSession } from "$lib/server/auth/auth-utils";
 
 type GoogleUser = {
@@ -32,7 +32,7 @@ export const GET: RequestHandler = async ({ cookies, url, locals: { db, lucia } 
   const stateCookie = cookies.get(GOOGLE_OAUTH_STATE_COOKIE_NAME);
   const codeVerifierCookie = cookies.get(GOOGLE_OAUTH_CODE_VERIFIER_COOKIE_NAME);
 
-  // Validate OAuth state and code verifier
+  // validate OAuth state and code verifier
   if (!code || !state || !stateCookie || !codeVerifierCookie || state !== stateCookie) {
     error(400, "Invalid OAuth state or code verifier");
   }
@@ -56,64 +56,58 @@ export const GET: RequestHandler = async ({ cookies, url, locals: { db, lucia } 
       error(400, "Unverified email");
     }
 
-    // Check if the user already exists
+    // check if the user already exists
     const existingUser = await getUserByEmail(db, googleUser.email);
 
     if (existingUser) {
-      // Check if the user already has a Google OAuth account linked
+      // check if the user already has a Google OAuth account linked
       const existingOauthAccount = await getOAuthAccountByProviderUserId(db, "google", googleUser.sub);
 
       if (!existingOauthAccount) {
-        // Add the 'google' auth provider to the user's authMethods list
+        // add the 'google' auth provider to the user's authMethods list
         const authMethods = existingUser.authMethods || [];
         authMethods.push("google");
 
-        // ! this should be a transaction, but right now D1 doesn't support them yet
-        // Link the Google OAuth account to the existing user
-        const newOauthAccount = await createOauthAccount(db, {
-          userId: existingUser.id,
-          providerId: "google",
-          providerUserId: googleUser.sub
-        });
-        if (!newOauthAccount) {
-          error(400, "Something went wrong");
+        const batchResponse: [DbOauthAccount | undefined, DbUser | undefined] = await db.batch([
+          // link the Google OAuth account to the existing user
+          createOauthAccount(db, {
+            userId: existingUser.id,
+            providerId: "google",
+            providerUserId: googleUser.sub
+          }),
+          // update the user's authMethods list
+          updateUserById(db, existingUser.id, { authMethods })
+        ]);
+        if (!batchResponse.some((r) => !r)) {
+          error(500, "Something went wrong");
         }
-
-        // Update the user's authMethods list
-        const updatedUser = await updateUserById(db, existingUser.id, { authMethods });
-        if (!updatedUser) {
-          error(400, "Something went wrong");
-        }
-        // ! end of transaction
       }
 
       await createAndSetSession(lucia, existingUser.id, cookies);
     } else {
-      // Create a new user and their OAuth account
       const userId = generateId(15);
 
-      // ! this should be a transaction, but right now D1 doesn't support them yet
-      const newUser = await createUser(db, {
-        id: userId,
-        name: googleUser.name,
-        avatarUrl: googleUser.picture,
-        email: googleUser.email,
-        isVerified: true,
-        authMethods: ["google"]
-      });
-      if (!newUser) {
-        error(400, "Something went wrong");
+      // if user doesn't exist in db
+      const batchResponse: [DbUser | undefined, DbOauthAccount | undefined] = await db.batch([
+        // create a new user and
+        createUser(db, {
+          id: userId,
+          name: googleUser.name,
+          avatarUrl: googleUser.picture,
+          email: googleUser.email,
+          isVerified: true,
+          authMethods: ["google"]
+        }),
+        // create a new Google OAuth account
+        createOauthAccount(db, {
+          userId,
+          providerId: "google",
+          providerUserId: googleUser.sub
+        })
+      ]);
+      if (!batchResponse.some((r) => !r)) {
+        error(500, "Something went wrong");
       }
-
-      const newOauthAccount = await createOauthAccount(db, {
-        userId,
-        providerId: "google",
-        providerUserId: googleUser.sub
-      });
-      if (!newOauthAccount) {
-        error(400, "Something went wrong");
-      }
-      // ! end of transaction
 
       await createAndSetSession(lucia, userId, cookies);
     }
