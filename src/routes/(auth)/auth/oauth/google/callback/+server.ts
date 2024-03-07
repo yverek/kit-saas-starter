@@ -89,7 +89,7 @@ export const GET: RequestHandler = async ({ cookies, url, locals: { db, lucia } 
 
       // if user doesn't exist in db
       const batchResponse: [DbUser | undefined, DbOauthAccount | undefined] = await db.batch([
-        // create a new user and
+        // create a new user
         createUser(db, {
           id: userId,
           name: googleUser.name,
