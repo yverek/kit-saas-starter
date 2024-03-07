@@ -5,7 +5,7 @@ import { generateId } from "lucia";
 
 import { route } from "$lib/ROUTES";
 
-import { GOOGLE_OAUTH_CODE_VERIFIER_COOKIE_NAME, GOOGLE_OAUTH_STATE_COOKIE_NAME } from "$configs/general";
+import { GOOGLE_OAUTH_CODE_VERIFIER_COOKIE_NAME, GOOGLE_OAUTH_STATE_COOKIE_NAME, OAUTH_PROVIDERS } from "$configs/general";
 import { error } from "@sveltejs/kit";
 import { googleOauth } from "$lib/server/auth";
 import { redirect } from "sveltekit-flash-message/server";
@@ -61,18 +61,18 @@ export const GET: RequestHandler = async ({ cookies, url, locals: { db, lucia } 
 
     if (existingUser) {
       // check if the user already has a Google OAuth account linked
-      const existingOauthAccount = await getOAuthAccountByProviderUserId(db, "google", googleUser.sub);
+      const existingOauthAccount = await getOAuthAccountByProviderUserId(db, OAUTH_PROVIDERS.GOOGLE, googleUser.sub);
 
       if (!existingOauthAccount) {
         // add the 'google' auth provider to the user's authMethods list
         const authMethods = existingUser.authMethods || [];
-        authMethods.push("google");
+        authMethods.push(OAUTH_PROVIDERS.GOOGLE);
 
         const batchResponse: [DbOauthAccount | undefined, DbUser | undefined] = await db.batch([
           // link the Google OAuth account to the existing user
           createOauthAccount(db, {
             userId: existingUser.id,
-            providerId: "google",
+            providerId: OAUTH_PROVIDERS.GOOGLE,
             providerUserId: googleUser.sub
           }),
           // update the user's authMethods list
@@ -96,12 +96,12 @@ export const GET: RequestHandler = async ({ cookies, url, locals: { db, lucia } 
           avatarUrl: googleUser.picture,
           email: googleUser.email,
           isVerified: true,
-          authMethods: ["google"]
+          authMethods: [OAUTH_PROVIDERS.GOOGLE]
         }),
         // create a new Google OAuth account
         createOauthAccount(db, {
           userId,
-          providerId: "google",
+          providerId: OAUTH_PROVIDERS.GOOGLE,
           providerUserId: googleUser.sub
         })
       ]);
