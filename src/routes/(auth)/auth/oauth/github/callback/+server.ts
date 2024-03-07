@@ -4,7 +4,7 @@ import { OAuth2RequestError } from "arctic";
 import { generateId } from "lucia";
 
 import { route } from "$lib/ROUTES";
-import { GITHUB_OAUTH_STATE_COOKIE_NAME } from "$configs/general";
+import { GITHUB_OAUTH_STATE_COOKIE_NAME, OAUTH_PROVIDERS } from "$configs/general";
 import { error } from "@sveltejs/kit";
 import { githubOauth } from "$lib/server/auth";
 import { createUser, getUserByEmail, updateUserById, type DbUser } from "$lib/server/db/users";
@@ -72,18 +72,18 @@ export const GET: RequestHandler = async ({ url, cookies, locals: { db, lucia } 
 
     if (existingUser) {
       // check if the user already has a GitHub OAuth account linked
-      const existingOauthAccount = await getOAuthAccountByProviderUserId(db, "github", githubUser.id.toString());
+      const existingOauthAccount = await getOAuthAccountByProviderUserId(db, OAUTH_PROVIDERS.GITHUB, githubUser.id.toString());
 
       if (!existingOauthAccount) {
         // add the 'github' auth provider to the user's authMethods list
         const authMethods = existingUser.authMethods || [];
-        authMethods.push("github");
+        authMethods.push(OAUTH_PROVIDERS.GITHUB);
 
         const batchResponse: [DbOauthAccount | undefined, DbUser | undefined] = await db.batch([
           // link the GitHub OAuth account to the existing user
           createOauthAccount(db, {
             userId: existingUser.id,
-            providerId: "github",
+            providerId: OAUTH_PROVIDERS.GITHUB,
             providerUserId: githubUser.id.toString()
           }),
           // update the user's authMethods list
@@ -107,12 +107,12 @@ export const GET: RequestHandler = async ({ url, cookies, locals: { db, lucia } 
           avatarUrl: githubUser.avatar_url,
           email: primaryEmail.email,
           isVerified: true,
-          authMethods: ["github"]
+          authMethods: [OAUTH_PROVIDERS.GITHUB]
         }),
         // create a new GitHub OAuth account
         createOauthAccount(db, {
           userId,
-          providerId: "github",
+          providerId: OAUTH_PROVIDERS.GITHUB,
           providerUserId: githubUser.id.toString()
         })
       ]);
