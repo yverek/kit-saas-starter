@@ -4,7 +4,7 @@ import { OAuth2RequestError } from "arctic";
 import { generateId } from "lucia";
 
 import { route } from "$lib/ROUTES";
-import { GITHUB_OAUTH_STATE_COOKIE_NAME, AUTH_METHODS } from "$configs/general";
+import { GITHUB_OAUTH_STATE_COOKIE_NAME } from "$configs/cookies-names";
 import { error } from "@sveltejs/kit";
 import { githubOauth } from "$lib/server/auth";
 import { createUser, getUserByEmail, updateUserById, type DbUser } from "$lib/server/db/users";
@@ -12,6 +12,7 @@ import { createOauthAccount, getOAuthAccountByProviderUserId, type DbOauthAccoun
 import { createAndSetSession } from "$lib/server/auth/auth-utils";
 import { logger } from "$lib/logger";
 import { redirect } from "sveltekit-flash-message/server";
+import { AUTH_METHODS } from "$configs/auth-methods";
 
 type GitHubUser = {
   id: number;

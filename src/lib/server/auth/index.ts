@@ -2,7 +2,7 @@ import { Lucia, TimeSpan } from "lucia";
 import { D1Adapter } from "@lucia-auth/adapter-sqlite";
 import { dev } from "$app/environment";
 import { SESSION_EXPIRATION_TIME } from "$configs/fields-length";
-import { SESSION_COOKIE_NAME } from "$configs/general";
+import { SESSION_COOKIE_NAME } from "$configs/cookies-names";
 import { GitHub, Google } from "arctic";
 import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from "$env/static/private";
 

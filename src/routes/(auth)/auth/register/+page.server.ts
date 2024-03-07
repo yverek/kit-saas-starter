@@ -10,7 +10,7 @@ import { route } from "$lib/ROUTES";
 import { logger } from "$lib/logger";
 import { createUser } from "$lib/server/db/users";
 import { USER_ID_LEN } from "$configs/fields-length";
-import { AUTH_METHODS } from "$configs/general";
+import { AUTH_METHODS } from "$configs/auth-methods";
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
   if (locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);

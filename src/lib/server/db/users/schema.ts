@@ -1,6 +1,6 @@
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 import { USER_ID_LEN } from "../../../configs/fields-length";
-import type { AUTH_METHODS } from "../../../configs/general";
+import { AUTH_METHODS } from "../../../configs/auth-methods";
 
 export const users = sqliteTable("users", {
   id: text("id", { length: USER_ID_LEN }).notNull().primaryKey(),

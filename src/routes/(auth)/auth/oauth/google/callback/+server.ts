@@ -5,7 +5,8 @@ import { generateId } from "lucia";
 
 import { route } from "$lib/ROUTES";
 
-import { GOOGLE_OAUTH_CODE_VERIFIER_COOKIE_NAME, GOOGLE_OAUTH_STATE_COOKIE_NAME, AUTH_METHODS } from "$configs/general";
+import { GOOGLE_OAUTH_CODE_VERIFIER_COOKIE_NAME, GOOGLE_OAUTH_STATE_COOKIE_NAME } from "$configs/cookies-names";
+import { AUTH_METHODS } from "$configs/auth-methods";
 import { error } from "@sveltejs/kit";
 import { googleOauth } from "$lib/server/auth";
 import { redirect } from "sveltekit-flash-message/server";

@@ -2,7 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { type Database } from "$lib/server/db";
 import type { DbInsertOauthAccount, DbOauthAccount } from "./types";
 import { oauthAccounts } from ".";
-import type { AUTH_METHODS } from "$configs/general";
+import { AUTH_METHODS } from "$configs/auth-methods";
 
 /*
  * CREATE
