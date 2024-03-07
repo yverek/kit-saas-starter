@@ -7,8 +7,8 @@ import { route } from "$lib/ROUTES";
 import { GITHUB_OAUTH_STATE_COOKIE_NAME } from "$configs/general";
 import { error } from "@sveltejs/kit";
 import { githubOauth } from "$lib/server/auth";
-import { createUser, getUserByEmail, updateUserById } from "$lib/server/db/users";
-import { createOauthAccount, getOAuthAccountByProviderUserId } from "$lib/server/db/oauth-accounts";
+import { createUser, getUserByEmail, updateUserById, type DbUser } from "$lib/server/db/users";
+import { createOauthAccount, getOAuthAccountByProviderUserId, type DbOauthAccount } from "$lib/server/db/oauth-accounts";
 import { createAndSetSession } from "$lib/server/auth/auth-utils";
 import { logger } from "$lib/logger";
 import { redirect } from "sveltekit-flash-message/server";
@@ -37,17 +37,17 @@ export const GET: RequestHandler = async ({ url, cookies, locals: { db, lucia } 
   }
 
   try {
-    // Validate the authorization code and retrieve the tokens
+    // validate the authorization code and retrieve the tokens
     const tokens = await githubOauth.validateAuthorizationCode(code);
 
-    // Fetch the GitHub user associated with the access token
+    // fetch the GitHub user associated with the access token
     const githubUserResponse = await fetch("https://api.github.com/user", {
       headers: {
         Authorization: `Bearer ${tokens.accessToken}`
       }
     });
 
-    // Fetch the primary email address of the GitHub user
+    // fetch the primary email address of the GitHub user
     const githubEmailResponse = await fetch("https://api.github.com/user/emails", {
       headers: {
         Authorization: `Bearer ${tokens.accessToken}`
@@ -67,64 +67,58 @@ export const GET: RequestHandler = async ({ url, cookies, locals: { db, lucia } 
       error(400, "Unverified email");
     }
 
-    // Check if the user already exists
+    // check if the user already exists
     const existingUser = await getUserByEmail(db, primaryEmail.email);
 
     if (existingUser) {
-      // Check if the user already has a GitHub OAuth account linked
+      // check if the user already has a GitHub OAuth account linked
       const existingOauthAccount = await getOAuthAccountByProviderUserId(db, "github", githubUser.id.toString());
 
       if (!existingOauthAccount) {
-        // Add the 'github' auth provider to the user's authMethods list
+        // add the 'github' auth provider to the user's authMethods list
         const authMethods = existingUser.authMethods || [];
         authMethods.push("github");
 
-        // ! this should be a transaction, but right now D1 doesn't support them yet
-        // Link the GitHub OAuth account to the existing user
-        const newOauthAccount = await createOauthAccount(db, {
-          userId: existingUser.id,
-          providerId: "github",
-          providerUserId: githubUser.id.toString()
-        });
-        if (!newOauthAccount) {
-          error(400, "Something went wrong");
+        const batchResponse: [DbOauthAccount | undefined, DbUser | undefined] = await db.batch([
+          // link the GitHub OAuth account to the existing user
+          createOauthAccount(db, {
+            userId: existingUser.id,
+            providerId: "github",
+            providerUserId: githubUser.id.toString()
+          }),
+          // update the user's authMethods list
+          updateUserById(db, existingUser.id, { authMethods })
+        ]);
+        if (!batchResponse.some((r) => !r)) {
+          error(500, "Something went wrong");
         }
-
-        // Update the user's authMethods list
-        const updatedUser = await updateUserById(db, existingUser.id, { authMethods });
-        if (!updatedUser) {
-          error(400, "Something went wrong");
-        }
-        // ! end of transaction
       }
 
       await createAndSetSession(lucia, existingUser.id, cookies);
     } else {
-      // Create a new user and their OAuth account
       const userId = generateId(15);
 
-      // ! this should be a transaction, but right now D1 doesn't support them yet
-      const newUser = await createUser(db, {
-        id: userId,
-        name: githubUser.name,
-        avatarUrl: githubUser.avatar_url,
-        email: primaryEmail.email,
-        isVerified: true,
-        authMethods: ["github"]
-      });
-      if (!newUser) {
-        error(400, "Something went wrong");
+      // if user doesn't exist in db
+      const batchResponse: [DbUser | undefined, DbOauthAccount | undefined] = await db.batch([
+        // create a new user
+        createUser(db, {
+          id: userId,
+          name: githubUser.name,
+          avatarUrl: githubUser.avatar_url,
+          email: primaryEmail.email,
+          isVerified: true,
+          authMethods: ["github"]
+        }),
+        // create a new GitHub OAuth account
+        createOauthAccount(db, {
+          userId,
+          providerId: "github",
+          providerUserId: githubUser.id.toString()
+        })
+      ]);
+      if (!batchResponse.some((r) => !r)) {
+        error(500, "Something went wrong");
       }
-
-      const newOauthAccount = await createOauthAccount(db, {
-        userId,
-        providerId: "github",
-        providerUserId: githubUser.id.toString()
-      });
-      if (!newOauthAccount) {
-        error(400, "Something went wrong");
-      }
-      // ! end of transaction
 
       await createAndSetSession(lucia, userId, cookies);
     }
