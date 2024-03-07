@@ -6,7 +6,7 @@ import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { logger } from "$lib/logger";
 import { verifyChangeEmailToken } from "$lib/server/auth/auth-utils";
-import { updateUserById, type DbUser } from "$lib/server/db/users";
+import { updateUserById } from "$lib/server/db/users";
 import { redirect } from "sveltekit-flash-message/server";
 
 export const load = (async ({ locals: { user } }) => {
@@ -19,6 +19,8 @@ export const load = (async ({ locals: { user } }) => {
 
 export const actions: Actions = {
   default: async ({ cookies, request, locals: { db, user, lucia } }) => {
+    if (!user) redirect(302, route("/auth/login"));
+
     const form = await superValidate<ChangeEmailFormSchemaSecondStep, FlashMessage>(request, zod(changeEmailFormSchemaSecondStep));
 
     if (!form.valid) {
@@ -28,7 +30,7 @@ export const actions: Actions = {
     }
 
     const { token } = form.data;
-    const { id: userId } = user as DbUser;
+    const { id: userId } = user;
 
     const tokenFromDatabase = await verifyChangeEmailToken(db, userId, token);
     if (!tokenFromDatabase) {

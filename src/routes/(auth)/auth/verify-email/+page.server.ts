@@ -6,7 +6,7 @@ import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { logger } from "$lib/logger";
 import { verifyEmailVerificationToken } from "$lib/server/auth/auth-utils";
-import { updateUserById, type DbUser } from "$lib/server/db/users";
+import { updateUserById } from "$lib/server/db/users";
 import { sendWelcomeEmail } from "$lib/server/email/send";
 import { SESSION_ID_LEN } from "$configs/fields-length";
 import { generateId } from "lucia";
@@ -22,6 +22,9 @@ export const load = (async ({ locals: { user } }) => {
 
 export const actions: Actions = {
   default: async ({ cookies, request, locals: { db, user, lucia } }) => {
+    if (!user) redirect(302, route("/auth/login"));
+    if (user.isVerified) redirect(302, route("/dashboard"));
+
     const form = await superValidate<VerifyEmailFormSchema, FlashMessage>(request, zod(verifyEmailFormSchema));
 
     if (!form.valid) {
@@ -31,7 +34,7 @@ export const actions: Actions = {
     }
 
     const { token } = form.data;
-    const { id: userId, email, name } = user as DbUser;
+    const { id: userId, email, name } = user;
 
     const isValidToken = await verifyEmailVerificationToken(db, userId, email, token);
     if (!isValidToken) {

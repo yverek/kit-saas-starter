@@ -2,7 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { type Database } from "$lib/server/db";
 import type { DbInsertOauthAccount, DbOauthAccount } from "./types";
 import { oauthAccounts } from ".";
-import type { OAUTH_PROVIDERS } from "$configs/general";
+import type { AUTH_METHODS } from "$configs/general";
 
 /*
  * CREATE
@@ -24,7 +24,7 @@ export async function createOauthAccount(db: Database, newOauthAccount: DbInsert
 
 export async function getOAuthAccountByProviderUserId(
   db: Database,
-  providerId: OAUTH_PROVIDERS,
+  providerId: AUTH_METHODS,
   providerUserId: string
 ): Promise<DbOauthAccount | undefined> {
   if (!providerId || !providerUserId) return;

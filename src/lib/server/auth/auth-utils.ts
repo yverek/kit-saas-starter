@@ -8,7 +8,7 @@ import {
   getEmailVerificationTokenByUserId
 } from "../db/email-verification-tokens";
 import type { Database } from "../db";
-import { TOKEN_EXPIRATION_TIME, TOKEN_LEN } from "$configs/fields-length";
+import { SESSION_ID_LEN, TOKEN_EXPIRATION_TIME, TOKEN_LEN } from "$configs/fields-length";
 import {
   createPasswordResetToken,
   deleteAllPasswordResetTokensByUserId,
@@ -161,7 +161,9 @@ export async function verifyChangeEmailToken(db: Database, userId: string, token
 
 // TODO use this functions in other places
 export const createAndSetSession = async (lucia: Lucia, userId: string, cookies: Cookies) => {
-  const session = await lucia.createSession(userId, {});
+  const sessionId = generateId(SESSION_ID_LEN);
+
+  const session = await lucia.createSession(userId, {}, { sessionId });
   const { name, value, attributes } = lucia.createSessionCookie(session.id);
 
   cookies.set(name, value, { ...attributes, path: "/" });

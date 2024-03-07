@@ -20,6 +20,8 @@ export const load = (async ({ locals: { user } }) => {
 
 export const actions: Actions = {
   default: async ({ cookies, request, locals: { db, user } }) => {
+    if (!user) redirect(302, route("/auth/login"));
+
     const form = await superValidate<ChangeEmailFormSchemaFirstStep, FlashMessage>(request, zod(changeEmailFormSchemaFirstStep));
 
     if (!form.valid) {
@@ -29,7 +31,7 @@ export const actions: Actions = {
     }
 
     const { email } = form.data;
-    const { id: userId, name } = user as DbUser;
+    const { id: userId, name } = user;
 
     const token = await generateChangeEmailToken(db, userId, email);
     if (!token) {

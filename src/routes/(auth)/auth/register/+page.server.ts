@@ -10,6 +10,7 @@ import { route } from "$lib/ROUTES";
 import { logger } from "$lib/logger";
 import { createUser } from "$lib/server/db/users";
 import { SESSION_ID_LEN, USER_ID_LEN } from "$configs/fields-length";
+import { AUTH_METHODS } from "$configs/general";
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
   if (locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
@@ -38,7 +39,16 @@ export const actions: Actions = {
     const userId = generateId(USER_ID_LEN);
     const createdAt = new Date();
 
-    const newUser = await createUser(db, { id: userId, name, email, password: hashedPassword, isVerified: false, isAdmin: false, createdAt });
+    const newUser = await createUser(db, {
+      id: userId,
+      name,
+      email,
+      password: hashedPassword,
+      isVerified: false,
+      isAdmin: false,
+      createdAt,
+      authMethods: [AUTH_METHODS.EMAIL]
+    });
     if (!newUser) {
       logger.debug("Failed to insert new user: email already used");
 

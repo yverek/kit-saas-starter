@@ -1,5 +1,5 @@
 import type { PageServerLoad, Actions } from "./$types";
-import { verifyPasswordHash } from "$lib/server/auth/auth-utils";
+import { createAndSetSession, verifyPasswordHash } from "$lib/server/auth/auth-utils";
 import { loginFormSchema, type LoginFormSchema } from "$validations/auth";
 import { message, superValidate } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
@@ -41,6 +41,14 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Incorrect username or password" }, { status: 400 });
     }
 
+    if (!existingUser.password) {
+      return message(
+        form,
+        { status: "error", text: "You registered with an OAuth provider. Please use the appropriate login method." },
+        { status: 403 }
+      );
+    }
+
     const validPassword = await verifyPasswordHash(password, existingUser.password);
     if (!validPassword) {
       form.data.password = "";
@@ -50,10 +58,7 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Incorrect username or password" }, { status: 400 });
     }
 
-    const sessionId = generateId(SESSION_ID_LEN);
-    const session = await lucia.createSession(existingUser.id, {}, { sessionId });
-    const { name, value, attributes } = lucia.createSessionCookie(session.id);
-    cookies.set(name, value, { ...attributes, path: "/" });
+    createAndSetSession(lucia, existingUser.id, cookies);
 
     let redirectTo = url.searchParams.get("redirectTo");
 
