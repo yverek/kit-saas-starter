@@ -1,6 +1,6 @@
 import type { PageServerLoad, Actions } from "./$types";
 import { generateId } from "lucia";
-import { createPasswordHash, generateEmailVerificationToken } from "$lib/server/auth/auth-utils";
+import { createAndSetSession, createPasswordHash, generateEmailVerificationToken } from "$lib/server/auth/auth-utils";
 import { registerFormSchema, type RegisterFormSchema } from "$validations/auth";
 import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
@@ -9,7 +9,7 @@ import { redirect } from "sveltekit-flash-message/server";
 import { route } from "$lib/ROUTES";
 import { logger } from "$lib/logger";
 import { createUser } from "$lib/server/db/users";
-import { SESSION_ID_LEN, USER_ID_LEN } from "$configs/fields-length";
+import { USER_ID_LEN } from "$configs/fields-length";
 import { AUTH_METHODS } from "$configs/general";
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
@@ -69,10 +69,7 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Failed to send email" }, { status: 500 });
     }
 
-    const sessionId = generateId(SESSION_ID_LEN);
-    const session = await lucia.createSession(userId, {}, { sessionId });
-    const { name: cookieName, value, attributes } = lucia.createSessionCookie(session.id);
-    cookies.set(cookieName, value, { ...attributes, path: "/" });
+    createAndSetSession(lucia, userId, cookies);
 
     redirect(route("/auth/verify-email"), { status: "success", text: "Account created. Please check your email to verify your account." }, cookies);
   }

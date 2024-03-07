@@ -159,12 +159,21 @@ export async function verifyChangeEmailToken(db: Database, userId: string, token
 // TODO can I merge all this "generate" and "verify" functions into one?
 // TODO add getToken and deleteToken function inside a single db transaction
 
-// TODO use this functions in other places
-export const createAndSetSession = async (lucia: Lucia, userId: string, cookies: Cookies) => {
-  const sessionId = generateId(SESSION_ID_LEN);
-
-  const session = await lucia.createSession(userId, {}, { sessionId });
-  const { name, value, attributes } = lucia.createSessionCookie(session.id);
+export async function setNewSession(lucia: Lucia, sessionId: string, cookies: Cookies) {
+  const { name, value, attributes } = lucia.createSessionCookie(sessionId);
 
   cookies.set(name, value, { ...attributes, path: "/" });
+}
+
+export async function destroySession(lucia: Lucia, cookies: Cookies) {
+  const { name, value, attributes } = lucia.createBlankSessionCookie();
+
+  cookies.set(name, value, { ...attributes, path: "/" });
+}
+
+export const createAndSetSession = async (lucia: Lucia, userId: string, cookies: Cookies) => {
+  const sessionId = generateId(SESSION_ID_LEN);
+  const session = await lucia.createSession(userId, {}, { sessionId });
+
+  setNewSession(lucia, session.id, cookies);
 };

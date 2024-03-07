@@ -2,6 +2,7 @@ import { logger } from "$lib/logger";
 import type { Handle } from "@sveltejs/kit";
 
 import { initializeLucia } from "$lib/server/auth";
+import { destroySession, setNewSession } from "$lib/server/auth/auth-utils";
 
 export const authentication: Handle = async ({ event, resolve }) => {
   event.locals.lucia = initializeLucia(event.platform?.env.DB as D1Database);
@@ -14,6 +15,7 @@ export const authentication: Handle = async ({ event, resolve }) => {
   if (!sessionId) {
     event.locals.user = null;
     event.locals.session = null;
+
     return resolve(event);
   }
 
@@ -21,16 +23,12 @@ export const authentication: Handle = async ({ event, resolve }) => {
 
   // if the session is newly created (due to session expiration extension), generate a new session cookie
   if (session?.fresh) {
-    const { name, value, attributes } = lucia.createSessionCookie(session.id);
-
-    event.cookies.set(name, value, { ...attributes, path: "/" });
+    setNewSession(lucia, session.id, event.cookies);
   }
 
   // if the session is invalid, generate a blank session cookie to remove the existing session cookie from the browser
   if (!session) {
-    const { name, value, attributes } = lucia.createBlankSessionCookie();
-
-    event.cookies.set(name, value, { ...attributes, path: "/" });
+    destroySession(lucia, event.cookies);
   }
 
   event.locals.user = user;

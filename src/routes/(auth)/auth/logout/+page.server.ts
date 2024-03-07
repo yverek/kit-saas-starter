@@ -1,4 +1,5 @@
 import { route } from "$lib/ROUTES";
+import { destroySession } from "$lib/server/auth/auth-utils";
 import type { Actions } from "./$types";
 import { error, redirect } from "@sveltejs/kit";
 
@@ -10,8 +11,7 @@ export const actions: Actions = {
     }
 
     await lucia.invalidateSession(session.id);
-    const { name, value, attributes } = lucia.createBlankSessionCookie();
-    cookies.set(name, value, { ...attributes, path: "/" });
+    destroySession(lucia, cookies);
 
     redirect(302, route("/"));
   }

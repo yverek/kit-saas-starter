@@ -5,7 +5,7 @@ import { verifyEmailFormSchema, type VerifyEmailFormSchema } from "$validations/
 import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { logger } from "$lib/logger";
-import { verifyEmailVerificationToken } from "$lib/server/auth/auth-utils";
+import { createAndSetSession, verifyEmailVerificationToken } from "$lib/server/auth/auth-utils";
 import { updateUserById } from "$lib/server/db/users";
 import { sendWelcomeEmail } from "$lib/server/email/send";
 import { SESSION_ID_LEN } from "$configs/fields-length";
@@ -48,10 +48,7 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "User not found" }, { status: 404 });
     }
 
-    const sessionId = generateId(SESSION_ID_LEN);
-    const session = await lucia.createSession(userId, {}, { sessionId });
-    const sessionCookie = lucia.createSessionCookie(session.id);
-    cookies.set(sessionCookie.name, sessionCookie.value, { ...sessionCookie.attributes, path: "/" });
+    createAndSetSession(lucia, userId, cookies);
 
     await sendWelcomeEmail(email, name);
 
