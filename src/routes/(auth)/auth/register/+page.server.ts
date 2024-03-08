@@ -8,7 +8,7 @@ import { sendEmailVerificationEmail } from "$lib/server/email/send";
 import { redirect } from "sveltekit-flash-message/server";
 import { route } from "$lib/ROUTES";
 import { logger } from "$lib/logger";
-import { createUser } from "$lib/server/db/users";
+import { createUser, getUserByEmail, updateUserById } from "$lib/server/db/users";
 import { USER_ID_LEN } from "$configs/fields-length";
 import { AUTH_METHODS } from "$configs/auth-methods";
 import { hashPassword } from "worker-password-auth";
@@ -36,24 +36,38 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Invalid form" });
     }
 
+    const existingUser = await getUserByEmail(db, email);
+    if (existingUser && existingUser.authMethods.includes(AUTH_METHODS.EMAIL)) {
+      return message(form, { status: "error", text: "This email is already in user. Please do login." });
+    }
+
+    const userId = existingUser?.id ?? generateId(USER_ID_LEN);
     const hashedPassword = await hashPassword(password);
-    const userId = generateId(USER_ID_LEN);
-    const createdAt = new Date();
 
-    const newUser = await createUser(db, {
-      id: userId,
-      name,
-      email,
-      password: hashedPassword,
-      isVerified: false,
-      isAdmin: false,
-      createdAt,
-      authMethods: [AUTH_METHODS.EMAIL]
-    });
-    if (!newUser) {
-      logger.debug("Failed to insert new user: email already used");
+    if (!existingUser) {
+      const newUser = await createUser(db, {
+        id: userId,
+        name,
+        email,
+        password: hashedPassword,
+        isVerified: false,
+        isAdmin: false,
+        authMethods: [AUTH_METHODS.EMAIL]
+      });
 
-      return message(form, { status: "error", text: "Email already used" }, { status: 400 });
+      if (!newUser) {
+        logger.debug("Failed to insert new user: email already used");
+
+        return message(form, { status: "error", text: "Email already used" }, { status: 400 });
+      }
+    } else {
+      const updatedUser = await updateUserById(db, existingUser.id, { password: hashedPassword });
+
+      if (!updatedUser) {
+        logger.debug("Failed to insert new user: email already used");
+
+        return message(form, { status: "error", text: "Email already used" }, { status: 400 });
+      }
     }
 
     const token = await generateEmailVerificationToken(db, userId, email);

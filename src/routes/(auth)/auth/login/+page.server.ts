@@ -8,6 +8,7 @@ import { route } from "$lib/ROUTES";
 import { getUserByEmail } from "$lib/server/db/users";
 import { logger } from "$lib/logger";
 import { verifyPassword } from "worker-password-auth";
+import { AUTH_METHODS } from "$configs/auth-methods";
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
   if (locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
@@ -37,7 +38,7 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Incorrect username or password" }, { status: 400 });
     }
 
-    if (!existingUser.password) {
+    if (!existingUser.password && !existingUser.authMethods.includes(AUTH_METHODS.EMAIL)) {
       return message(
         form,
         { status: "error", text: "You registered with an OAuth provider. Please use the appropriate login method." },
@@ -45,7 +46,7 @@ export const actions: Actions = {
       );
     }
 
-    const validPassword = await verifyPassword(password, existingUser.password);
+    const validPassword = await verifyPassword(password, existingUser.password ?? "");
     if (!validPassword) {
       logger.debug("Invalid password");
 
