@@ -1,10 +1,14 @@
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vitest/config";
 import { kitRoutes } from "vite-plugin-kit-routes";
+import wasm from "vite-plugin-wasm";
+import topLevelAwait from "vite-plugin-top-level-await";
 import type { KIT_ROUTES } from "$lib/ROUTES";
 
 export default defineConfig({
   plugins: [
+    wasm(),
+    topLevelAwait(),
     sveltekit(),
     kitRoutes<KIT_ROUTES>({
       post_update_run: "npm exec prettier ./src/lib/ROUTES.ts -- -w",

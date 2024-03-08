@@ -8,8 +8,6 @@ import { logger } from "$lib/logger";
 import { createAndSetSession, verifyEmailVerificationToken } from "$lib/server/auth/auth-utils";
 import { updateUserById } from "$lib/server/db/users";
 import { sendWelcomeEmail } from "$lib/server/email/send";
-import { SESSION_ID_LEN } from "$configs/fields-length";
-import { generateId } from "lucia";
 
 export const load = (async ({ locals: { user } }) => {
   if (!user) redirect(302, route("/auth/login"));
@@ -48,7 +46,7 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "User not found" }, { status: 404 });
     }
 
-    createAndSetSession(lucia, userId, cookies);
+    await createAndSetSession(lucia, userId, cookies);
 
     await sendWelcomeEmail(email, name);
 

@@ -31,7 +31,7 @@ export function initializeLucia(db: D1Database) {
         id: data.id,
         name: data.name,
         email: data.email,
-        authMethods: data.auth_methods,
+        authMethods: JSON.parse(data.auth_methods),
         avatarUrl: data.avatar_url,
         isVerified: !!data.is_verified,
         isAdmin: !!data.is_admin,
@@ -48,7 +48,7 @@ interface DatabaseUserAttributes {
   name: string;
   email: string;
   password: string;
-  auth_methods: string[];
+  auth_methods: string;
   avatar_url: string;
   is_verified: boolean;
   is_admin: boolean;

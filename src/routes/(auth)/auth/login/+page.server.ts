@@ -1,5 +1,5 @@
 import type { PageServerLoad, Actions } from "./$types";
-import { createAndSetSession, verifyPasswordHash } from "$lib/server/auth/auth-utils";
+import { createAndSetSession } from "$lib/server/auth/auth-utils";
 import { loginFormSchema, type LoginFormSchema } from "$validations/auth";
 import { message, superValidate } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
@@ -7,8 +7,7 @@ import { redirect } from "sveltekit-flash-message/server";
 import { route } from "$lib/ROUTES";
 import { getUserByEmail } from "$lib/server/db/users";
 import { logger } from "$lib/logger";
-import { generateId } from "lucia";
-import { SESSION_ID_LEN } from "$configs/fields-length";
+import { verifyPassword } from "worker-password-auth";
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
   if (locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
@@ -22,20 +21,17 @@ export const actions: Actions = {
   default: async ({ request, cookies, url, locals: { db, lucia } }) => {
     const form = await superValidate<LoginFormSchema, FlashMessage>(request, zod(loginFormSchema));
 
-    if (!form.valid) {
-      form.data.password = "";
+    const { email, password } = form.data;
+    form.data.password = "";
 
+    if (!form.valid) {
       logger.debug("Invalid form");
 
       return message(form, { status: "error", text: "Invalid form" });
     }
 
-    const { email, password } = form.data;
-
     const existingUser = await getUserByEmail(db, email);
     if (!existingUser) {
-      form.data.password = "";
-
       logger.debug("User not found");
 
       return message(form, { status: "error", text: "Incorrect username or password" }, { status: 400 });
@@ -49,16 +45,14 @@ export const actions: Actions = {
       );
     }
 
-    const validPassword = await verifyPasswordHash(password, existingUser.password);
+    const validPassword = await verifyPassword(password, existingUser.password);
     if (!validPassword) {
-      form.data.password = "";
-
       logger.debug("Invalid password");
 
       return message(form, { status: "error", text: "Incorrect username or password" }, { status: 400 });
     }
 
-    createAndSetSession(lucia, existingUser.id, cookies);
+    await createAndSetSession(lucia, existingUser.id, cookies);
 
     let redirectTo = url.searchParams.get("redirectTo");
 

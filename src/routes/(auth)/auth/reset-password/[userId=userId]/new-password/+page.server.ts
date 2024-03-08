@@ -5,8 +5,8 @@ import type { Actions, PageServerLoad } from "./$types";
 import { superValidate, message } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
 import { route } from "$lib/ROUTES";
-import { createPasswordHash } from "$lib/server/auth/auth-utils";
 import { updateUserById } from "$lib/server/db/users";
+import { hashPassword } from "worker-password-auth";
 
 export const load = (async () => {
   const form = await superValidate<ResetPasswordFormSchemaThirdStep, FlashMessage>(zod(resetPasswordFormSchemaThirdStep));
@@ -33,7 +33,7 @@ export const actions: Actions = {
 
     await lucia.invalidateUserSessions(userId);
 
-    const hashedPassword = await createPasswordHash(password);
+    const hashedPassword = await hashPassword(password);
     const res = await updateUserById(db, userId, { password: hashedPassword });
     if (!res) {
       return message(form, { status: "error", text: "Error while changing password" }, { status: 500 });
