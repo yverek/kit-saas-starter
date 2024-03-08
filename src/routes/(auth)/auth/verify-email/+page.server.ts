@@ -6,8 +6,9 @@ import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { logger } from "$lib/logger";
 import { createAndSetSession, verifyEmailVerificationToken } from "$lib/server/auth/auth-utils";
-import { updateUserById } from "$lib/server/db/users";
+import { getUserByEmail, updateUserById } from "$lib/server/db/users";
 import { sendWelcomeEmail } from "$lib/server/email/send";
+import { AUTH_METHODS } from "$configs/auth-methods";
 
 export const load = (async ({ locals: { user } }) => {
   if (!user) redirect(302, route("/auth/login"));
@@ -41,7 +42,15 @@ export const actions: Actions = {
 
     await lucia.invalidateUserSessions(userId);
 
-    const res = await updateUserById(db, userId, { isVerified: true });
+    const existingUser = await getUserByEmail(db, email);
+    if (!existingUser) {
+      return message(form, { status: "error", text: "User not found" }, { status: 404 });
+    }
+
+    const authMethods = existingUser.authMethods ?? [];
+    authMethods.push(AUTH_METHODS.EMAIL);
+
+    const res = await updateUserById(db, userId, { isVerified: true, authMethods });
     if (!res) {
       return message(form, { status: "error", text: "User not found" }, { status: 404 });
     }

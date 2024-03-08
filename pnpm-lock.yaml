@@ -21,17 +21,17 @@ dependencies:
     specifier: ^2.1.0
     version: 2.1.0
   drizzle-orm:
-    specifier: ^0.30.0
-    version: 0.30.0(@cloudflare/workers-types@4.20240222.0)
+    specifier: ^0.30.1
+    version: 0.30.1(@cloudflare/workers-types@4.20240222.0)
   formsnap:
     specifier: ^0.5.1
-    version: 0.5.1(svelte@5.0.0-next.68)(sveltekit-superforms@2.8.0)
+    version: 0.5.1(svelte@5.0.0-next.68)(sveltekit-superforms@2.8.1)
   lucia:
     specifier: ^3.0.1
     version: 3.0.1
   lucide-svelte:
-    specifier: ^0.350.0
-    version: 0.350.0(svelte@5.0.0-next.68)
+    specifier: ^0.351.0
+    version: 0.351.0(svelte@5.0.0-next.68)
   mode-watcher:
     specifier: ^0.2.2
     version: 0.2.2(svelte@5.0.0-next.68)
@@ -45,8 +45,8 @@ dependencies:
     specifier: ^0.3.19
     version: 0.3.19(svelte@5.0.0-next.68)
   sveltekit-superforms:
-    specifier: ^2.8.0
-    version: 2.8.0(@sveltejs/kit@2.5.2)(@types/json-schema@7.0.15)(esbuild-runner@2.2.2)(esbuild@0.20.1)(svelte@5.0.0-next.68)
+    specifier: ^2.8.1
+    version: 2.8.1(@sveltejs/kit@2.5.2)(@types/json-schema@7.0.15)(esbuild-runner@2.2.2)(esbuild@0.20.1)(svelte@5.0.0-next.68)
   tailwind-merge:
     specifier: ^2.2.1
     version: 2.2.1
@@ -131,8 +131,8 @@ devDependencies:
     specifier: ^3.6.6
     version: 3.6.6(postcss-load-config@5.0.3)(postcss@8.4.35)(svelte@5.0.0-next.68)
   sveltekit-flash-message:
-    specifier: ^2.4.2
-    version: 2.4.2(@sveltejs/kit@2.5.2)(svelte@5.0.0-next.68)
+    specifier: ^2.4.4
+    version: 2.4.4(@sveltejs/kit@2.5.2)(svelte@5.0.0-next.68)
   tailwindcss:
     specifier: ^3.4.1
     version: 3.4.1
@@ -1961,8 +1961,8 @@ packages:
       playwright: 1.42.1
     dev: true
 
-  /@polka/url@1.0.0-next.24:
-    resolution: {integrity: sha512-2LuNTFBIO0m7kKIQvvPHN6UE63VjpmL9rnEEaOOaiSPbZK+zUOYIzBAWcED+3XYzhYsd/0mD57VdxAEqqV52CQ==}
+  /@polka/url@1.0.0-next.25:
+    resolution: {integrity: sha512-j7P6Rgr3mmtdkeDGTe0E/aYyWEWVtc5yFXtHCRHs28/jptDEWfaVOc5T7cblqy1XKPPfCxJc/8DwQ5YgLOZOVQ==}
 
   /@poppinss/macroable@1.0.1:
     resolution: {integrity: sha512-bO3+rnqGhE+gdx4DOyYjY9jCm2+c5Ncyl2Gmst0w271rIFnsB00btonpdmAqvFNzS8rcas+APGm+47fYMmkpQA==}
@@ -2768,7 +2768,7 @@ packages:
     hasBin: true
     dependencies:
       caniuse-lite: 1.0.30001596
-      electron-to-chromium: 1.4.696
+      electron-to-chromium: 1.4.698
       node-releases: 2.0.14
       update-browserslist-db: 1.0.13(browserslist@4.23.0)
     dev: true
@@ -3085,13 +3085,14 @@ packages:
       - supports-color
     dev: true
 
-  /drizzle-orm@0.30.0(@cloudflare/workers-types@4.20240222.0):
-    resolution: {integrity: sha512-SupNouCdvosjzQpLinqnyIu7bBfsUKiaWXfUZ0IyDtwK8rWa2zQ4AOWCda86VJVxgb8xZ1l8vKvlLHyTBalB/g==}
+  /drizzle-orm@0.30.1(@cloudflare/workers-types@4.20240222.0):
+    resolution: {integrity: sha512-5P6CXl4XyWtDDiYOX/jYOJp1HTUmBlXRAwaq+muUOgaSykMEy5sJesCxceMT0oCGvxeWkKfSXo5owLnfKwCIdw==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=3'
       '@libsql/client': '*'
       '@neondatabase/serverless': '>=0.1'
+      '@op-engineering/op-sqlite': '>=2'
       '@opentelemetry/api': ^1.4.1
       '@planetscale/database': '>=1'
       '@types/better-sqlite3': '*'
@@ -3118,6 +3119,8 @@ packages:
       '@libsql/client':
         optional: true
       '@neondatabase/serverless':
+        optional: true
+      '@op-engineering/op-sqlite':
         optional: true
       '@opentelemetry/api':
         optional: true
@@ -3162,8 +3165,8 @@ packages:
   /eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
 
-  /electron-to-chromium@1.4.696:
-    resolution: {integrity: sha512-SOr0bHP52OvYg2chCsz/0+FUSMGFm8L8HKwPpx3cbwRY24EOemVJtbgTm+IFO8LzhcnPy+hXmTq7ZcZ8uUuaYg==}
+  /electron-to-chromium@1.4.698:
+    resolution: {integrity: sha512-f9iZD1t3CLy1AS6vzM5EKGa6p9pRcOeEFXRFbaG2Ta+Oe7MkfRQ3fsvPYidzHe1h4i0JvIvpcY55C+B6BZNGtQ==}
     dev: true
 
   /emoji-regex@8.0.0:
@@ -3420,7 +3423,7 @@ packages:
       postcss-selector-parser: 6.0.15
       semver: 7.6.0
       svelte: 5.0.0-next.68
-      svelte-eslint-parser: 0.34.0-next.11(svelte@5.0.0-next.68)
+      svelte-eslint-parser: 0.34.0-next.12(svelte@5.0.0-next.68)
     transitivePeerDependencies:
       - supports-color
       - ts-node
@@ -3682,7 +3685,7 @@ packages:
       cross-spawn: 7.0.3
       signal-exit: 4.1.0
 
-  /formsnap@0.5.1(svelte@5.0.0-next.68)(sveltekit-superforms@2.8.0):
+  /formsnap@0.5.1(svelte@5.0.0-next.68)(sveltekit-superforms@2.8.1):
     resolution: {integrity: sha512-8ppOlOu7llBEJbV0PzUz/KWh1J8KfiGqwjiyb8emQ2m+/nYXohLBtMcLVpW3XwlMkUbYaIXM+5lhfGjw8xbGJw==}
     peerDependencies:
       svelte: ^4.0.0
@@ -3690,7 +3693,7 @@ packages:
     dependencies:
       nanoid: 5.0.6
       svelte: 5.0.0-next.68
-      sveltekit-superforms: 2.8.0(@sveltejs/kit@2.5.2)(@types/json-schema@7.0.15)(esbuild-runner@2.2.2)(esbuild@0.20.1)(svelte@5.0.0-next.68)
+      sveltekit-superforms: 2.8.1(@sveltejs/kit@2.5.2)(@types/json-schema@7.0.15)(esbuild-runner@2.2.2)(esbuild@0.20.1)(svelte@5.0.0-next.68)
     dev: false
 
   /fraction.js@4.3.7:
@@ -4108,8 +4111,8 @@ packages:
       oslo: 1.0.1
     dev: false
 
-  /lucide-svelte@0.350.0(svelte@5.0.0-next.68):
-    resolution: {integrity: sha512-y9sKMM2vVrQOGpdKt4CbN8H9zA3tfVCdOWsJU7MQ2F81R2S+RuWbt2HmfpY+AK5xOxkcLbJ0bQa4iZq7VCrDJw==}
+  /lucide-svelte@0.351.0(svelte@5.0.0-next.68):
+    resolution: {integrity: sha512-iFt6MBHJnZ9MXbxyay1jv95GsugZ0P9bGhH1puMeOGvVoG0I6LEug2439C98EbrAybpG/TGx7niQD1xIxdRwdA==}
     peerDependencies:
       svelte: ^3 || ^4 || ^5.0.0-next.42
     dependencies:
@@ -5015,7 +5018,7 @@ packages:
     resolution: {integrity: sha512-94Bdh3cC2PKrbgSOUqTiGPWVZeSiXfKOVZNJniWoqrWrRkB1CJzBU3NEbiTsPcYy1lDsANA/THzS+9WBiy5nfQ==}
     engines: {node: '>= 10'}
     dependencies:
-      '@polka/url': 1.0.0-next.24
+      '@polka/url': 1.0.0-next.25
       mrmime: 2.0.0
       totalist: 3.0.1
 
@@ -5207,8 +5210,8 @@ packages:
       - sugarss
     dev: true
 
-  /svelte-eslint-parser@0.34.0-next.11(svelte@5.0.0-next.68):
-    resolution: {integrity: sha512-9P+qXK132z2ZbNeUvnBeP4vwjSAp44MCXgn9aIO5RBpmrF4BU3tpJyRWbjAW/osHg/NA3qb3tq1VL9vCIc2gxw==}
+  /svelte-eslint-parser@0.34.0-next.12(svelte@5.0.0-next.68):
+    resolution: {integrity: sha512-KJTStZILapiwY6ULdUaAf+6GgJs0qGZJrRy5PHtgAGKr8xNHtst9Cax0xbxz2ONDvDGaR26SZRDl9vI2f1KBAQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
       svelte: ^3.37.0 || ^4.0.0 || ^5.0.0-next.69
@@ -5326,8 +5329,8 @@ packages:
       magic-string: 0.30.8
       zimmerframe: 1.1.2
 
-  /sveltekit-flash-message@2.4.2(@sveltejs/kit@2.5.2)(svelte@5.0.0-next.68):
-    resolution: {integrity: sha512-iXZSOp8La7kHQuOsXOcjIp7x24J/Ycs2uPoHwtjsbObVCbjgxZrtvjd0XUfA0mYZBp97BtAQ5SW5owRDJCWq6A==}
+  /sveltekit-flash-message@2.4.4(@sveltejs/kit@2.5.2)(svelte@5.0.0-next.68):
+    resolution: {integrity: sha512-CFN03chH/FMEJcBZ/8zKm7RqGee/pwb57Spbbx8QCQPhe7N9ofZHd9iYV2vVy4E9glBo/oQ1IG7VQje6L092wg==}
     peerDependencies:
       '@sveltejs/kit': 1.x || 2.x
       svelte: 3.x || 4.x || >=5.0.0-next.51
@@ -5336,8 +5339,8 @@ packages:
       svelte: 5.0.0-next.68
     dev: true
 
-  /sveltekit-superforms@2.8.0(@sveltejs/kit@2.5.2)(@types/json-schema@7.0.15)(esbuild-runner@2.2.2)(esbuild@0.20.1)(svelte@5.0.0-next.68):
-    resolution: {integrity: sha512-Ac3GlnVOjZ6q4m6+1xcPEznJsoet4tNn3FqbgZ83UJP5O/io4fWXioGFDztuZXmIDPeaBoAx22A0TMmS61pCxA==}
+  /sveltekit-superforms@2.8.1(@sveltejs/kit@2.5.2)(@types/json-schema@7.0.15)(esbuild-runner@2.2.2)(esbuild@0.20.1)(svelte@5.0.0-next.68):
+    resolution: {integrity: sha512-jlQUnAdlhQEBMpA1k9qNUQzelPSNWsjonKeQVHi+Hj+bgWjPn29QOJbyFKzvKqeFEgzcuUnNEaJI4g5K3QFIKQ==}
     requiresBuild: true
     peerDependencies:
       '@sveltejs/kit': 1.x || 2.x
