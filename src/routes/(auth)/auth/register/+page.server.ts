@@ -1,6 +1,6 @@
 import type { PageServerLoad, Actions } from "./$types";
 import { generateId } from "lucia";
-import { createAndSetSession, createPasswordHash, generateEmailVerificationToken } from "$lib/server/auth/auth-utils";
+import { createAndSetSession, generateEmailVerificationToken } from "$lib/server/auth/auth-utils";
 import { registerFormSchema, type RegisterFormSchema } from "$validations/auth";
 import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
@@ -11,6 +11,7 @@ import { logger } from "$lib/logger";
 import { createUser } from "$lib/server/db/users";
 import { USER_ID_LEN } from "$configs/fields-length";
 import { AUTH_METHODS } from "$configs/auth-methods";
+import { hashPassword } from "worker-password-auth";
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
   if (locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
@@ -35,7 +36,7 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Invalid form" });
     }
 
-    const hashedPassword = await createPasswordHash(password);
+    const hashedPassword = await hashPassword(password);
     const userId = generateId(USER_ID_LEN);
     const createdAt = new Date();
 
