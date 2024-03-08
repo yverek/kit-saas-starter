@@ -70,7 +70,7 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Failed to send email" }, { status: 500 });
     }
 
-    createAndSetSession(lucia, userId, cookies);
+    await createAndSetSession(lucia, userId, cookies);
 
     redirect(route("/auth/verify-email"), { status: "success", text: "Account created. Please check your email to verify your account." }, cookies);
   }

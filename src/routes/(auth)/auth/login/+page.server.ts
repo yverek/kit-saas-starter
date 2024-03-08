@@ -52,7 +52,7 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Incorrect username or password" }, { status: 400 });
     }
 
-    createAndSetSession(lucia, existingUser.id, cookies);
+    await createAndSetSession(lucia, existingUser.id, cookies);
 
     let redirectTo = url.searchParams.get("redirectTo");
 
