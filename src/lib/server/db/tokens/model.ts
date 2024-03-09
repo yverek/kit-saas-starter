@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { type Database } from "$lib/server/db";
-import type { DbInsertToken, DbToken } from "./types";
+import type { DbInsertToken, DbToken, TOKEN_TYPE } from "./types";
 import { tokens } from ".";
 
 /*
@@ -23,10 +23,10 @@ export async function getToken(db: Database, token: string): Promise<DbToken | u
   return await db.query.tokens.findFirst({ where: eq(tokens.token, token) });
 }
 
-export async function getTokenByUserId(db: Database, userId: string): Promise<DbToken | undefined> {
-  if (!userId) return;
+export async function getTokenByUserId(db: Database, userId: string, type: TOKEN_TYPE): Promise<DbToken | undefined> {
+  if (!userId || !type) return;
 
-  return await db.query.tokens.findFirst({ where: eq(tokens.userId, userId) });
+  return await db.query.tokens.findFirst({ where: and(eq(tokens.userId, userId), eq(tokens.type, type)) });
 }
 
 /*
@@ -36,20 +36,26 @@ export async function getTokenByUserId(db: Database, userId: string): Promise<Db
 /*
  * DELETE
  **/
-export async function deleteAllTokensByUserId(db: Database, userId: string): Promise<DbToken[] | undefined> {
-  if (!userId) return;
+export async function deleteAllTokensByUserId(db: Database, userId: string, type: TOKEN_TYPE): Promise<DbToken[] | undefined> {
+  if (!userId || !type) return;
 
-  const res = await db.delete(tokens).where(eq(tokens.userId, userId)).returning();
+  const res = await db
+    .delete(tokens)
+    .where(and(eq(tokens.userId, userId), eq(tokens.type, type)))
+    .returning();
 
   if (res.length === 0) return;
 
   return res;
 }
 
-export async function deleteToken(db: Database, token: string): Promise<DbToken | undefined> {
-  if (!token) return;
+export async function deleteToken(db: Database, token: string, type: TOKEN_TYPE): Promise<DbToken | undefined> {
+  if (!token || !type) return;
 
-  const res = await db.delete(tokens).where(eq(tokens.token, token)).returning();
+  const res = await db
+    .delete(tokens)
+    .where(and(eq(tokens.token, token), eq(tokens.type, type)))
+    .returning();
 
   if (res.length === 0) return;
 

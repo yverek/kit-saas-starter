@@ -23,6 +23,7 @@ import {
   type DbEmailChangeToken
 } from "../db/email-change-tokens";
 import type { Cookies } from "@sveltejs/kit";
+import { createToken, deleteAllTokensByUserId, type DbToken, type TOKEN_TYPE, getTokenByUserId, deleteToken } from "../db/tokens";
 
 export async function generateEmailVerificationToken(db: Database, userId: string, email: string): Promise<string> {
   await deleteAllEmailVerificationTokensByUserId(db, userId);
@@ -118,6 +119,33 @@ export async function verifyChangeEmailToken(db: Database, userId: string, token
 }
 
 // TODO can I merge all this "generate" and "verify" functions into one?
+export async function generateToken(db: Database, userId: string, type: TOKEN_TYPE): Promise<DbToken | undefined> {
+  await deleteAllTokensByUserId(db, userId, type);
+
+  const token = await createToken(db, { userId, type });
+  if (!token) return;
+
+  return token;
+}
+
+export async function verifyToken(db: Database, userId: string, token: string, type: TOKEN_TYPE): Promise<boolean> {
+  const tokenFromDatabase = await getTokenByUserId(db, userId, type);
+  if (!tokenFromDatabase || tokenFromDatabase.token !== token) {
+    return false;
+  }
+
+  const deletedToken = await deleteToken(db, token, type);
+  if (!deletedToken) {
+    return false;
+  }
+
+  const isExpired = !isWithinExpirationDate(tokenFromDatabase.expiresAt);
+  if (isExpired) {
+    return false;
+  }
+
+  return true;
+}
 
 export function setNewSession(lucia: Lucia, sessionId: string, cookies: Cookies) {
   const { name, value, attributes } = lucia.createSessionCookie(sessionId);
