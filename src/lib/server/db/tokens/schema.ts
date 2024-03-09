@@ -1,7 +1,7 @@
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 import { users } from "../schema";
 import { TOKEN_EXPIRATION_TIME, TOKEN_LEN } from "../../../configs/fields-length";
-import { TOKEN_TYPE } from ".";
+import { TOKEN_TYPE } from "./types";
 import { TimeSpan, generateId } from "lucia";
 import { createDate } from "oslo";
 
