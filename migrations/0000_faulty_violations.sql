@@ -1,19 +1,3 @@
-CREATE TABLE `email_change_tokens` (
-	`token` text(15) PRIMARY KEY NOT NULL,
-	`email` text NOT NULL,
-	`expires_at` integer NOT NULL,
-	`user_id` text NOT NULL,
-	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
-);
---> statement-breakpoint
-CREATE TABLE `email_verification_tokens` (
-	`token` text(15) PRIMARY KEY NOT NULL,
-	`email` text NOT NULL,
-	`expires_at` integer NOT NULL,
-	`user_id` text NOT NULL,
-	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
-);
---> statement-breakpoint
 CREATE TABLE `oauth_accounts` (
 	`provider_id` text NOT NULL,
 	`provider_user_id` text NOT NULL,
@@ -58,6 +42,4 @@ CREATE TABLE `users` (
 	`modified_at` integer
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `email_change_tokens_email_unique` ON `email_change_tokens` (`email`);--> statement-breakpoint
-CREATE UNIQUE INDEX `email_verification_tokens_email_unique` ON `email_verification_tokens` (`email`);--> statement-breakpoint
 CREATE UNIQUE INDEX `users_email_unique` ON `users` (`email`);
