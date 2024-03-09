@@ -53,7 +53,7 @@ export const actions: Actions = {
         password: hashedPassword,
         isVerified: false,
         isAdmin: false,
-        authMethods: [AUTH_METHODS.EMAIL]
+        authMethods: []
       });
 
       if (!newUser) {
