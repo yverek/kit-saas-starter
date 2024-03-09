@@ -1,6 +1,6 @@
 import type { PageServerLoad, Actions } from "./$types";
 import { generateId } from "lucia";
-import { createAndSetSession, generateEmailVerificationToken } from "$lib/server/auth/auth-utils";
+import { createAndSetSession, generateToken } from "$lib/server/auth/auth-utils";
 import { registerFormSchema, type RegisterFormSchema } from "$validations/auth";
 import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
@@ -12,6 +12,7 @@ import { createUser, getUserByEmail, updateUserById } from "$lib/server/db/users
 import { USER_ID_LEN } from "$configs/fields-length";
 import { AUTH_METHODS } from "$configs/auth-methods";
 import { hashPassword } from "worker-password-auth";
+import { TOKEN_TYPE } from "$lib/server/db/tokens";
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
   if (locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
@@ -70,14 +71,14 @@ export const actions: Actions = {
       }
     }
 
-    const token = await generateEmailVerificationToken(db, userId, email);
-    if (!token) {
+    const newToken = await generateToken(db, userId, TOKEN_TYPE.EMAIL_VERIFICATION);
+    if (!newToken) {
       logger.debug("Failed to generate email verification token");
 
       return message(form, { status: "error", text: "Failed to generate email verification token" }, { status: 500 });
     }
 
-    const res = await sendEmailVerificationEmail(email, name, token);
+    const res = await sendEmailVerificationEmail(email, name, newToken.token);
     if (!res) {
       logger.debug("Failed to send email");
 

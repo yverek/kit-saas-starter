@@ -5,10 +5,11 @@ import { verifyEmailFormSchema, type VerifyEmailFormSchema } from "$validations/
 import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { logger } from "$lib/logger";
-import { createAndSetSession, verifyEmailVerificationToken } from "$lib/server/auth/auth-utils";
+import { createAndSetSession, verifyToken } from "$lib/server/auth/auth-utils";
 import { getUserByEmail, updateUserById } from "$lib/server/db/users";
 import { sendWelcomeEmail } from "$lib/server/email/send";
 import { AUTH_METHODS } from "$configs/auth-methods";
+import { TOKEN_TYPE } from "$lib/server/db/tokens";
 
 export const load = (async ({ locals: { user } }) => {
   if (!user) redirect(302, route("/auth/login"));
@@ -35,7 +36,7 @@ export const actions: Actions = {
     const { token } = form.data;
     const { id: userId, email, name } = user;
 
-    const isValidToken = await verifyEmailVerificationToken(db, userId, email, token);
+    const isValidToken = await verifyToken(db, userId, token, TOKEN_TYPE.EMAIL_VERIFICATION);
     if (!isValidToken) {
       return message(form, { status: "error", text: "Invalid token" }, { status: 500 });
     }
@@ -50,8 +51,8 @@ export const actions: Actions = {
     const authMethods = existingUser.authMethods ?? [];
     authMethods.push(AUTH_METHODS.EMAIL);
 
-    const res = await updateUserById(db, userId, { isVerified: true, authMethods });
-    if (!res) {
+    const updatedUser = await updateUserById(db, userId, { isVerified: true, authMethods });
+    if (!updatedUser) {
       return message(form, { status: "error", text: "User not found" }, { status: 404 });
     }
 
