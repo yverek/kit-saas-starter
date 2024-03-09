@@ -9,13 +9,6 @@ import {
   deletePasswordResetToken,
   getPasswordResetTokenByUserId
 } from "../db/password-reset-tokens";
-import {
-  createEmailChangeToken,
-  deleteAllEmailChangeTokensByUserId,
-  deleteEmailChangeToken,
-  getEmailChangeTokenByUserId,
-  type DbEmailChangeToken
-} from "../db/email-change-tokens";
 import type { Cookies } from "@sveltejs/kit";
 import { createToken, deleteAllTokensByUserId, type DbToken, type TOKEN_TYPE, getTokenByUserId, deleteToken } from "../db/tokens";
 export async function generatePasswordResetToken(db: Database, userId: string): Promise<string | undefined> {
@@ -48,37 +41,6 @@ export async function verifyPasswordResetToken(db: Database, userId: string, tok
   return true;
 }
 
-export async function generateChangeEmailToken(db: Database, userId: string, newEmail: string): Promise<string | undefined> {
-  await deleteAllEmailChangeTokensByUserId(db, userId);
-  const token = generateId(TOKEN_LEN);
-  const expiresAt = createDate(new TimeSpan(TOKEN_EXPIRATION_TIME, "m"));
-
-  const res = await createEmailChangeToken(db, { token, userId, expiresAt, email: newEmail });
-  if (!res) return;
-
-  return token;
-}
-
-export async function verifyChangeEmailToken(db: Database, userId: string, token: string): Promise<DbEmailChangeToken | undefined> {
-  const tokenFromDatabase = await getEmailChangeTokenByUserId(db, userId);
-  if (!tokenFromDatabase || tokenFromDatabase.token !== token) {
-    return;
-  }
-
-  const res = await deleteEmailChangeToken(db, token);
-  if (!res) {
-    return;
-  }
-
-  const isExpired = !isWithinExpirationDate(tokenFromDatabase.expiresAt);
-  if (isExpired) {
-    return;
-  }
-
-  return tokenFromDatabase;
-}
-
-// TODO can I merge all this "generate" and "verify" functions into one?
 export async function generateToken(db: Database, userId: string, type: TOKEN_TYPE): Promise<DbToken | undefined> {
   await deleteAllTokensByUserId(db, userId, type);
 
