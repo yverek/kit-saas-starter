@@ -34,14 +34,11 @@ export const actions: Actions = {
     await lucia.invalidateUserSessions(userId);
 
     const hashedPassword = await hashPassword(password);
-    const res = await updateUserById(db, userId, { password: hashedPassword });
-    if (!res) {
+    const updatedUser = await updateUserById(db, userId, { password: hashedPassword });
+    if (!updatedUser) {
       return message(form, { status: "error", text: "Error while changing password" }, { status: 500 });
     }
 
-    const status = "success";
-    const text = "Password changed successfully. You can now login.";
-
-    redirect(route("/auth/login"), { status, text }, cookies);
+    redirect(route("/auth/login"), { status: "success", text: "Password changed successfully. You can now login." }, cookies);
   }
 };

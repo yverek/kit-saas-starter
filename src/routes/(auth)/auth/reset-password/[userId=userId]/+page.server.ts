@@ -5,8 +5,9 @@ import type { Actions } from "@sveltejs/kit";
 import { logger } from "$lib/logger";
 import { route } from "$lib/ROUTES";
 import { redirect } from "sveltekit-flash-message/server";
-import { verifyPasswordResetToken } from "$lib/server/auth/auth-utils";
 import type { PageServerLoad } from "./$types";
+import { verifyToken } from "$lib/server/auth/auth-utils";
+import { TOKEN_TYPE } from "$lib/server/db/tokens";
 
 export const load = (async () => {
   const form = await superValidate<ResetPasswordFormSchemaSecondStep, FlashMessage>(zod(resetPasswordFormSchemaSecondStep));
@@ -27,10 +28,17 @@ export const actions: Actions = {
     const { token } = form.data;
     const userId = params.userId as string;
 
-    const res = await verifyPasswordResetToken(db, userId, token);
-    const status = res ? "success" : "error";
-    const text = res ? "Email sent successfully" : "Error while sending your email";
+    const isValidToken = await verifyToken(db, userId, token, TOKEN_TYPE.PASSWORD_RESET);
+    if (!isValidToken) {
+      logger.debug("Invalid token");
 
-    redirect(route("/auth/reset-password/[userId=userId]/new-password", { userId }), { status, text }, cookies);
+      return message(form, { status: "error", text: "Invalid token" });
+    }
+
+    redirect(
+      route("/auth/reset-password/[userId=userId]/new-password", { userId }),
+      { status: "success", text: "You can change your password" },
+      cookies
+    );
   }
 };

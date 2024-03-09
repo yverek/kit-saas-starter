@@ -5,19 +5,24 @@ import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { logger } from "$lib/logger";
 import { resetPasswordFormSchemaFirstStep, type ResetPasswordFormSchemaFirstStep } from "$validations/auth";
-import { generatePasswordResetToken } from "$lib/server/auth/auth-utils";
 import { getUserByEmail } from "$lib/server/db/users";
 import { sendPasswordResetEmail } from "$lib/server/email/send";
 import { redirect } from "sveltekit-flash-message/server";
+import { generateToken } from "$lib/server/auth/auth-utils";
+import { TOKEN_TYPE } from "$lib/server/db/tokens";
 
-export const load = (async () => {
+export const load = (async ({ locals, cookies }) => {
+  if (locals.user) redirect(route("/dashboard"), { status: "error", text: "You are already logged in, change your email from dashboard." }, cookies);
+
   const form = await superValidate<ResetPasswordFormSchemaFirstStep, FlashMessage>(zod(resetPasswordFormSchemaFirstStep));
 
   return { form };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  default: async ({ cookies, request, locals: { db } }) => {
+  default: async ({ cookies, request, locals: { db, user } }) => {
+    if (user) redirect(route("/dashboard"), { status: "error", text: "You are already logged in, change your email from dashboard." }, cookies);
+
     const form = await superValidate<ResetPasswordFormSchemaFirstStep, FlashMessage>(request, zod(resetPasswordFormSchemaFirstStep));
 
     if (!form.valid) {
@@ -28,21 +33,21 @@ export const actions: Actions = {
 
     const { email } = form.data;
 
-    const user = await getUserByEmail(db, email);
-    if (!user) {
+    const userFromDb = await getUserByEmail(db, email);
+    if (!userFromDb) {
       // we send a success message even if the user doesn't exist to prevent email enumeration
       redirect(route("/"), { status: "success", text: "Email sent successfully" }, cookies);
     }
 
-    const { id: userId } = user;
+    const { id: userId } = userFromDb;
 
-    const token = await generatePasswordResetToken(db, userId);
-    if (!token) {
+    const newToken = await generateToken(db, userId, TOKEN_TYPE.PASSWORD_RESET);
+    if (!newToken) {
       return message(form, { status: "error", text: "Failed to generate password reset token" }, { status: 500 });
     }
 
-    const mail = await sendPasswordResetEmail(email, token);
-    if (!mail) {
+    const mailSent = await sendPasswordResetEmail(email, newToken.token);
+    if (!mailSent) {
       return message(form, { status: "error", text: "Failed to send password reset mail" }, { status: 500 });
     }
 
