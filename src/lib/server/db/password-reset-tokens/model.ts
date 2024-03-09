@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
-import { type Database } from "$lib/server/db";
+import { passwordResetTokens } from "../schema";
+import type { Database } from "../types";
 import type { DbInsertPasswordResetToken, DbPasswordResetToken } from "./types";
-import { passwordResetTokens } from ".";
 
 /*
  * CREATE

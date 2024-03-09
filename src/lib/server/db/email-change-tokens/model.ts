@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
-import { type Database } from "$lib/server/db";
+import { emailChangeTokens } from "../schema";
+import type { Database } from "../types";
 import type { DbInsertEmailChangeToken, DbEmailChangeToken } from "./types";
-import { emailChangeTokens } from ".";
 
 /*
  * CREATE

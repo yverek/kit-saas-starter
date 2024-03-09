@@ -1,7 +1,7 @@
 import { eq, and } from "drizzle-orm";
-import { type Database } from "$lib/server/db";
+import { tokens } from "../schema";
+import type { Database } from "../types";
 import type { DbInsertToken, DbToken, TOKEN_TYPE } from "./types";
-import { tokens } from ".";
 
 /*
  * CREATE
