@@ -38,7 +38,7 @@ export const actions: Actions = {
 
     const parsedNewEmail = changeEmailFormSchemaFirstStep.safeParse({ email: newEmailFromCookies });
     if (!parsedNewEmail.success) {
-      message(form, { status: "error", text: "Invalid new email" }, { status: 401 });
+      return message(form, { status: "error", text: "Invalid new email" }, { status: 401 });
     } else {
       newEmail = parsedNewEmail.data.email;
     }
