@@ -1,45 +1,11 @@
 import { Lucia, generateId } from "lucia";
-import { TimeSpan, createDate, isWithinExpirationDate } from "oslo";
+import { isWithinExpirationDate } from "oslo";
+
+import type { Cookies } from "@sveltejs/kit";
+import { SESSION_ID_LEN } from "$configs/fields-length";
 
 import type { Database } from "../db";
-import { SESSION_ID_LEN, TOKEN_EXPIRATION_TIME, TOKEN_LEN } from "$configs/fields-length";
-import {
-  createPasswordResetToken,
-  deleteAllPasswordResetTokensByUserId,
-  deletePasswordResetToken,
-  getPasswordResetTokenByUserId
-} from "../db/password-reset-tokens";
-import type { Cookies } from "@sveltejs/kit";
 import { createToken, deleteAllTokensByUserId, type DbToken, type TOKEN_TYPE, getTokenByUserId, deleteToken } from "../db/tokens";
-export async function generatePasswordResetToken(db: Database, userId: string): Promise<string | undefined> {
-  await deleteAllPasswordResetTokensByUserId(db, userId);
-  const token = generateId(TOKEN_LEN);
-  const expiresAt = createDate(new TimeSpan(TOKEN_EXPIRATION_TIME, "m"));
-
-  const res = await createPasswordResetToken(db, { token, userId, expiresAt });
-  if (!res) return;
-
-  return token;
-}
-
-export async function verifyPasswordResetToken(db: Database, userId: string, token: string): Promise<boolean> {
-  const tokenFromDatabase = await getPasswordResetTokenByUserId(db, userId);
-  if (!tokenFromDatabase || tokenFromDatabase.token !== token) {
-    return false;
-  }
-
-  const res = await deletePasswordResetToken(db, token);
-  if (!res) {
-    return false;
-  }
-
-  const isExpired = !isWithinExpirationDate(tokenFromDatabase.expiresAt);
-  if (isExpired) {
-    return false;
-  }
-
-  return true;
-}
 
 export async function generateToken(db: Database, userId: string, type: TOKEN_TYPE): Promise<DbToken | undefined> {
   await deleteAllTokensByUserId(db, userId, type);
