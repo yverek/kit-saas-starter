@@ -6,3 +6,4 @@
 - [ ] Implement rate limiting based on user ID and IP address using https://github.com/ciscoheat/sveltekit-rate-limiter
 - [ ] Add CloudFlare Turnstile
 - [ ] Add get and delete queries into a single transaction for tokens table
+- [ ] Fix css for root layout
