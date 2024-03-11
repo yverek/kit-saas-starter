@@ -1,4 +1,7 @@
 const BASE = "kss";
+const RATE_LIMITER_BASE = `${BASE}_rate_limiter`;
+
+export const LOGIN_LIMITER_COOKIE_NAME = `${RATE_LIMITER_BASE}_login`;
 
 export const SESSION_COOKIE_NAME = `${BASE}_auth`;
 
