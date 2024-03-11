@@ -15,12 +15,20 @@
   const form = superForm(data.form, {
     validators: zodClient(changeEmailFormSchemaSecondStep),
     delayMs: 500,
+    timeoutMs: 5000,
     multipleSubmits: "prevent",
     syncFlashMessage: true,
-    flashMessage: { module: flashModule }
+    flashMessage: { module: flashModule },
+    onResult: ({ result }) => {
+      if (result.type === "failure") {
+        resetTurnstile();
+      }
+    }
   });
 
   const { form: formData, enhance } = form;
+
+  let resetTurnstile = $state(() => {});
 </script>
 
 <Card.Root class="w-1/3">
@@ -39,7 +47,7 @@
         </Form.Control>
         <Form.FieldErrors class="h-4 text-xs" />
       </Form.Field>
-      <Turnstile action={"change-email-confirm"} />
+      <Turnstile action={"change-email-confirm"} bind:resetTurnstile />
       <Form.Button type="submit" class="mt-2">Verify</Form.Button>
     </form>
   </Card.Content>

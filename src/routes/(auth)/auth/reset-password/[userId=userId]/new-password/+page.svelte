@@ -20,13 +20,21 @@
 
   const form = superForm(data.form, {
     validators: zodClient(resetPasswordFormSchemaThirdStep),
-    delayMs: 2000,
+    delayMs: 500,
+    timeoutMs: 5000,
     multipleSubmits: "prevent",
     syncFlashMessage: true,
-    flashMessage: { module: flashModule }
+    flashMessage: { module: flashModule },
+    onResult: ({ result }) => {
+      if (result.type === "failure") {
+        resetTurnstile();
+      }
+    }
   });
 
   const { form: formData, enhance } = form;
+
+  let resetTurnstile = $state(() => {});
 
   // ! this code is duplicated from register route
   // TODO export
@@ -95,7 +103,7 @@
           {/if}
         </Form.FieldErrors>
       </Form.Field>
-      <Turnstile action={"reset-password-change"} />
+      <Turnstile action={"reset-password-change"} bind:resetTurnstile />
       <Form.Button type="submit">Change password</Form.Button>
     </form>
   </Card.Content>

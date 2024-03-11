@@ -12,13 +12,21 @@
 
   const form = superForm(data.form, {
     validators: zodClient(resetPasswordFormSchemaFirstStep),
-    delayMs: 2000,
+    delayMs: 500,
+    timeoutMs: 5000,
     multipleSubmits: "prevent",
     syncFlashMessage: true,
-    flashMessage: { module: flashModule }
+    flashMessage: { module: flashModule },
+    onResult: ({ result }) => {
+      if (result.type === "failure") {
+        resetTurnstile();
+      }
+    }
   });
 
   const { form: formData, enhance } = form;
+
+  let resetTurnstile = $state(() => {});
 </script>
 
 <Card.Root class="w-1/3">
@@ -39,7 +47,7 @@
           {/if}
         </Form.FieldErrors>
       </Form.Field>
-      <Turnstile action={"reset-password-submit"} />
+      <Turnstile action={"reset-password-submit"} bind:resetTurnstile />
       <Form.Button type="submit" class="mt-2">Send</Form.Button>
     </form>
   </Card.Content>

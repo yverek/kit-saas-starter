@@ -24,11 +24,19 @@
   const form = superForm(data.form, {
     validators: zodClient(registerFormSchema),
     delayMs: 500,
+    timeoutMs: 5000,
     multipleSubmits: "prevent",
     syncFlashMessage: true,
-    flashMessage: { module: flashModule }
+    flashMessage: { module: flashModule },
+    onResult: ({ result }) => {
+      if (result.type === "failure") {
+        resetTurnstile();
+      }
+    }
   });
   const { form: formData, enhance } = form;
+
+  let resetTurnstile = $state(() => {});
 
   const customOptions: [FirstOption<string>, ...Option<string>[]] = [
     { id: 0, value: "Too weak", minDiversity: 0, minLength: 0 },
@@ -135,7 +143,7 @@
           {/if}
         </Form.FieldErrors>
       </Form.Field>
-      <Turnstile action={"register"} />
+      <Turnstile action={"register"} bind:resetTurnstile />
       <Form.Button type="submit" class="mt-4">Create account</Form.Button>
     </form>
   </Card.Content>
