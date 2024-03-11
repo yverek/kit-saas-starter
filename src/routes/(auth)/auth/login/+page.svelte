@@ -9,6 +9,7 @@
   import { GitHub, Google } from "$components/icons";
   import { route } from "$lib/ROUTES.js";
   import * as flashModule from "sveltekit-flash-message/client";
+  import Turnstile from "$components/layout/Turnstile.svelte";
 
   let { data } = $props();
 
@@ -70,8 +71,9 @@
           {/if}
         </Form.FieldErrors>
       </Form.Field>
-      <a href={route("/auth/reset-password")} class="flex- text-right text-sm font-medium hover:underline">Forgot password?</a>
-      <Form.Button type="submit" class="mt-4">Login</Form.Button>
+      <a href={route("/auth/reset-password")} class="flex justify-end text-right text-sm font-medium hover:underline">Forgot password?</a>
+      <Turnstile action={"login"} />
+      <Form.Button type="submit">Login</Form.Button>
     </form>
   </Card.Content>
   <Card.Footer>
