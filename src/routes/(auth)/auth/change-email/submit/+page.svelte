@@ -7,6 +7,7 @@
   import { zodClient } from "sveltekit-superforms/adapters";
   import * as flashModule from "sveltekit-flash-message/client";
   import { changeEmailFormSchemaFirstStep } from "$validations/auth";
+  import Turnstile from "$components/layout/Turnstile.svelte";
 
   let { data } = $props();
 
@@ -38,6 +39,7 @@
         </Form.Control>
         <Form.FieldErrors class="h-4 text-xs" />
       </Form.Field>
+      <Turnstile action={"change-email-submit"} />
       <Form.Button type="submit" class="mt-2">Change my email</Form.Button>
     </form>
   </Card.Content>

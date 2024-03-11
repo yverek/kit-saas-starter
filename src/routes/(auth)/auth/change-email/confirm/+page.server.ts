@@ -10,6 +10,7 @@ import { redirect } from "sveltekit-flash-message/server";
 import { verifyToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { dev } from "$app/environment";
+import { validateTurnstileToken } from "$lib/server/security";
 
 export const load = (async ({ locals: { user } }) => {
   if (!user) redirect(302, route("/auth/login"));
@@ -20,7 +21,7 @@ export const load = (async ({ locals: { user } }) => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  default: async ({ cookies, request, locals: { db, user, lucia } }) => {
+  default: async ({ cookies, request, getClientAddress, locals: { db, user, lucia } }) => {
     if (!user) redirect(302, route("/auth/login"));
 
     const form = await superValidate<ChangeEmailFormSchemaSecondStep, FlashMessage>(request, zod(changeEmailFormSchemaSecondStep));
@@ -31,8 +32,17 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Invalid form" });
     }
 
+    const { token, turnstileToken } = form.data;
+
+    const ip = getClientAddress();
+    const validatedTurnstileToken = await validateTurnstileToken(turnstileToken, ip);
+    if (!validatedTurnstileToken.success) {
+      logger.debug(validatedTurnstileToken.error, "Invalid turnstile");
+
+      return message(form, { status: "error", text: "Invalid Turnstile" }, { status: 400 });
+    }
+
     let newEmail = "";
-    const { token } = form.data;
     const { id: userId } = user;
     const newEmailFromCookies = cookies.get("email_change");
 
