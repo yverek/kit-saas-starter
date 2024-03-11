@@ -13,6 +13,7 @@ import { USER_ID_LEN } from "$configs/fields-length";
 import { AUTH_METHODS } from "$configs/auth-methods";
 import { hashPassword } from "worker-password-auth";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
+import { validateTurnstileToken } from "$lib/server/security";
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
   if (locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
@@ -23,10 +24,10 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 };
 
 export const actions: Actions = {
-  default: async ({ request, cookies, locals: { lucia, db } }) => {
+  default: async ({ request, cookies, getClientAddress, locals: { lucia, db } }) => {
     const form = await superValidate<RegisterFormSchema, FlashMessage>(request, zod(registerFormSchema));
 
-    const { name, email, password } = form.data;
+    const { name, email, password, turnstileToken } = form.data;
 
     form.data.password = "";
     form.data.passwordConfirm = "";
@@ -35,6 +36,14 @@ export const actions: Actions = {
       logger.debug("Invalid form");
 
       return message(form, { status: "error", text: "Invalid form" });
+    }
+
+    const ip = getClientAddress();
+    const validatedTurnstileToken = await validateTurnstileToken(turnstileToken, ip);
+    if (!validatedTurnstileToken.success) {
+      logger.debug(validatedTurnstileToken.error, "Invalid turnstile");
+
+      return message(form, { status: "error", text: "Invalid Turnstile" }, { status: 400 });
     }
 
     const existingUser = await getUserByEmail(db, email);

@@ -9,19 +9,24 @@
   import { GitHub, Google } from "$components/icons";
   import { route } from "$lib/ROUTES.js";
   import * as flashModule from "sveltekit-flash-message/client";
+  import Turnstile from "$components/layout/Turnstile.svelte";
+  import { Loader2 } from "lucide-svelte";
 
   let { data } = $props();
 
   const form = superForm(data.form, {
     validators: zodClient(loginFormSchema),
-    invalidateAll: true,
     delayMs: 500,
+    timeoutMs: 5000,
     multipleSubmits: "prevent",
     syncFlashMessage: true,
-    flashMessage: { module: flashModule }
+    flashMessage: { module: flashModule },
+    onUpdate: () => resetTurnstile()
   });
 
-  const { form: formData, enhance } = form;
+  const { form: formData, enhance, delayed } = form;
+
+  let resetTurnstile = $state(() => {});
 </script>
 
 <Card.Root class="w-96">
@@ -70,8 +75,15 @@
           {/if}
         </Form.FieldErrors>
       </Form.Field>
-      <a href={route("/auth/reset-password")} class="flex- text-right text-sm font-medium hover:underline">Forgot password?</a>
-      <Form.Button type="submit" class="mt-4">Login</Form.Button>
+      <a href={route("/auth/reset-password")} class="flex justify-end text-right text-sm font-medium hover:underline">Forgot password?</a>
+      <Turnstile action={"login"} bind:resetTurnstile />
+      <Form.Button type="submit" disabled={$delayed}>
+        {#if $delayed}
+          <Loader2 class="mr-2 h-4 w-4 animate-spin" /> Loading...
+        {:else}
+          Login
+        {/if}
+      </Form.Button>
     </form>
   </Card.Content>
   <Card.Footer>

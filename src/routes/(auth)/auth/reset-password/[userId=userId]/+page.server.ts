@@ -8,6 +8,7 @@ import { redirect } from "sveltekit-flash-message/server";
 import type { PageServerLoad } from "./$types";
 import { verifyToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
+import { validateTurnstileToken } from "$lib/server/security";
 
 export const load = (async () => {
   const form = await superValidate<ResetPasswordFormSchemaSecondStep, FlashMessage>(zod(resetPasswordFormSchemaSecondStep));
@@ -16,7 +17,7 @@ export const load = (async () => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  default: async ({ params, request, cookies, locals: { db } }) => {
+  default: async ({ params, request, getClientAddress, cookies, locals: { db } }) => {
     const form = await superValidate<ResetPasswordFormSchemaSecondStep, FlashMessage>(request, zod(resetPasswordFormSchemaSecondStep));
 
     if (!form.valid) {
@@ -25,8 +26,16 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Invalid form" });
     }
 
-    const { token } = form.data;
+    const { token, turnstileToken } = form.data;
     const userId = params.userId as string;
+
+    const ip = getClientAddress();
+    const validatedTurnstileToken = await validateTurnstileToken(turnstileToken, ip);
+    if (!validatedTurnstileToken.success) {
+      logger.debug(validatedTurnstileToken.error, "Invalid turnstile");
+
+      return message(form, { status: "error", text: "Invalid Turnstile" }, { status: 400 });
+    }
 
     const isValidToken = await verifyToken(db, userId, token, TOKEN_TYPE.PASSWORD_RESET);
     if (!isValidToken) {

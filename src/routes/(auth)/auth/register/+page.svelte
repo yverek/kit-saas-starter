@@ -12,6 +12,8 @@
   import { passwordStrength, type FirstOption, type Result, type Option } from "check-password-strength";
   import { Eye, EyeOff } from "lucide-svelte";
   import { GitHub, Google } from "$components/icons";
+  import Turnstile from "$components/layout/Turnstile.svelte";
+  import { Loader2 } from "lucide-svelte";
 
   let { data } = $props();
 
@@ -22,13 +24,16 @@
 
   const form = superForm(data.form, {
     validators: zodClient(registerFormSchema),
-    invalidateAll: true,
     delayMs: 500,
+    timeoutMs: 5000,
     multipleSubmits: "prevent",
     syncFlashMessage: true,
-    flashMessage: { module: flashModule }
+    flashMessage: { module: flashModule },
+    onUpdate: () => resetTurnstile()
   });
-  const { form: formData, enhance } = form;
+  const { form: formData, enhance, delayed } = form;
+
+  let resetTurnstile = $state(() => {});
 
   const customOptions: [FirstOption<string>, ...Option<string>[]] = [
     { id: 0, value: "Too weak", minDiversity: 0, minLength: 0 },
@@ -135,7 +140,14 @@
           {/if}
         </Form.FieldErrors>
       </Form.Field>
-      <Form.Button type="submit" class="mt-4">Create account</Form.Button>
+      <Turnstile action={"register"} bind:resetTurnstile />
+      <Form.Button type="submit" class="mt-4" disabled={$delayed}>
+        {#if $delayed}
+          <Loader2 class="mr-2 h-4 w-4 animate-spin" /> Loading...
+        {:else}
+          Create account
+        {/if}
+      </Form.Button>
     </form>
   </Card.Content>
   <Card.Footer>

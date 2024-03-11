@@ -10,6 +10,8 @@
   import { passwordStrength, type FirstOption, type Result, type Option } from "check-password-strength";
   import { Eye, EyeOff } from "lucide-svelte";
   import Button from "$components/ui/button/button.svelte";
+  import Turnstile from "$components/layout/Turnstile.svelte";
+  import { Loader2 } from "lucide-svelte";
 
   let { data } = $props();
 
@@ -19,14 +21,17 @@
 
   const form = superForm(data.form, {
     validators: zodClient(resetPasswordFormSchemaThirdStep),
-    invalidateAll: true,
-    delayMs: 2000,
+    delayMs: 500,
+    timeoutMs: 5000,
     multipleSubmits: "prevent",
     syncFlashMessage: true,
-    flashMessage: { module: flashModule }
+    flashMessage: { module: flashModule },
+    onUpdate: () => resetTurnstile()
   });
 
-  const { form: formData, enhance } = form;
+  const { form: formData, enhance, delayed } = form;
+
+  let resetTurnstile = $state(() => {});
 
   // ! this code is duplicated from register route
   // TODO export
@@ -95,7 +100,14 @@
           {/if}
         </Form.FieldErrors>
       </Form.Field>
-      <Form.Button type="submit">Change password</Form.Button>
+      <Turnstile action={"reset-password-change"} bind:resetTurnstile />
+      <Form.Button type="submit" disabled={$delayed}>
+        {#if $delayed}
+          <Loader2 class="mr-2 h-4 w-4 animate-spin" /> Loading...
+        {:else}
+          Change password
+        {/if}
+      </Form.Button>
     </form>
   </Card.Content>
 </Card.Root>

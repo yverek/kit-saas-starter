@@ -8,19 +8,24 @@
   import { zodClient } from "sveltekit-superforms/adapters";
   import * as flashModule from "sveltekit-flash-message/client";
   import { verifyEmailFormSchema } from "$validations/auth";
+  import Turnstile from "$components/layout/Turnstile.svelte";
+  import { Loader2 } from "lucide-svelte";
 
   let { data } = $props();
 
   const form = superForm(data.form, {
     validators: zodClient(verifyEmailFormSchema),
-    invalidateAll: true,
     delayMs: 500,
+    timeoutMs: 5000,
     multipleSubmits: "prevent",
     syncFlashMessage: true,
-    flashMessage: { module: flashModule }
+    flashMessage: { module: flashModule },
+    onUpdate: () => resetTurnstile()
   });
 
-  const { form: formData, enhance } = form;
+  const { form: formData, enhance, delayed } = form;
+
+  let resetTurnstile = $state(() => {});
 </script>
 
 <Card.Root class="w-1/3">
@@ -39,7 +44,14 @@
         </Form.Control>
         <Form.FieldErrors class="h-4 text-xs" />
       </Form.Field>
-      <Form.Button type="submit" class="mt-2">Verify</Form.Button>
+      <Turnstile action={"verify-email"} bind:resetTurnstile />
+      <Form.Button type="submit" disabled={$delayed}>
+        {#if $delayed}
+          <Loader2 class="mr-2 h-4 w-4 animate-spin" /> Loading...
+        {:else}
+          Verify
+        {/if}
+      </Form.Button>
     </form>
   </Card.Content>
   <Card.Footer>
