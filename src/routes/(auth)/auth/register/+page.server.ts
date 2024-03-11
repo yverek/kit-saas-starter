@@ -5,7 +5,7 @@ import { registerFormSchema, type RegisterFormSchema } from "$validations/auth";
 import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { sendEmailVerificationEmail } from "$lib/server/email/send";
-import { redirect } from "sveltekit-flash-message/server";
+import { redirect, setFlash } from "sveltekit-flash-message/server";
 import { route } from "$lib/ROUTES";
 import { logger } from "$lib/logger";
 import { createUser, getUserByEmail, updateUserById } from "$lib/server/db/users";
@@ -14,9 +14,28 @@ import { AUTH_METHODS } from "$configs/auth-methods";
 import { hashPassword } from "worker-password-auth";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { validateTurnstileToken } from "$lib/server/security";
+import { RetryAfterRateLimiter } from "sveltekit-rate-limiter/server";
+import { REGISTER_LIMITER_COOKIE_NAME } from "$configs/cookies-names";
+import { RATE_LIMITER_SECRET_KEY } from "$env/static/private";
+import { fail } from "@sveltejs/kit";
 
-export const load: PageServerLoad = async ({ locals, cookies }) => {
-  if (locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
+const registerLimiter = new RetryAfterRateLimiter({
+  rates: {
+    IP: [5, "h"],
+    IPUA: [5, "h"],
+    cookie: {
+      name: REGISTER_LIMITER_COOKIE_NAME,
+      secret: RATE_LIMITER_SECRET_KEY,
+      rate: [5, "h"],
+      preflight: true
+    }
+  }
+});
+
+export const load: PageServerLoad = async (event) => {
+  await registerLimiter.cookieLimiter?.preflight(event);
+
+  if (event.locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, event.cookies);
 
   const form = await superValidate<RegisterFormSchema, FlashMessage>(zod(registerFormSchema));
 
@@ -24,7 +43,23 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 };
 
 export const actions: Actions = {
-  default: async ({ request, cookies, getClientAddress, locals: { lucia, db } }) => {
+  default: async (event) => {
+    const {
+      request,
+      cookies,
+      getClientAddress,
+      locals: { db, lucia }
+    } = event;
+
+    const status = await registerLimiter.check(event);
+    if (status.limited) {
+      const retryAfterInMinutes = status.retryAfter / 60;
+      const retryAfter = retryAfterInMinutes.toString();
+
+      setFlash({ status: "error", text: `Too many requests, retry in ${retryAfter} minutes` }, event);
+      fail(429);
+    }
+
     const form = await superValidate<RegisterFormSchema, FlashMessage>(request, zod(registerFormSchema));
 
     const { name, email, password, turnstileToken } = form.data;
