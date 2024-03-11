@@ -11,6 +11,7 @@ database_id = "database-id"
 # Docs: https://developers.cloudflare.com/workers/platform/environment-variables
 [vars]
 RESEND_API_KEY=""
+RATE_LIMITER_SECRET_KEY=""
 PUBLIC_CLOUDFLARE_ANALYTICS_KEY=""
 PUBLIC_CLOUDFLARE_TURNSTILE_KEY=""
 CLOUDFLARE_TURNSTILE_SECRET=""

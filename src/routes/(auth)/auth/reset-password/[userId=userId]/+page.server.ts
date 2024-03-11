@@ -8,16 +8,29 @@ import { redirect } from "sveltekit-flash-message/server";
 import type { PageServerLoad } from "./$types";
 import { verifyToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
-import { validateTurnstileToken } from "$lib/server/security";
+import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
+import { resetPasswordLimiter } from "../rate-limiter";
 
-export const load = (async () => {
+export const load = (async (event) => {
+  await resetPasswordLimiter.cookieLimiter?.preflight(event);
+
   const form = await superValidate<ResetPasswordFormSchemaSecondStep, FlashMessage>(zod(resetPasswordFormSchemaSecondStep));
 
   return { form };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  default: async ({ params, request, getClientAddress, cookies, locals: { db } }) => {
+  default: async (event) => {
+    const {
+      params,
+      request,
+      getClientAddress,
+      cookies,
+      locals: { db }
+    } = event;
+
+    verifyRateLimiter(event, resetPasswordLimiter);
+
     const form = await superValidate<ResetPasswordFormSchemaSecondStep, FlashMessage>(request, zod(resetPasswordFormSchemaSecondStep));
 
     if (!form.valid) {

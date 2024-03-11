@@ -9,10 +9,28 @@ import { getUserByEmail } from "$lib/server/db/users";
 import { logger } from "$lib/logger";
 import { verifyPassword } from "worker-password-auth";
 import { AUTH_METHODS } from "$configs/auth-methods";
-import { validateTurnstileToken } from "$lib/server/security";
+import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
+import { RetryAfterRateLimiter } from "sveltekit-rate-limiter/server";
+import { LOGIN_LIMITER_COOKIE_NAME } from "$configs/cookies-names";
+import { RATE_LIMITER_SECRET_KEY } from "$env/static/private";
 
-export const load: PageServerLoad = async ({ locals, cookies }) => {
-  if (locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
+const loginLimiter = new RetryAfterRateLimiter({
+  rates: {
+    IP: [5, "h"],
+    IPUA: [5, "h"],
+    cookie: {
+      name: LOGIN_LIMITER_COOKIE_NAME,
+      secret: RATE_LIMITER_SECRET_KEY,
+      rate: [5, "h"],
+      preflight: true
+    }
+  }
+});
+
+export const load: PageServerLoad = async (event) => {
+  await loginLimiter.cookieLimiter?.preflight(event);
+
+  if (event.locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, event.cookies);
 
   const form = await superValidate<LoginFormSchema, FlashMessage>(zod(loginFormSchema));
 
@@ -20,7 +38,17 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 };
 
 export const actions: Actions = {
-  default: async ({ request, cookies, getClientAddress, url, locals: { db, lucia } }) => {
+  default: async (event) => {
+    const {
+      request,
+      cookies,
+      getClientAddress,
+      url,
+      locals: { db, lucia }
+    } = event;
+
+    verifyRateLimiter(event, loginLimiter);
+
     const form = await superValidate<LoginFormSchema, FlashMessage>(request, zod(loginFormSchema));
 
     const { email, password, turnstileToken } = form.data;

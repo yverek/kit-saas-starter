@@ -10,10 +10,14 @@ import { sendPasswordResetEmail } from "$lib/server/email/send";
 import { redirect } from "sveltekit-flash-message/server";
 import { generateToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
-import { validateTurnstileToken } from "$lib/server/security";
+import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
+import { resetPasswordLimiter } from "./rate-limiter";
 
-export const load = (async ({ locals, cookies }) => {
-  if (locals.user) redirect(route("/dashboard"), { status: "error", text: "You are already logged in, change your email from dashboard." }, cookies);
+export const load = (async (event) => {
+  await resetPasswordLimiter.cookieLimiter?.preflight(event);
+
+  if (event.locals.user)
+    redirect(route("/dashboard"), { status: "error", text: "You are already logged in, change your email from dashboard." }, event.cookies);
 
   const form = await superValidate<ResetPasswordFormSchemaFirstStep, FlashMessage>(zod(resetPasswordFormSchemaFirstStep));
 
@@ -21,7 +25,16 @@ export const load = (async ({ locals, cookies }) => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  default: async ({ cookies, request, getClientAddress, locals: { db, user } }) => {
+  default: async (event) => {
+    const {
+      cookies,
+      request,
+      getClientAddress,
+      locals: { db, user }
+    } = event;
+
+    verifyRateLimiter(event, resetPasswordLimiter);
+
     if (user) redirect(route("/dashboard"), { status: "error", text: "You are already logged in, change your email from dashboard." }, cookies);
 
     const form = await superValidate<ResetPasswordFormSchemaFirstStep, FlashMessage>(request, zod(resetPasswordFormSchemaFirstStep));
