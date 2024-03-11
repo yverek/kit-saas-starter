@@ -7,6 +7,7 @@
   import * as flashModule from "sveltekit-flash-message/client";
   import { resetPasswordFormSchemaFirstStep } from "$validations/auth";
   import Turnstile from "$components/layout/Turnstile.svelte";
+  import { Loader2 } from "lucide-svelte";
 
   let { data } = $props();
 
@@ -17,14 +18,10 @@
     multipleSubmits: "prevent",
     syncFlashMessage: true,
     flashMessage: { module: flashModule },
-    onResult: ({ result }) => {
-      if (result.type === "failure") {
-        resetTurnstile();
-      }
-    }
+    onUpdate: () => resetTurnstile()
   });
 
-  const { form: formData, enhance } = form;
+  const { form: formData, enhance, delayed } = form;
 
   let resetTurnstile = $state(() => {});
 </script>
@@ -48,7 +45,13 @@
         </Form.FieldErrors>
       </Form.Field>
       <Turnstile action={"reset-password-submit"} bind:resetTurnstile />
-      <Form.Button type="submit" class="mt-2">Send</Form.Button>
+      <Form.Button type="submit" disabled={$delayed}>
+        {#if $delayed}
+          <Loader2 class="mr-2 h-4 w-4 animate-spin" /> Loading...
+        {:else}
+          Send
+        {/if}
+      </Form.Button>
     </form>
   </Card.Content>
 </Card.Root>

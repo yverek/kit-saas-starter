@@ -13,6 +13,7 @@
   import { Eye, EyeOff } from "lucide-svelte";
   import { GitHub, Google } from "$components/icons";
   import Turnstile from "$components/layout/Turnstile.svelte";
+  import { Loader2 } from "lucide-svelte";
 
   let { data } = $props();
 
@@ -28,13 +29,9 @@
     multipleSubmits: "prevent",
     syncFlashMessage: true,
     flashMessage: { module: flashModule },
-    onResult: ({ result }) => {
-      if (result.type === "failure") {
-        resetTurnstile();
-      }
-    }
+    onUpdate: () => resetTurnstile()
   });
-  const { form: formData, enhance } = form;
+  const { form: formData, enhance, delayed } = form;
 
   let resetTurnstile = $state(() => {});
 
@@ -144,7 +141,13 @@
         </Form.FieldErrors>
       </Form.Field>
       <Turnstile action={"register"} bind:resetTurnstile />
-      <Form.Button type="submit" class="mt-4">Create account</Form.Button>
+      <Form.Button type="submit" class="mt-4" disabled={$delayed}>
+        {#if $delayed}
+          <Loader2 class="mr-2 h-4 w-4 animate-spin" /> Loading...
+        {:else}
+          Create account
+        {/if}
+      </Form.Button>
     </form>
   </Card.Content>
   <Card.Footer>

@@ -10,6 +10,7 @@
   import { route } from "$lib/ROUTES.js";
   import * as flashModule from "sveltekit-flash-message/client";
   import Turnstile from "$components/layout/Turnstile.svelte";
+  import { Loader2 } from "lucide-svelte";
 
   let { data } = $props();
 
@@ -20,11 +21,7 @@
     multipleSubmits: "prevent",
     syncFlashMessage: true,
     flashMessage: { module: flashModule },
-    onResult: ({ result }) => {
-      if (result.type === "failure") {
-        resetTurnstile();
-      }
-    }
+    onUpdate: () => resetTurnstile()
   });
 
   const { form: formData, enhance, delayed } = form;
@@ -80,7 +77,13 @@
       </Form.Field>
       <a href={route("/auth/reset-password")} class="flex justify-end text-right text-sm font-medium hover:underline">Forgot password?</a>
       <Turnstile action={"login"} bind:resetTurnstile />
-      <Form.Button type="submit">Login</Form.Button>
+      <Form.Button type="submit" disabled={$delayed}>
+        {#if $delayed}
+          <Loader2 class="mr-2 h-4 w-4 animate-spin" /> Loading...
+        {:else}
+          Login
+        {/if}
+      </Form.Button>
     </form>
   </Card.Content>
   <Card.Footer>
