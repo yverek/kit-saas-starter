@@ -7,16 +7,29 @@ import { zod } from "sveltekit-superforms/adapters";
 import { route } from "$lib/ROUTES";
 import { updateUserById } from "$lib/server/db/users";
 import { hashPassword } from "worker-password-auth";
-import { validateTurnstileToken } from "$lib/server/security";
+import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
+import { resetPasswordLimiter } from "../../rate-limiter";
 
-export const load = (async () => {
+export const load = (async (event) => {
+  await resetPasswordLimiter.cookieLimiter?.preflight(event);
+
   const form = await superValidate<ResetPasswordFormSchemaThirdStep, FlashMessage>(zod(resetPasswordFormSchemaThirdStep));
 
   return { form };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  default: async ({ params, request, cookies, getClientAddress, locals: { db, lucia } }) => {
+  default: async (event) => {
+    const {
+      params,
+      request,
+      cookies,
+      getClientAddress,
+      locals: { db, lucia }
+    } = event;
+
+    verifyRateLimiter(event, resetPasswordLimiter);
+
     const form = await superValidate<ResetPasswordFormSchemaThirdStep, FlashMessage>(request, zod(resetPasswordFormSchemaThirdStep));
 
     const { password, turnstileToken } = form.data;

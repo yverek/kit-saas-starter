@@ -5,6 +5,7 @@ export const LOGIN_LIMITER_COOKIE_NAME = `${RATE_LIMITER_BASE}_login`;
 export const REGISTER_LIMITER_COOKIE_NAME = `${RATE_LIMITER_BASE}_register`;
 export const VERIFY_EMAIL_LIMITER_COOKIE_NAME = `${RATE_LIMITER_BASE}_verify_email`;
 export const CHANGE_EMAIL_LIMITER_COOKIE_NAME = `${RATE_LIMITER_BASE}_change_email`;
+export const RESET_PASSWORD_LIMITER_COOKIE_NAME = `${RATE_LIMITER_BASE}_reset_password`;
 
 export const SESSION_COOKIE_NAME = `${BASE}_auth`;
 
