@@ -5,7 +5,7 @@ import { registerFormSchema, type RegisterFormSchema } from "$validations/auth";
 import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { sendEmailVerificationEmail } from "$lib/server/email/send";
-import { redirect, setFlash } from "sveltekit-flash-message/server";
+import { redirect } from "sveltekit-flash-message/server";
 import { route } from "$lib/ROUTES";
 import { logger } from "$lib/logger";
 import { createUser, getUserByEmail, updateUserById } from "$lib/server/db/users";
@@ -13,11 +13,10 @@ import { USER_ID_LEN } from "$configs/fields-length";
 import { AUTH_METHODS } from "$configs/auth-methods";
 import { hashPassword } from "worker-password-auth";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
-import { validateTurnstileToken } from "$lib/server/security";
+import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { RetryAfterRateLimiter } from "sveltekit-rate-limiter/server";
 import { REGISTER_LIMITER_COOKIE_NAME } from "$configs/cookies-names";
 import { RATE_LIMITER_SECRET_KEY } from "$env/static/private";
-import { fail } from "@sveltejs/kit";
 
 const registerLimiter = new RetryAfterRateLimiter({
   rates: {
@@ -51,14 +50,7 @@ export const actions: Actions = {
       locals: { db, lucia }
     } = event;
 
-    const status = await registerLimiter.check(event);
-    if (status.limited) {
-      const retryAfterInMinutes = status.retryAfter / 60;
-      const retryAfter = retryAfterInMinutes.toString();
-
-      setFlash({ status: "error", text: `Too many requests, retry in ${retryAfter} minutes` }, event);
-      fail(429);
-    }
+    verifyRateLimiter(event, registerLimiter);
 
     const form = await superValidate<RegisterFormSchema, FlashMessage>(request, zod(registerFormSchema));
 
