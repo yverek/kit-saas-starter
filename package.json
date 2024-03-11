@@ -57,7 +57,7 @@
   "dependencies": {
     "@lucia-auth/adapter-sqlite": "^3.0.1",
     "arctic": "^1.2.1",
-    "bits-ui": "^0.19.5",
+    "bits-ui": "^0.19.6",
     "check-password-strength": "^2.0.10",
     "clsx": "^2.1.0",
     "drizzle-orm": "^0.30.1",
