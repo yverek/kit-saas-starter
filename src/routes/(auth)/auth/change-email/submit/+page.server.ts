@@ -10,10 +10,28 @@ import { redirect } from "sveltekit-flash-message/server";
 import { generateToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { dev } from "$app/environment";
-import { validateTurnstileToken } from "$lib/server/security";
+import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
+import { RetryAfterRateLimiter } from "sveltekit-rate-limiter/server";
+import { CHANGE_EMAIL_LIMITER_COOKIE_NAME } from "$configs/cookies-names";
+import { RATE_LIMITER_SECRET_KEY } from "$env/static/private";
 
-export const load = (async ({ locals: { user } }) => {
-  if (!user) redirect(302, route("/auth/login"));
+export const changeEmailLimiter = new RetryAfterRateLimiter({
+  rates: {
+    IP: [5, "h"],
+    IPUA: [5, "h"],
+    cookie: {
+      name: CHANGE_EMAIL_LIMITER_COOKIE_NAME,
+      secret: RATE_LIMITER_SECRET_KEY,
+      rate: [5, "h"],
+      preflight: true
+    }
+  }
+});
+
+export const load = (async (event) => {
+  await changeEmailLimiter.cookieLimiter?.preflight(event);
+
+  if (!event.locals.user) redirect(302, route("/auth/login"));
 
   const form = await superValidate<ChangeEmailFormSchemaFirstStep, FlashMessage>(zod(changeEmailFormSchemaFirstStep));
 
@@ -21,7 +39,16 @@ export const load = (async ({ locals: { user } }) => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  default: async ({ cookies, request, getClientAddress, locals: { db, user } }) => {
+  default: async (event) => {
+    const {
+      request,
+      cookies,
+      getClientAddress,
+      locals: { db, user }
+    } = event;
+
+    verifyRateLimiter(event, changeEmailLimiter);
+
     if (!user) redirect(302, route("/auth/login"));
 
     const form = await superValidate<ChangeEmailFormSchemaFirstStep, FlashMessage>(request, zod(changeEmailFormSchemaFirstStep));
