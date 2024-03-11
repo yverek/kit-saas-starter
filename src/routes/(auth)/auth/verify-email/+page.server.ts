@@ -10,6 +10,7 @@ import { getUserByEmail, updateUserById } from "$lib/server/db/users";
 import { sendWelcomeEmail } from "$lib/server/email/send";
 import { AUTH_METHODS } from "$configs/auth-methods";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
+import { validateTurnstileToken } from "$lib/server/security";
 
 export const load = (async ({ locals: { user } }) => {
   if (!user) redirect(302, route("/auth/login"));
@@ -21,7 +22,7 @@ export const load = (async ({ locals: { user } }) => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  default: async ({ cookies, request, locals: { db, user, lucia } }) => {
+  default: async ({ cookies, request, getClientAddress, locals: { db, user, lucia } }) => {
     if (!user) redirect(302, route("/auth/login"));
     if (user.isVerified) redirect(302, route("/dashboard"));
 
@@ -33,8 +34,16 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Invalid form" });
     }
 
-    const { token } = form.data;
+    const { token, turnstileToken } = form.data;
     const { id: userId, email, name } = user;
+
+    const ip = getClientAddress();
+    const validatedTurnstileToken = await validateTurnstileToken(turnstileToken, ip);
+    if (!validatedTurnstileToken.success) {
+      logger.debug(validatedTurnstileToken.error, "Invalid turnstile");
+
+      return message(form, { status: "error", text: "Invalid Turnstile" }, { status: 400 });
+    }
 
     const isValidToken = await verifyToken(db, userId, token, TOKEN_TYPE.EMAIL_VERIFICATION);
     if (!isValidToken) {

@@ -1,8 +1,8 @@
 import { z } from "zod";
 import type { Infer } from "sveltekit-superforms";
-import { tokenField } from "$validations/core";
+import { tokenField, turnstileTokenField } from "$validations/core";
 
-const verifyEmailFormSchema = z.object({ token: tokenField });
+const verifyEmailFormSchema = z.object({ token: tokenField, turnstileToken: turnstileTokenField });
 
 type VerifyEmailFormSchema = Infer<typeof verifyEmailFormSchema>;
 
