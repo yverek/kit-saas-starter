@@ -12,6 +12,7 @@
   import { passwordStrength, type FirstOption, type Result, type Option } from "check-password-strength";
   import { Eye, EyeOff } from "lucide-svelte";
   import { GitHub, Google } from "$components/icons";
+  import Turnstile from "$components/layout/Turnstile.svelte";
 
   let { data } = $props();
 
@@ -135,6 +136,7 @@
           {/if}
         </Form.FieldErrors>
       </Form.Field>
+      <Turnstile action={"register"} />
       <Form.Button type="submit" class="mt-4">Create account</Form.Button>
     </form>
   </Card.Content>
