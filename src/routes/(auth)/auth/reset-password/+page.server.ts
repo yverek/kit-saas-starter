@@ -10,6 +10,7 @@ import { sendPasswordResetEmail } from "$lib/server/email/send";
 import { redirect } from "sveltekit-flash-message/server";
 import { generateToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
+import { validateTurnstileToken } from "$lib/server/security";
 
 export const load = (async ({ locals, cookies }) => {
   if (locals.user) redirect(route("/dashboard"), { status: "error", text: "You are already logged in, change your email from dashboard." }, cookies);
@@ -20,7 +21,7 @@ export const load = (async ({ locals, cookies }) => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  default: async ({ cookies, request, locals: { db, user } }) => {
+  default: async ({ cookies, request, getClientAddress, locals: { db, user } }) => {
     if (user) redirect(route("/dashboard"), { status: "error", text: "You are already logged in, change your email from dashboard." }, cookies);
 
     const form = await superValidate<ResetPasswordFormSchemaFirstStep, FlashMessage>(request, zod(resetPasswordFormSchemaFirstStep));
@@ -31,7 +32,15 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Invalid form" });
     }
 
-    const { email } = form.data;
+    const { email, turnstileToken } = form.data;
+
+    const ip = getClientAddress();
+    const validatedTurnstileToken = await validateTurnstileToken(turnstileToken, ip);
+    if (!validatedTurnstileToken.success) {
+      logger.debug(validatedTurnstileToken.error, "Invalid turnstile");
+
+      return message(form, { status: "error", text: "Invalid Turnstile" }, { status: 400 });
+    }
 
     const userFromDb = await getUserByEmail(db, email);
     if (!userFromDb) {

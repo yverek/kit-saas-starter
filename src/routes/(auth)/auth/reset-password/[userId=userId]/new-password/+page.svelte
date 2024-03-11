@@ -10,6 +10,7 @@
   import { passwordStrength, type FirstOption, type Result, type Option } from "check-password-strength";
   import { Eye, EyeOff } from "lucide-svelte";
   import Button from "$components/ui/button/button.svelte";
+  import Turnstile from "$components/layout/Turnstile.svelte";
 
   let { data } = $props();
 
@@ -95,6 +96,7 @@
           {/if}
         </Form.FieldErrors>
       </Form.Field>
+      <Turnstile action={"reset-password-change"} />
       <Form.Button type="submit">Change password</Form.Button>
     </form>
   </Card.Content>

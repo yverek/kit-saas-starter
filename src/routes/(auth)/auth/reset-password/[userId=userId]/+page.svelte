@@ -7,6 +7,7 @@
   import { zodClient } from "sveltekit-superforms/adapters";
   import * as flashModule from "sveltekit-flash-message/client";
   import { resetPasswordFormSchemaSecondStep } from "$validations/auth";
+  import Turnstile from "$components/layout/Turnstile.svelte";
 
   let { data } = $props();
 
@@ -40,6 +41,7 @@
           {/if}
         </Form.FieldErrors>
       </Form.Field>
+      <Turnstile action={"reset-password-confirm"} />
       <Form.Button type="submit" class="mt-2">Confirm</Form.Button>
     </form>
   </Card.Content>

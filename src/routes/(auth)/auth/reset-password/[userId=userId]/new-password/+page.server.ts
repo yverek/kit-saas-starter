@@ -7,6 +7,7 @@ import { zod } from "sveltekit-superforms/adapters";
 import { route } from "$lib/ROUTES";
 import { updateUserById } from "$lib/server/db/users";
 import { hashPassword } from "worker-password-auth";
+import { validateTurnstileToken } from "$lib/server/security";
 
 export const load = (async () => {
   const form = await superValidate<ResetPasswordFormSchemaThirdStep, FlashMessage>(zod(resetPasswordFormSchemaThirdStep));
@@ -15,10 +16,10 @@ export const load = (async () => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  default: async ({ params, request, cookies, locals: { db, lucia } }) => {
+  default: async ({ params, request, cookies, getClientAddress, locals: { db, lucia } }) => {
     const form = await superValidate<ResetPasswordFormSchemaThirdStep, FlashMessage>(request, zod(resetPasswordFormSchemaThirdStep));
 
-    const { password } = form.data;
+    const { password, turnstileToken } = form.data;
 
     form.data.password = "";
     form.data.passwordConfirm = "";
@@ -27,6 +28,14 @@ export const actions: Actions = {
       logger.debug("Invalid form");
 
       return message(form, { status: "error", text: "Invalid form" });
+    }
+
+    const ip = getClientAddress();
+    const validatedTurnstileToken = await validateTurnstileToken(turnstileToken, ip);
+    if (!validatedTurnstileToken.success) {
+      logger.debug(validatedTurnstileToken.error, "Invalid turnstile");
+
+      return message(form, { status: "error", text: "Invalid Turnstile" }, { status: 400 });
     }
 
     const { userId } = params;
