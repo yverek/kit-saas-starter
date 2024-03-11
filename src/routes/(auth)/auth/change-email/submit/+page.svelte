@@ -13,7 +13,6 @@
 
   const form = superForm(data.form, {
     validators: zodClient(changeEmailFormSchemaFirstStep),
-    invalidateAll: true,
     delayMs: 500,
     multipleSubmits: "prevent",
     syncFlashMessage: true,

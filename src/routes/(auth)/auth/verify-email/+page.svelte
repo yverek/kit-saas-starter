@@ -14,7 +14,6 @@
 
   const form = superForm(data.form, {
     validators: zodClient(verifyEmailFormSchema),
-    invalidateAll: true,
     delayMs: 500,
     multipleSubmits: "prevent",
     syncFlashMessage: true,

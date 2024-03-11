@@ -12,7 +12,6 @@
 
   const form = superForm(data.form, {
     validators: zodClient(resetPasswordFormSchemaFirstStep),
-    invalidateAll: true,
     delayMs: 2000,
     multipleSubmits: "prevent",
     syncFlashMessage: true,
