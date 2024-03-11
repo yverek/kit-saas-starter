@@ -11,22 +11,7 @@ import { generateToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { dev } from "$app/environment";
 import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
-import { RetryAfterRateLimiter } from "sveltekit-rate-limiter/server";
-import { CHANGE_EMAIL_LIMITER_COOKIE_NAME } from "$configs/cookies-names";
-import { RATE_LIMITER_SECRET_KEY } from "$env/static/private";
-
-export const changeEmailLimiter = new RetryAfterRateLimiter({
-  rates: {
-    IP: [5, "h"],
-    IPUA: [5, "h"],
-    cookie: {
-      name: CHANGE_EMAIL_LIMITER_COOKIE_NAME,
-      secret: RATE_LIMITER_SECRET_KEY,
-      rate: [5, "h"],
-      preflight: true
-    }
-  }
-});
+import { changeEmailLimiter } from "../rate-limiter";
 
 export const load = (async (event) => {
   await changeEmailLimiter.cookieLimiter?.preflight(event);
