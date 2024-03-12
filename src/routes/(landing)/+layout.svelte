@@ -1,12 +1,10 @@
 <script lang="ts">
   import { Footer, Header } from "$components/layout/landing-page";
-  import type { LayoutData } from "./$types";
-
-  export let data: LayoutData;
+  let { data, children } = $props();
 </script>
 
 <div class="container">
   <Header user={data.user} />
-  <slot />
+  {@render children()}
   <Footer />
 </div>

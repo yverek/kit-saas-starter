@@ -1,9 +1,8 @@
 <script lang="ts">
   import { route } from "$lib/ROUTES";
   import { APP_NAME } from "$configs/general";
-  import type { LayoutData } from "./$types";
 
-  export let data: LayoutData;
+  let { children } = $props();
 </script>
 
 <section class="m-16">
@@ -12,6 +11,6 @@
       <img src="/logo.png" class="size-8" alt={`${APP_NAME} Logo`} />
       <span class="text-2xl font-bold text-black dark:text-white">{APP_NAME}</span>
     </a>
-    <slot />
+    {@render children()}
   </div>
 </section>
