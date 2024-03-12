@@ -11,28 +11,11 @@ import { sendWelcomeEmail } from "$lib/server/email/send";
 import { AUTH_METHODS } from "$configs/auth-methods";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
-import { RetryAfterRateLimiter } from "sveltekit-rate-limiter/server";
-import { VERIFY_EMAIL_LIMITER_COOKIE_NAME } from "$configs/cookies-names";
-import { RATE_LIMITER_SECRET_KEY } from "$env/static/private";
+import { verifyEmailLimiter } from "$configs/rate-limiters";
 
-const verifyEmailLimiter = new RetryAfterRateLimiter({
-  rates: {
-    IP: [5, "h"],
-    IPUA: [5, "h"],
-    cookie: {
-      name: VERIFY_EMAIL_LIMITER_COOKIE_NAME,
-      secret: RATE_LIMITER_SECRET_KEY,
-      rate: [5, "h"],
-      preflight: true
-    }
-  }
-});
-
-export const load = (async (event) => {
-  await verifyEmailLimiter.cookieLimiter?.preflight(event);
-
-  if (!event.locals.user) redirect(302, route("/auth/login"));
-  if (event.locals.user.isVerified) redirect(302, route("/dashboard"));
+export const load = (async ({ locals: { user } }) => {
+  if (!user) redirect(302, route("/auth/login"));
+  if (user.isVerified) redirect(302, route("/dashboard"));
 
   const form = await superValidate<VerifyEmailFormSchema, FlashMessage>(zod(verifyEmailFormSchema));
 
@@ -48,10 +31,10 @@ export const actions: Actions = {
       locals: { db, lucia, user }
     } = event;
 
-    verifyRateLimiter(event, verifyEmailLimiter);
-
     if (!user) redirect(302, route("/auth/login"));
     if (user.isVerified) redirect(302, route("/dashboard"));
+
+    verifyRateLimiter(event, verifyEmailLimiter);
 
     const form = await superValidate<VerifyEmailFormSchema, FlashMessage>(request, zod(verifyEmailFormSchema));
 

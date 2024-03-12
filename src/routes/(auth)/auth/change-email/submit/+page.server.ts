@@ -11,12 +11,10 @@ import { generateToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { dev } from "$app/environment";
 import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
-import { changeEmailLimiter } from "../rate-limiter";
+import { changeEmailLimiter } from "$configs/rate-limiters";
 
-export const load = (async (event) => {
-  await changeEmailLimiter.cookieLimiter?.preflight(event);
-
-  if (!event.locals.user) redirect(302, route("/auth/login"));
+export const load = (async ({ locals: { user } }) => {
+  if (!user) redirect(302, route("/auth/login"));
 
   const form = await superValidate<ChangeEmailFormSchemaFirstStep, FlashMessage>(zod(changeEmailFormSchemaFirstStep));
 

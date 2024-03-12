@@ -9,10 +9,10 @@ import type { PageServerLoad } from "./$types";
 import { verifyToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
-import { resetPasswordLimiter } from "../rate-limiter";
+import { resetPasswordLimiter } from "$configs/rate-limiters";
 
-export const load = (async (event) => {
-  await resetPasswordLimiter.cookieLimiter?.preflight(event);
+export const load = (async ({ cookies, locals: { user } }) => {
+  if (user) redirect(route("/dashboard"), { status: "error", text: "You are already logged in, change your email from dashboard." }, cookies);
 
   const form = await superValidate<ResetPasswordFormSchemaSecondStep, FlashMessage>(zod(resetPasswordFormSchemaSecondStep));
 
@@ -26,8 +26,10 @@ export const actions: Actions = {
       request,
       getClientAddress,
       cookies,
-      locals: { db }
+      locals: { db, user }
     } = event;
+
+    if (user) redirect(route("/dashboard"), { status: "error", text: "You are already logged in, change your email from dashboard." }, cookies);
 
     verifyRateLimiter(event, resetPasswordLimiter);
 
