@@ -6,7 +6,7 @@
   import { page } from "$app/stores";
   import { toast } from "svelte-sonner";
 
-  // let { data } = $props();
+  let { children } = $props();
 
   const flash = getFlash(page);
 
@@ -34,4 +34,4 @@
 <ModeWatcher />
 <Toaster richColors closeButton position={"top-center"} />
 
-<slot />
+{@render children()}
