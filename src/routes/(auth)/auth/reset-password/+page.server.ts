@@ -11,7 +11,7 @@ import { redirect } from "sveltekit-flash-message/server";
 import { generateToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
-import { resetPasswordLimiter } from "./rate-limiter";
+import { resetPasswordLimiter } from "$configs/rate-limiters";
 
 export const load = (async ({ cookies, locals: { user } }) => {
   if (user) redirect(route("/dashboard"), { status: "error", text: "You are already logged in, change your email from dashboard." }, cookies);

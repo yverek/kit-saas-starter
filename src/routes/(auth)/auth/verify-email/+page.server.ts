@@ -11,12 +11,7 @@ import { sendWelcomeEmail } from "$lib/server/email/send";
 import { AUTH_METHODS } from "$configs/auth-methods";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
-import { RetryAfterRateLimiter } from "sveltekit-rate-limiter/server";
-
-const verifyEmailLimiter = new RetryAfterRateLimiter({
-  IP: [5, "h"],
-  IPUA: [5, "h"]
-});
+import { verifyEmailLimiter } from "$configs/rate-limiters";
 
 export const load = (async ({ locals: { user } }) => {
   if (!user) redirect(302, route("/auth/login"));

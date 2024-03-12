@@ -11,7 +11,7 @@ import { generateToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { dev } from "$app/environment";
 import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
-import { changeEmailLimiter } from "../rate-limiter";
+import { changeEmailLimiter } from "$configs/rate-limiters";
 
 export const load = (async ({ locals: { user } }) => {
   if (!user) redirect(302, route("/auth/login"));

@@ -8,7 +8,7 @@ import { route } from "$lib/ROUTES";
 import { updateUserById } from "$lib/server/db/users";
 import { hashPassword } from "worker-password-auth";
 import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
-import { resetPasswordLimiter } from "../../rate-limiter";
+import { resetPasswordLimiter } from "$configs/rate-limiters";
 
 export const load = (async ({ cookies, locals: { user } }) => {
   if (user) redirect(route("/dashboard"), { status: "error", text: "You are already logged in, change your email from dashboard." }, cookies);

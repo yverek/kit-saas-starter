@@ -14,12 +14,7 @@ import { AUTH_METHODS } from "$configs/auth-methods";
 import { hashPassword } from "worker-password-auth";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
-import { RetryAfterRateLimiter } from "sveltekit-rate-limiter/server";
-
-const registerLimiter = new RetryAfterRateLimiter({
-  IP: [5, "h"],
-  IPUA: [5, "h"]
-});
+import { registerLimiter } from "$configs/rate-limiters";
 
 export const load: PageServerLoad = async ({ cookies, locals: { user } }) => {
   if (user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);

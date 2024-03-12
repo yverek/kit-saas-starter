@@ -10,12 +10,7 @@ import { logger } from "$lib/logger";
 import { verifyPassword } from "worker-password-auth";
 import { AUTH_METHODS } from "$configs/auth-methods";
 import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
-import { RetryAfterRateLimiter } from "sveltekit-rate-limiter/server";
-
-const loginLimiter = new RetryAfterRateLimiter({
-  IP: [5, "h"],
-  IPUA: [5, "h"]
-});
+import { loginLimiter } from "$configs/rate-limiters";
 
 export const load: PageServerLoad = async ({ cookies, locals: { user } }) => {
   if (user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
