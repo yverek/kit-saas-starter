@@ -11,26 +11,14 @@ import { verifyPassword } from "worker-password-auth";
 import { AUTH_METHODS } from "$configs/auth-methods";
 import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { RetryAfterRateLimiter } from "sveltekit-rate-limiter/server";
-import { LOGIN_LIMITER_COOKIE_NAME } from "$configs/cookies-names";
-import { RATE_LIMITER_SECRET_KEY } from "$env/static/private";
 
 const loginLimiter = new RetryAfterRateLimiter({
-  rates: {
-    IP: [5, "h"],
-    IPUA: [5, "h"],
-    cookie: {
-      name: LOGIN_LIMITER_COOKIE_NAME,
-      secret: RATE_LIMITER_SECRET_KEY,
-      rate: [5, "h"],
-      preflight: true
-    }
-  }
+  IP: [5, "h"],
+  IPUA: [5, "h"]
 });
 
-export const load: PageServerLoad = async (event) => {
-  await loginLimiter.cookieLimiter?.preflight(event);
-
-  if (event.locals.user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, event.cookies);
+export const load: PageServerLoad = async ({ cookies, locals: { user } }) => {
+  if (user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
 
   const form = await superValidate<LoginFormSchema, FlashMessage>(zod(loginFormSchema));
 
