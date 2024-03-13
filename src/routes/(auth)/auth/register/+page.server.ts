@@ -13,11 +13,11 @@ import { USER_ID_LEN } from "$configs/fields-length";
 import { AUTH_METHODS } from "$configs/auth-methods";
 import { hashPassword } from "worker-password-auth";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
-import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
+import { isAnonymous, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { registerLimiter } from "$configs/rate-limiters";
 
-export const load: PageServerLoad = async ({ cookies, locals: { user } }) => {
-  if (user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
+export const load: PageServerLoad = async ({ locals }) => {
+  isAnonymous(locals);
 
   const form = await superValidate<RegisterFormSchema, FlashMessage>(zod(registerFormSchema));
 
@@ -26,14 +26,11 @@ export const load: PageServerLoad = async ({ cookies, locals: { user } }) => {
 
 export const actions: Actions = {
   default: async (event) => {
-    const {
-      request,
-      cookies,
-      getClientAddress,
-      locals: { db, lucia }
-    } = event;
+    const { request, cookies, getClientAddress, locals } = event;
 
-    verifyRateLimiter(event, registerLimiter);
+    isAnonymous(locals);
+
+    await verifyRateLimiter(event, registerLimiter);
 
     const form = await superValidate<RegisterFormSchema, FlashMessage>(request, zod(registerFormSchema));
 
@@ -56,7 +53,7 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Invalid Turnstile" }, { status: 400 });
     }
 
-    const existingUser = await getUserByEmail(db, email);
+    const existingUser = await getUserByEmail(locals.db, email);
     if (existingUser && existingUser.authMethods.includes(AUTH_METHODS.EMAIL)) {
       return message(form, { status: "error", text: "This email is already in user. Please do login." });
     }
@@ -65,7 +62,7 @@ export const actions: Actions = {
     const hashedPassword = await hashPassword(password);
 
     if (!existingUser) {
-      const newUser = await createUser(db, {
+      const newUser = await createUser(locals.db, {
         id: userId,
         name,
         email,
@@ -81,7 +78,7 @@ export const actions: Actions = {
         return message(form, { status: "error", text: "Email already used" }, { status: 400 });
       }
     } else {
-      const updatedUser = await updateUserById(db, existingUser.id, { password: hashedPassword });
+      const updatedUser = await updateUserById(locals.db, existingUser.id, { password: hashedPassword });
 
       if (!updatedUser) {
         logger.debug("Failed to insert new user: email already used");
@@ -90,7 +87,7 @@ export const actions: Actions = {
       }
     }
 
-    const newToken = await generateToken(db, userId, TOKEN_TYPE.EMAIL_VERIFICATION);
+    const newToken = await generateToken(locals.db, userId, TOKEN_TYPE.EMAIL_VERIFICATION);
     if (!newToken) {
       logger.debug("Failed to generate email verification token");
 
@@ -104,7 +101,7 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Failed to send email" }, { status: 500 });
     }
 
-    await createAndSetSession(lucia, userId, cookies);
+    await createAndSetSession(locals.lucia, userId, cookies);
 
     redirect(route("/auth/verify-email"), { status: "success", text: "Account created. Please check your email to verify your account." }, cookies);
   }
