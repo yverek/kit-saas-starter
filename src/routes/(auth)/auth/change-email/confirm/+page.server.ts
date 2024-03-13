@@ -14,7 +14,7 @@ import { changeEmailLimiter } from "$configs/rate-limiters";
 import type { User } from "lucia";
 import { FLASH_MESSAGE_STATUS } from "$configs/general";
 import { sendEmailChangeEmail } from "$lib/server/email/send";
-import { resendEmailLimiter } from "$configs/rate-limiters/resend-email.limiter";
+import { resendChangeEmailLimiter } from "$configs/rate-limiters/resend-email.limiter";
 
 export const load = (async ({ locals, cookies, url }) => {
   isUserAuthenticated(locals, cookies, url);
@@ -102,7 +102,7 @@ export const actions: Actions = {
 
     isUserAuthenticated(locals, cookies, url);
 
-    const retryAfter = await verifyRateLimiter(event, resendEmailLimiter);
+    const retryAfter = await verifyRateLimiter(event, resendChangeEmailLimiter);
     if (retryAfter) {
       flashMessage.text = `Too many requests, retry in ${retryAfter} minutes`;
       logger.debug(flashMessage.text);
