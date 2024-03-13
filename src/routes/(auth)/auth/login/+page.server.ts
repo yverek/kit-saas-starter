@@ -25,12 +25,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 export const actions: Actions = {
   default: async (event) => {
     const { request, locals, url, cookies, getClientAddress } = event;
+    const flashMessage = { status: FLASH_MESSAGE_STATUS.ERROR, text: "" };
 
     isAnonymous(locals);
 
     const retryAfter = await verifyRateLimiter(event, loginLimiter);
     if (retryAfter) {
-      const flashMessage = { status: FLASH_MESSAGE_STATUS.ERROR, text: `Too many requests, retry in ${retryAfter} minutes` };
+      flashMessage.text = `Too many requests, retry in ${retryAfter} minutes`;
+      logger.debug(flashMessage.text);
 
       setFlash(flashMessage, cookies);
       return fail(429);
@@ -42,39 +44,42 @@ export const actions: Actions = {
     form.data.password = "";
 
     if (!form.valid) {
-      logger.debug("Invalid form");
+      flashMessage.text = "Invalid form";
+      logger.debug(flashMessage.text);
 
-      return message(form, { status: "error", text: "Invalid form" });
+      return message(form, flashMessage);
     }
 
     const ip = getClientAddress();
     const validatedTurnstileToken = await validateTurnstileToken(turnstileToken, ip);
     if (!validatedTurnstileToken.success) {
-      logger.debug(validatedTurnstileToken.error, "Invalid turnstile");
+      flashMessage.text = "Invalid turnstile";
+      logger.debug(validatedTurnstileToken.error, flashMessage.text);
 
-      return message(form, { status: "error", text: "Invalid Turnstile" }, { status: 400 });
+      return message(form, flashMessage, { status: 400 });
     }
 
     const existingUser = await getUserByEmail(locals.db, email);
     if (!existingUser) {
-      logger.debug("User not found");
+      flashMessage.text = "User not found";
+      logger.debug(flashMessage.text);
 
-      return message(form, { status: "error", text: "Incorrect username or password" }, { status: 400 });
+      return message(form, flashMessage, { status: 400 });
     }
 
     if (!existingUser.password && !existingUser.authMethods.includes(AUTH_METHODS.EMAIL)) {
-      return message(
-        form,
-        { status: "error", text: "You registered with an OAuth provider. Please use the appropriate login method." },
-        { status: 403 }
-      );
+      flashMessage.text = "You registered with an OAuth provider. Please use the appropriate login method.";
+      logger.debug(flashMessage.text);
+
+      return message(form, flashMessage, { status: 403 });
     }
 
     const validPassword = await verifyPassword(password, existingUser.password ?? "");
     if (!validPassword) {
-      logger.debug("Invalid password");
+      flashMessage.text = "Invalid password";
+      logger.debug(flashMessage.text);
 
-      return message(form, { status: "error", text: "Incorrect username or password" }, { status: 400 });
+      return message(form, flashMessage, { status: 400 });
     }
 
     await createAndSetSession(locals.lucia, existingUser.id, cookies);
