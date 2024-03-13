@@ -71,7 +71,6 @@ export const actions: Actions = {
       sameSite: "lax"
     });
 
-    // TODO fix this, can't see toast message
     redirect(route("/auth/change-email/confirm"), { status: "success", text: "Email sent successfully" }, cookies);
   }
 };

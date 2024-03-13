@@ -65,7 +65,6 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Failed to send password reset mail" }, { status: 500 });
     }
 
-    // TODO fix this, can't see toast message
     redirect(route("/auth/reset-password/[userId=userId]", { userId }), { status: "success", text: "Email send successfully" }, cookies);
   }
 };
