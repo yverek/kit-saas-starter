@@ -9,11 +9,11 @@ import { getUserByEmail } from "$lib/server/db/users";
 import { logger } from "$lib/logger";
 import { verifyPassword } from "worker-password-auth";
 import { AUTH_METHODS } from "$configs/auth-methods";
-import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
+import { isAnonymous, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { loginLimiter } from "$configs/rate-limiters";
 
-export const load: PageServerLoad = async ({ cookies, locals: { user } }) => {
-  if (user) redirect(route("/dashboard"), { status: "success", text: "You are already logged in." }, cookies);
+export const load: PageServerLoad = async ({ locals }) => {
+  isAnonymous(locals);
 
   const form = await superValidate<LoginFormSchema, FlashMessage>(zod(loginFormSchema));
 
@@ -22,15 +22,11 @@ export const load: PageServerLoad = async ({ cookies, locals: { user } }) => {
 
 export const actions: Actions = {
   default: async (event) => {
-    const {
-      request,
-      cookies,
-      getClientAddress,
-      url,
-      locals: { db, lucia }
-    } = event;
+    const { request, cookies, getClientAddress, url, locals } = event;
 
-    verifyRateLimiter(event, loginLimiter);
+    isAnonymous(locals);
+
+    await verifyRateLimiter(event, loginLimiter);
 
     const form = await superValidate<LoginFormSchema, FlashMessage>(request, zod(loginFormSchema));
 
@@ -51,7 +47,7 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Invalid Turnstile" }, { status: 400 });
     }
 
-    const existingUser = await getUserByEmail(db, email);
+    const existingUser = await getUserByEmail(locals.db, email);
     if (!existingUser) {
       logger.debug("User not found");
 
@@ -73,7 +69,7 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Incorrect username or password" }, { status: 400 });
     }
 
-    await createAndSetSession(lucia, existingUser.id, cookies);
+    await createAndSetSession(locals.lucia, existingUser.id, cookies);
 
     let redirectTo = url.searchParams.get("redirectTo");
 
