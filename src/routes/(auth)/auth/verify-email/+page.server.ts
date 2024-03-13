@@ -1,6 +1,6 @@
 import { route } from "$lib/ROUTES";
 import type { PageServerLoad } from "./$types";
-import { redirect, type Actions } from "@sveltejs/kit";
+import { redirect, type Actions, fail } from "@sveltejs/kit";
 import { verifyEmailFormSchema, type VerifyEmailFormSchema } from "$validations/auth";
 import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
@@ -13,6 +13,8 @@ import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { isUserNotVerified, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { verifyEmailLimiter } from "$configs/rate-limiters";
 import type { User } from "lucia";
+import { FLASH_MESSAGE_STATUS } from "$configs/general";
+import { setFlash } from "sveltekit-flash-message/server";
 
 export const load = (async ({ locals, cookies, url }) => {
   isUserNotVerified(locals, cookies, url);
@@ -28,7 +30,13 @@ export const actions: Actions = {
 
     isUserNotVerified(locals, cookies, url);
 
-    await verifyRateLimiter(event, verifyEmailLimiter);
+    const retryAfter = await verifyRateLimiter(event, verifyEmailLimiter);
+    if (retryAfter) {
+      const flashMessage = { status: FLASH_MESSAGE_STATUS.ERROR, text: `Too many requests, retry in ${retryAfter} minutes` };
+
+      setFlash(flashMessage, cookies);
+      return fail(429);
+    }
 
     const form = await superValidate<VerifyEmailFormSchema, FlashMessage>(request, zod(verifyEmailFormSchema));
 

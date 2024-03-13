@@ -1,18 +1,19 @@
 import { route } from "$lib/ROUTES";
 import type { PageServerLoad } from "./$types";
-import type { Actions } from "@sveltejs/kit";
+import { fail, type Actions } from "@sveltejs/kit";
 import { changeEmailFormSchemaFirstStep, type ChangeEmailFormSchemaFirstStep } from "$validations/auth";
 import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { logger } from "$lib/logger";
 import { sendEmailChangeEmail } from "$lib/server/email/send";
-import { redirect } from "sveltekit-flash-message/server";
+import { redirect, setFlash } from "sveltekit-flash-message/server";
 import { generateToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { dev } from "$app/environment";
 import { isUserAuthenticated, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { changeEmailLimiter } from "$configs/rate-limiters";
 import type { User } from "lucia";
+import { FLASH_MESSAGE_STATUS } from "$configs/general";
 
 export const load = (async ({ locals, cookies, url }) => {
   isUserAuthenticated(locals, cookies, url);
@@ -28,7 +29,13 @@ export const actions: Actions = {
 
     isUserAuthenticated(locals, cookies, url);
 
-    await verifyRateLimiter(event, changeEmailLimiter);
+    const retryAfter = await verifyRateLimiter(event, changeEmailLimiter);
+    if (retryAfter) {
+      const flashMessage = { status: FLASH_MESSAGE_STATUS.ERROR, text: `Too many requests, retry in ${retryAfter} minutes` };
+
+      setFlash(flashMessage, cookies);
+      return fail(429);
+    }
 
     const form = await superValidate<ChangeEmailFormSchemaFirstStep, FlashMessage>(request, zod(changeEmailFormSchemaFirstStep));
 

@@ -1,15 +1,16 @@
 import { resetPasswordFormSchemaSecondStep, type ResetPasswordFormSchemaSecondStep } from "$validations/auth";
 import { superValidate, message } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
-import type { Actions } from "@sveltejs/kit";
+import { fail, type Actions } from "@sveltejs/kit";
 import { logger } from "$lib/logger";
 import { route } from "$lib/ROUTES";
-import { redirect } from "sveltekit-flash-message/server";
+import { redirect, setFlash } from "sveltekit-flash-message/server";
 import type { PageServerLoad } from "./$types";
 import { verifyToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { isAnonymous, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { resetPasswordLimiter } from "$configs/rate-limiters";
+import { FLASH_MESSAGE_STATUS } from "$configs/general";
 
 export const load = (async ({ locals }) => {
   isAnonymous(locals);
@@ -25,7 +26,13 @@ export const actions: Actions = {
 
     isAnonymous(locals);
 
-    await verifyRateLimiter(event, resetPasswordLimiter);
+    const retryAfter = await verifyRateLimiter(event, resetPasswordLimiter);
+    if (retryAfter) {
+      const flashMessage = { status: FLASH_MESSAGE_STATUS.ERROR, text: `Too many requests, retry in ${retryAfter} minutes` };
+
+      setFlash(flashMessage, cookies);
+      return fail(429);
+    }
 
     const form = await superValidate<ResetPasswordFormSchemaSecondStep, FlashMessage>(request, zod(resetPasswordFormSchemaSecondStep));
 

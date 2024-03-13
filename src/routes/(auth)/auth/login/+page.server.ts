@@ -3,7 +3,7 @@ import { createAndSetSession } from "$lib/server/auth/auth-utils";
 import { loginFormSchema, type LoginFormSchema } from "$validations/auth";
 import { message, superValidate } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
-import { redirect } from "sveltekit-flash-message/server";
+import { redirect, setFlash } from "sveltekit-flash-message/server";
 import { route } from "$lib/ROUTES";
 import { getUserByEmail } from "$lib/server/db/users";
 import { logger } from "$lib/logger";
@@ -11,6 +11,8 @@ import { verifyPassword } from "worker-password-auth";
 import { AUTH_METHODS } from "$configs/auth-methods";
 import { isAnonymous, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { loginLimiter } from "$configs/rate-limiters";
+import { FLASH_MESSAGE_STATUS } from "$configs/general";
+import { fail } from "@sveltejs/kit";
 
 export const load: PageServerLoad = async ({ locals }) => {
   isAnonymous(locals);
@@ -26,7 +28,13 @@ export const actions: Actions = {
 
     isAnonymous(locals);
 
-    await verifyRateLimiter(event, loginLimiter);
+    const retryAfter = await verifyRateLimiter(event, loginLimiter);
+    if (retryAfter) {
+      const flashMessage = { status: FLASH_MESSAGE_STATUS.ERROR, text: `Too many requests, retry in ${retryAfter} minutes` };
+
+      setFlash(flashMessage, cookies);
+      return fail(429);
+    }
 
     const form = await superValidate<LoginFormSchema, FlashMessage>(request, zod(loginFormSchema));
 

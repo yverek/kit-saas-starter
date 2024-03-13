@@ -5,7 +5,7 @@ import { registerFormSchema, type RegisterFormSchema } from "$validations/auth";
 import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { sendEmailVerificationEmail } from "$lib/server/email/send";
-import { redirect } from "sveltekit-flash-message/server";
+import { redirect, setFlash } from "sveltekit-flash-message/server";
 import { route } from "$lib/ROUTES";
 import { logger } from "$lib/logger";
 import { createUser, getUserByEmail, updateUserById } from "$lib/server/db/users";
@@ -15,6 +15,8 @@ import { hashPassword } from "worker-password-auth";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { isAnonymous, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { registerLimiter } from "$configs/rate-limiters";
+import { FLASH_MESSAGE_STATUS } from "$configs/general";
+import { fail } from "@sveltejs/kit";
 
 export const load: PageServerLoad = async ({ locals }) => {
   isAnonymous(locals);
@@ -30,7 +32,13 @@ export const actions: Actions = {
 
     isAnonymous(locals);
 
-    await verifyRateLimiter(event, registerLimiter);
+    const retryAfter = await verifyRateLimiter(event, registerLimiter);
+    if (retryAfter) {
+      const flashMessage = { status: FLASH_MESSAGE_STATUS.ERROR, text: `Too many requests, retry in ${retryAfter} minutes` };
+
+      setFlash(flashMessage, cookies);
+      return fail(429);
+    }
 
     const form = await superValidate<RegisterFormSchema, FlashMessage>(request, zod(registerFormSchema));
 
