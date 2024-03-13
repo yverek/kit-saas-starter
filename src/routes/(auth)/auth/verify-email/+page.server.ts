@@ -14,8 +14,8 @@ import { isUserNotVerified, validateTurnstileToken, verifyRateLimiter } from "$l
 import { verifyEmailLimiter } from "$configs/rate-limiters";
 import type { User } from "lucia";
 
-export const load = (async ({ locals }) => {
-  isUserNotVerified(locals);
+export const load = (async ({ locals, cookies, url }) => {
+  isUserNotVerified(locals, cookies, url);
 
   const form = await superValidate<VerifyEmailFormSchema, FlashMessage>(zod(verifyEmailFormSchema));
 
@@ -24,14 +24,9 @@ export const load = (async ({ locals }) => {
 
 export const actions: Actions = {
   default: async (event) => {
-    const {
-      request,
-      cookies,
-      getClientAddress,
-      locals: { db, lucia, user }
-    } = event;
+    const { request, locals, url, cookies, getClientAddress } = event;
 
-    isUserNotVerified(event.locals);
+    isUserNotVerified(locals, cookies, url);
 
     await verifyRateLimiter(event, verifyEmailLimiter);
 
@@ -46,7 +41,7 @@ export const actions: Actions = {
     const { token, turnstileToken } = form.data;
     // ! user is defined here because of "isUserVerified"
     // TODO how can we remove that "as User" casting?
-    const { id: userId, email, name } = user as User;
+    const { id: userId, email, name } = locals.user as User;
 
     const ip = getClientAddress();
     const validatedTurnstileToken = await validateTurnstileToken(turnstileToken, ip);
@@ -56,14 +51,14 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Invalid Turnstile" }, { status: 400 });
     }
 
-    const isValidToken = await verifyToken(db, userId, token, TOKEN_TYPE.EMAIL_VERIFICATION);
+    const isValidToken = await verifyToken(locals.db, userId, token, TOKEN_TYPE.EMAIL_VERIFICATION);
     if (!isValidToken) {
       return message(form, { status: "error", text: "Invalid token" }, { status: 500 });
     }
 
-    await lucia.invalidateUserSessions(userId);
+    await locals.lucia.invalidateUserSessions(userId);
 
-    const existingUser = await getUserByEmail(db, email);
+    const existingUser = await getUserByEmail(locals.db, email);
     if (!existingUser) {
       return message(form, { status: "error", text: "User not found" }, { status: 404 });
     }
@@ -71,12 +66,12 @@ export const actions: Actions = {
     const authMethods = existingUser.authMethods ?? [];
     authMethods.push(AUTH_METHODS.EMAIL);
 
-    const updatedUser = await updateUserById(db, userId, { isVerified: true, authMethods });
+    const updatedUser = await updateUserById(locals.db, userId, { isVerified: true, authMethods });
     if (!updatedUser) {
       return message(form, { status: "error", text: "User not found" }, { status: 404 });
     }
 
-    await createAndSetSession(lucia, userId, cookies);
+    await createAndSetSession(locals.lucia, userId, cookies);
 
     await sendWelcomeEmail(email, name);
 

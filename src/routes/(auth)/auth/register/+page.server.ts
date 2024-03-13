@@ -26,7 +26,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
   default: async (event) => {
-    const { request, cookies, getClientAddress, locals } = event;
+    const { request, locals, cookies, getClientAddress } = event;
 
     isAnonymous(locals);
 

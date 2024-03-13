@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
   default: async (event) => {
-    const { request, cookies, getClientAddress, url, locals } = event;
+    const { request, locals, url, cookies, getClientAddress } = event;
 
     isAnonymous(locals);
 
@@ -73,7 +73,6 @@ export const actions: Actions = {
 
     let redirectTo = url.searchParams.get("redirectTo");
 
-    // TODO this should be a svelte-flash-message?
     if (redirectTo) {
       // with this line we are forcing to redirect to our domain
       // for example, if they pass a malicious domain like example.com/auth/login?redirectTo=http://virus.com

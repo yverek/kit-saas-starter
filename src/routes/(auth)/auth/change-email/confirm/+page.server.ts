@@ -10,12 +10,12 @@ import { redirect } from "sveltekit-flash-message/server";
 import { verifyToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { dev } from "$app/environment";
-import { isUserAuthenticated, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
+import { isUserAuthenticated, isUserNotVerified, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { changeEmailLimiter } from "$configs/rate-limiters";
 import type { User } from "lucia";
 
-export const load = (async ({ locals }) => {
-  isUserAuthenticated(locals);
+export const load = (async ({ locals, cookies, url }) => {
+  isUserNotVerified(locals, cookies, url);
 
   const form = await superValidate<ChangeEmailFormSchemaSecondStep, FlashMessage>(zod(changeEmailFormSchemaSecondStep));
 
@@ -24,9 +24,9 @@ export const load = (async ({ locals }) => {
 
 export const actions: Actions = {
   default: async (event) => {
-    const { request, cookies, getClientAddress, locals } = event;
+    const { request, locals, url, cookies, getClientAddress } = event;
 
-    isUserAuthenticated(locals);
+    isUserAuthenticated(locals, cookies, url);
 
     await verifyRateLimiter(event, changeEmailLimiter);
 

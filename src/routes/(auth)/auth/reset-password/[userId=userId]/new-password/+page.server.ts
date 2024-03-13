@@ -20,7 +20,7 @@ export const load = (async ({ locals }) => {
 
 export const actions: Actions = {
   default: async (event) => {
-    const { params, request, cookies, getClientAddress, locals } = event;
+    const { request, locals, cookies, params, getClientAddress } = event;
 
     isAnonymous(locals);
 

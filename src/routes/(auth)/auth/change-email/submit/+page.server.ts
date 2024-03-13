@@ -14,8 +14,8 @@ import { isUserAuthenticated, validateTurnstileToken, verifyRateLimiter } from "
 import { changeEmailLimiter } from "$configs/rate-limiters";
 import type { User } from "lucia";
 
-export const load = (async ({ locals }) => {
-  isUserAuthenticated(locals);
+export const load = (async ({ locals, cookies, url }) => {
+  isUserAuthenticated(locals, cookies, url);
 
   const form = await superValidate<ChangeEmailFormSchemaFirstStep, FlashMessage>(zod(changeEmailFormSchemaFirstStep));
 
@@ -24,9 +24,9 @@ export const load = (async ({ locals }) => {
 
 export const actions: Actions = {
   default: async (event) => {
-    const { request, cookies, getClientAddress, locals } = event;
+    const { request, locals, url, cookies, getClientAddress } = event;
 
-    isUserAuthenticated(locals);
+    isUserAuthenticated(locals, cookies, url);
 
     await verifyRateLimiter(event, changeEmailLimiter);
 

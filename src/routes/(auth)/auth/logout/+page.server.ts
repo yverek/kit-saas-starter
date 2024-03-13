@@ -5,8 +5,10 @@ import type { Actions } from "./$types";
 import { redirect } from "@sveltejs/kit";
 
 export const actions: Actions = {
-  default: async ({ locals, cookies }) => {
-    isUserAuthenticated(locals);
+  default: async (event) => {
+    const { locals, url, cookies } = event;
+
+    isUserAuthenticated(locals, cookies, url);
 
     // ! user is defined here because of "isUserAuthenticated"
     // TODO how can we remove that "!"?
