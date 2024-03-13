@@ -8,11 +8,11 @@ import { redirect } from "sveltekit-flash-message/server";
 import type { PageServerLoad } from "./$types";
 import { verifyToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
-import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
+import { isAnonymous, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { resetPasswordLimiter } from "$configs/rate-limiters";
 
-export const load = (async ({ cookies, locals: { user } }) => {
-  if (user) redirect(route("/dashboard"), { status: "error", text: "You are already logged in, change your email from dashboard." }, cookies);
+export const load = (async ({ locals }) => {
+  isAnonymous(locals);
 
   const form = await superValidate<ResetPasswordFormSchemaSecondStep, FlashMessage>(zod(resetPasswordFormSchemaSecondStep));
 
@@ -21,17 +21,11 @@ export const load = (async ({ cookies, locals: { user } }) => {
 
 export const actions: Actions = {
   default: async (event) => {
-    const {
-      params,
-      request,
-      getClientAddress,
-      cookies,
-      locals: { db, user }
-    } = event;
+    const { request, locals, cookies, params, getClientAddress } = event;
 
-    if (user) redirect(route("/dashboard"), { status: "error", text: "You are already logged in, change your email from dashboard." }, cookies);
+    isAnonymous(locals);
 
-    verifyRateLimiter(event, resetPasswordLimiter);
+    await verifyRateLimiter(event, resetPasswordLimiter);
 
     const form = await superValidate<ResetPasswordFormSchemaSecondStep, FlashMessage>(request, zod(resetPasswordFormSchemaSecondStep));
 
@@ -52,7 +46,7 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Invalid Turnstile" }, { status: 400 });
     }
 
-    const isValidToken = await verifyToken(db, userId, token, TOKEN_TYPE.PASSWORD_RESET);
+    const isValidToken = await verifyToken(locals.db, userId, token, TOKEN_TYPE.PASSWORD_RESET);
     if (!isValidToken) {
       logger.debug("Invalid token");
 

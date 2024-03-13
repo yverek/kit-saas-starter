@@ -10,11 +10,11 @@ import { sendPasswordResetEmail } from "$lib/server/email/send";
 import { redirect } from "sveltekit-flash-message/server";
 import { generateToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
-import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
+import { isAnonymous, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { resetPasswordLimiter } from "$configs/rate-limiters";
 
-export const load = (async ({ cookies, locals: { user } }) => {
-  if (user) redirect(route("/dashboard"), { status: "error", text: "You are already logged in, change your email from dashboard." }, cookies);
+export const load = (async ({ locals }) => {
+  isAnonymous(locals);
 
   const form = await superValidate<ResetPasswordFormSchemaFirstStep, FlashMessage>(zod(resetPasswordFormSchemaFirstStep));
 
@@ -23,16 +23,11 @@ export const load = (async ({ cookies, locals: { user } }) => {
 
 export const actions: Actions = {
   default: async (event) => {
-    const {
-      cookies,
-      request,
-      getClientAddress,
-      locals: { db, user }
-    } = event;
+    const { request, locals, cookies, getClientAddress } = event;
 
-    if (user) redirect(route("/dashboard"), { status: "error", text: "You are already logged in, change your email from dashboard." }, cookies);
+    isAnonymous(locals);
 
-    verifyRateLimiter(event, resetPasswordLimiter);
+    await verifyRateLimiter(event, resetPasswordLimiter);
 
     const form = await superValidate<ResetPasswordFormSchemaFirstStep, FlashMessage>(request, zod(resetPasswordFormSchemaFirstStep));
 
@@ -52,7 +47,7 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Invalid Turnstile" }, { status: 400 });
     }
 
-    const userFromDb = await getUserByEmail(db, email);
+    const userFromDb = await getUserByEmail(locals.db, email);
     if (!userFromDb) {
       // we send a success message even if the user doesn't exist to prevent email enumeration
       redirect(route("/"), { status: "success", text: "Email sent successfully" }, cookies);
@@ -60,7 +55,7 @@ export const actions: Actions = {
 
     const { id: userId } = userFromDb;
 
-    const newToken = await generateToken(db, userId, TOKEN_TYPE.PASSWORD_RESET);
+    const newToken = await generateToken(locals.db, userId, TOKEN_TYPE.PASSWORD_RESET);
     if (!newToken) {
       return message(form, { status: "error", text: "Failed to generate password reset token" }, { status: 500 });
     }
@@ -70,7 +65,6 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Failed to send password reset mail" }, { status: 500 });
     }
 
-    // TODO fix this, can't see toast message
     redirect(route("/auth/reset-password/[userId=userId]", { userId }), { status: "success", text: "Email send successfully" }, cookies);
   }
 };

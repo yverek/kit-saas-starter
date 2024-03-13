@@ -10,11 +10,12 @@ import { redirect } from "sveltekit-flash-message/server";
 import { generateToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { dev } from "$app/environment";
-import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
+import { isUserAuthenticated, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { changeEmailLimiter } from "$configs/rate-limiters";
+import type { User } from "lucia";
 
-export const load = (async ({ locals: { user } }) => {
-  if (!user) redirect(302, route("/auth/login"));
+export const load = (async ({ locals, cookies, url }) => {
+  isUserAuthenticated(locals, cookies, url);
 
   const form = await superValidate<ChangeEmailFormSchemaFirstStep, FlashMessage>(zod(changeEmailFormSchemaFirstStep));
 
@@ -23,16 +24,11 @@ export const load = (async ({ locals: { user } }) => {
 
 export const actions: Actions = {
   default: async (event) => {
-    const {
-      request,
-      cookies,
-      getClientAddress,
-      locals: { db, user }
-    } = event;
+    const { request, locals, url, cookies, getClientAddress } = event;
 
-    verifyRateLimiter(event, changeEmailLimiter);
+    isUserAuthenticated(locals, cookies, url);
 
-    if (!user) redirect(302, route("/auth/login"));
+    await verifyRateLimiter(event, changeEmailLimiter);
 
     const form = await superValidate<ChangeEmailFormSchemaFirstStep, FlashMessage>(request, zod(changeEmailFormSchemaFirstStep));
 
@@ -43,7 +39,9 @@ export const actions: Actions = {
     }
 
     const { email: newEmail, turnstileToken } = form.data;
-    const { id: userId, name } = user;
+    // ! user is defined here because of "isUserVerified"
+    // TODO how can we remove that "as User" casting?
+    const { id: userId, name } = locals.user as User;
 
     const ip = getClientAddress();
     const validatedTurnstileToken = await validateTurnstileToken(turnstileToken, ip);
@@ -53,7 +51,7 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Invalid Turnstile" }, { status: 400 });
     }
 
-    const newToken = await generateToken(db, userId, TOKEN_TYPE.EMAIL_CHANGE);
+    const newToken = await generateToken(locals.db, userId, TOKEN_TYPE.EMAIL_CHANGE);
     if (!newToken) {
       return message(form, { status: "error", text: "Failed to generate change email token" }, { status: 500 });
     }
@@ -64,6 +62,7 @@ export const actions: Actions = {
     }
 
     // TODO export this name into constant
+    // TODO this is bad, need to save it server side!
     cookies.set("email_change", newEmail, {
       path: route("/auth/change-email/confirm"),
       secure: !dev,
@@ -72,7 +71,6 @@ export const actions: Actions = {
       sameSite: "lax"
     });
 
-    // TODO fix this, can't see toast message
     redirect(route("/auth/change-email/confirm"), { status: "success", text: "Email sent successfully" }, cookies);
   }
 };

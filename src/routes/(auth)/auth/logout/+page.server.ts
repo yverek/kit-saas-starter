@@ -1,16 +1,19 @@
 import { route } from "$lib/ROUTES";
 import { destroySession } from "$lib/server/auth/auth-utils";
+import { isUserAuthenticated } from "$lib/server/security";
 import type { Actions } from "./$types";
 import { redirect } from "@sveltejs/kit";
 
 export const actions: Actions = {
-  default: async ({ locals: { lucia, session }, cookies }) => {
-    if (!session) {
-      redirect(302, route("/"));
-    }
+  default: async (event) => {
+    const { locals, url, cookies } = event;
 
-    await lucia.invalidateSession(session.id);
-    destroySession(lucia, cookies);
+    isUserAuthenticated(locals, cookies, url);
+
+    // ! user is defined here because of "isUserAuthenticated"
+    // TODO how can we remove that "!"?
+    await locals.lucia.invalidateSession(locals.session!.id);
+    destroySession(locals.lucia, cookies);
 
     redirect(302, route("/"));
   }

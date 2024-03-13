@@ -26,6 +26,13 @@ export default defineConfig({
         tailwind: "https://tailwindcss.com",
         drizzle: "https://orm.drizzle.team",
         lucia: "https://lucia-auth.com"
+      },
+      PAGES: {
+        "/auth/login": {
+          explicit_search_params: {
+            redirectTo: { type: "string" }
+          }
+        }
       }
     })
   ],

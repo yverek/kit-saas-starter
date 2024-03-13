@@ -13,7 +13,9 @@ const PAGES = {
   "/dashboard": `/dashboard`,
   "/auth/change-email/confirm": `/auth/change-email/confirm`,
   "/auth/change-email/submit": `/auth/change-email/submit`,
-  "/auth/login": `/auth/login`,
+  "/auth/login": (params?: { redirectTo?: string }) => {
+    return `/auth/login${appendSp({ redirectTo: params?.redirectTo })}`;
+  },
   "/auth/register": `/auth/register`,
   "/auth/reset-password": `/auth/reset-password`,
   "/auth/reset-password/[userId=userId]": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
@@ -221,5 +223,5 @@ export type KIT_ROUTES = {
     drizzle: never;
     lucia: never;
   };
-  Params: { userId: never };
+  Params: { redirectTo: never; userId: never };
 };

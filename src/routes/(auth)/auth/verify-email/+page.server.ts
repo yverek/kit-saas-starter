@@ -10,12 +10,12 @@ import { getUserByEmail, updateUserById } from "$lib/server/db/users";
 import { sendWelcomeEmail } from "$lib/server/email/send";
 import { AUTH_METHODS } from "$configs/auth-methods";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
-import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
+import { isUserNotVerified, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { verifyEmailLimiter } from "$configs/rate-limiters";
+import type { User } from "lucia";
 
-export const load = (async ({ locals: { user } }) => {
-  if (!user) redirect(302, route("/auth/login"));
-  if (user.isVerified) redirect(302, route("/dashboard"));
+export const load = (async ({ locals, cookies, url }) => {
+  isUserNotVerified(locals, cookies, url);
 
   const form = await superValidate<VerifyEmailFormSchema, FlashMessage>(zod(verifyEmailFormSchema));
 
@@ -24,17 +24,11 @@ export const load = (async ({ locals: { user } }) => {
 
 export const actions: Actions = {
   default: async (event) => {
-    const {
-      request,
-      cookies,
-      getClientAddress,
-      locals: { db, lucia, user }
-    } = event;
+    const { request, locals, url, cookies, getClientAddress } = event;
 
-    if (!user) redirect(302, route("/auth/login"));
-    if (user.isVerified) redirect(302, route("/dashboard"));
+    isUserNotVerified(locals, cookies, url);
 
-    verifyRateLimiter(event, verifyEmailLimiter);
+    await verifyRateLimiter(event, verifyEmailLimiter);
 
     const form = await superValidate<VerifyEmailFormSchema, FlashMessage>(request, zod(verifyEmailFormSchema));
 
@@ -45,7 +39,9 @@ export const actions: Actions = {
     }
 
     const { token, turnstileToken } = form.data;
-    const { id: userId, email, name } = user;
+    // ! user is defined here because of "isUserVerified"
+    // TODO how can we remove that "as User" casting?
+    const { id: userId, email, name } = locals.user as User;
 
     const ip = getClientAddress();
     const validatedTurnstileToken = await validateTurnstileToken(turnstileToken, ip);
@@ -55,14 +51,14 @@ export const actions: Actions = {
       return message(form, { status: "error", text: "Invalid Turnstile" }, { status: 400 });
     }
 
-    const isValidToken = await verifyToken(db, userId, token, TOKEN_TYPE.EMAIL_VERIFICATION);
+    const isValidToken = await verifyToken(locals.db, userId, token, TOKEN_TYPE.EMAIL_VERIFICATION);
     if (!isValidToken) {
       return message(form, { status: "error", text: "Invalid token" }, { status: 500 });
     }
 
-    await lucia.invalidateUserSessions(userId);
+    await locals.lucia.invalidateUserSessions(userId);
 
-    const existingUser = await getUserByEmail(db, email);
+    const existingUser = await getUserByEmail(locals.db, email);
     if (!existingUser) {
       return message(form, { status: "error", text: "User not found" }, { status: 404 });
     }
@@ -70,12 +66,12 @@ export const actions: Actions = {
     const authMethods = existingUser.authMethods ?? [];
     authMethods.push(AUTH_METHODS.EMAIL);
 
-    const updatedUser = await updateUserById(db, userId, { isVerified: true, authMethods });
+    const updatedUser = await updateUserById(locals.db, userId, { isVerified: true, authMethods });
     if (!updatedUser) {
       return message(form, { status: "error", text: "User not found" }, { status: 404 });
     }
 
-    await createAndSetSession(lucia, userId, cookies);
+    await createAndSetSession(locals.lucia, userId, cookies);
 
     await sendWelcomeEmail(email, name);
 
