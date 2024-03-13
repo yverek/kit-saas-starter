@@ -46,19 +46,24 @@ const SERVERS = {
  */
 const ACTIONS = {
   "default /admin/dashboard": `/admin/dashboard`,
-  "default /auth/change-email/confirm": `/auth/change-email/confirm`,
+  "confirm /auth/change-email/confirm": `/auth/change-email/confirm?/confirm`,
+  "resendEmail /auth/change-email/confirm": `/auth/change-email/confirm?/resendEmail`,
   "default /auth/change-email/submit": `/auth/change-email/submit`,
   "default /auth/login": `/auth/login`,
   "default /auth/logout": `/auth/logout`,
   "default /auth/register": `/auth/register`,
   "default /auth/reset-password": `/auth/reset-password`,
-  "default /auth/reset-password/[userId=userId]": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
-    return `/auth/reset-password/${params.userId}`;
+  "confirm /auth/reset-password/[userId=userId]": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
+    return `/auth/reset-password/${params.userId}?/confirm`;
+  },
+  "resendEmail /auth/reset-password/[userId=userId]": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
+    return `/auth/reset-password/${params.userId}?/resendEmail`;
   },
   "default /auth/reset-password/[userId=userId]/new-password": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
     return `/auth/reset-password/${params.userId}/new-password`;
   },
-  "default /auth/verify-email": `/auth/verify-email`
+  "confirm /auth/verify-email": `/auth/verify-email?/confirm`,
+  "resendEmail /auth/verify-email": `/auth/verify-email?/resendEmail`
 };
 
 /**
@@ -201,15 +206,18 @@ export type KIT_ROUTES = {
   };
   ACTIONS: {
     "default /admin/dashboard": never;
-    "default /auth/change-email/confirm": never;
+    "confirm /auth/change-email/confirm": never;
+    "resendEmail /auth/change-email/confirm": never;
     "default /auth/change-email/submit": never;
     "default /auth/login": never;
     "default /auth/logout": never;
     "default /auth/register": never;
     "default /auth/reset-password": never;
-    "default /auth/reset-password/[userId=userId]": "userId";
+    "confirm /auth/reset-password/[userId=userId]": "userId";
+    "resendEmail /auth/reset-password/[userId=userId]": "userId";
     "default /auth/reset-password/[userId=userId]/new-password": "userId";
-    "default /auth/verify-email": never;
+    "confirm /auth/verify-email": never;
+    "resendEmail /auth/verify-email": never;
   };
   LINKS: {
     discord: never;

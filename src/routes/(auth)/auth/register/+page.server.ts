@@ -29,12 +29,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 export const actions: Actions = {
   default: async (event) => {
     const { request, locals, cookies, getClientAddress } = event;
+    const flashMessage = { status: FLASH_MESSAGE_STATUS.ERROR, text: "" };
 
     isAnonymous(locals);
 
     const retryAfter = await verifyRateLimiter(event, registerLimiter);
     if (retryAfter) {
-      const flashMessage = { status: FLASH_MESSAGE_STATUS.ERROR, text: `Too many requests, retry in ${retryAfter} minutes` };
+      flashMessage.text = `Too many requests, retry in ${retryAfter} minutes`;
+      logger.debug(flashMessage.text);
 
       setFlash(flashMessage, cookies);
       return fail(429);
@@ -48,22 +50,27 @@ export const actions: Actions = {
     form.data.passwordConfirm = "";
 
     if (!form.valid) {
-      logger.debug("Invalid form");
+      flashMessage.text = "Invalid form";
+      logger.debug(flashMessage.text);
 
-      return message(form, { status: "error", text: "Invalid form" });
+      return message(form, flashMessage);
     }
 
     const ip = getClientAddress();
     const validatedTurnstileToken = await validateTurnstileToken(turnstileToken, ip);
     if (!validatedTurnstileToken.success) {
-      logger.debug(validatedTurnstileToken.error, "Invalid turnstile");
+      flashMessage.text = "Invalid turnstile";
+      logger.debug(validatedTurnstileToken.error, flashMessage.text);
 
-      return message(form, { status: "error", text: "Invalid Turnstile" }, { status: 400 });
+      return message(form, flashMessage, { status: 400 });
     }
 
     const existingUser = await getUserByEmail(locals.db, email);
     if (existingUser && existingUser.authMethods.includes(AUTH_METHODS.EMAIL)) {
-      return message(form, { status: "error", text: "This email is already in user. Please do login." });
+      flashMessage.text = "This email is already in user. Please do login.";
+      logger.debug(flashMessage.text);
+
+      return message(form, flashMessage, { status: 400 });
     }
 
     const userId = existingUser?.id ?? generateId(USER_ID_LEN);
@@ -81,36 +88,43 @@ export const actions: Actions = {
       });
 
       if (!newUser) {
-        logger.debug("Failed to insert new user: email already used");
+        flashMessage.text = "Failed to insert new user: email already used";
+        logger.debug(flashMessage.text);
 
-        return message(form, { status: "error", text: "Email already used" }, { status: 400 });
+        return message(form, flashMessage, { status: 400 });
       }
     } else {
       const updatedUser = await updateUserById(locals.db, existingUser.id, { password: hashedPassword });
 
       if (!updatedUser) {
-        logger.debug("Failed to insert new user: email already used");
+        flashMessage.text = "Failed to insert new user: email already used";
+        logger.debug(flashMessage.text);
 
-        return message(form, { status: "error", text: "Email already used" }, { status: 400 });
+        return message(form, flashMessage, { status: 400 });
       }
     }
 
     const newToken = await generateToken(locals.db, userId, TOKEN_TYPE.EMAIL_VERIFICATION);
     if (!newToken) {
-      logger.debug("Failed to generate email verification token");
+      flashMessage.text = "Failed to generate email verification token";
+      logger.debug(flashMessage.text);
 
-      return message(form, { status: "error", text: "Failed to generate email verification token" }, { status: 500 });
+      return message(form, flashMessage, { status: 500 });
     }
 
     const res = await sendEmailVerificationEmail(email, name, newToken.token);
     if (!res) {
-      logger.debug("Failed to send email");
+      flashMessage.text = "Failed to send email";
+      logger.debug(flashMessage.text);
 
-      return message(form, { status: "error", text: "Failed to send email" }, { status: 500 });
+      return message(form, flashMessage, { status: 500 });
     }
 
     await createAndSetSession(locals.lucia, userId, cookies);
 
-    redirect(route("/auth/verify-email"), { status: "success", text: "Account created. Please check your email to verify your account." }, cookies);
+    flashMessage.status = FLASH_MESSAGE_STATUS.SUCCESS;
+    flashMessage.text = "Account created. Please check your email to verify your account.";
+
+    redirect(route("/auth/verify-email"), flashMessage, cookies);
   }
 };

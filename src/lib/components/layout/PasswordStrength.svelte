@@ -3,7 +3,9 @@
   import type { Result } from "check-password-strength";
   import { Check, X } from "lucide-svelte";
 
-  let { pwd, myData } = $props<{ pwd: Result<string>; myData: Array<{ name: string; isDone: boolean }> }>();
+  type Props = { pwd: Result<string>; myData: Array<{ name: string; isDone: boolean }> };
+
+  let { pwd, myData }: Props = $props();
 </script>
 
 <div class="!mt-2 flex h-2 w-full flex-row items-stretch gap-1">

@@ -9,7 +9,6 @@ import { sendEmailChangeEmail } from "$lib/server/email/send";
 import { redirect, setFlash } from "sveltekit-flash-message/server";
 import { generateToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
-import { dev } from "$app/environment";
 import { isUserAuthenticated, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { changeEmailLimiter } from "$configs/rate-limiters";
 import type { User } from "lucia";
@@ -26,58 +25,63 @@ export const load = (async ({ locals, cookies, url }) => {
 export const actions: Actions = {
   default: async (event) => {
     const { request, locals, url, cookies, getClientAddress } = event;
+    const flashMessage = { status: FLASH_MESSAGE_STATUS.ERROR, text: "" };
 
     isUserAuthenticated(locals, cookies, url);
 
     const retryAfter = await verifyRateLimiter(event, changeEmailLimiter);
     if (retryAfter) {
-      const flashMessage = { status: FLASH_MESSAGE_STATUS.ERROR, text: `Too many requests, retry in ${retryAfter} minutes` };
+      flashMessage.text = `Too many requests, retry in ${retryAfter} minutes`;
+      logger.debug(flashMessage.text);
 
       setFlash(flashMessage, cookies);
       return fail(429);
     }
 
     const form = await superValidate<ChangeEmailFormSchemaFirstStep, FlashMessage>(request, zod(changeEmailFormSchemaFirstStep));
-
     if (!form.valid) {
-      logger.debug("Invalid form");
+      flashMessage.text = "Invalid form";
+      logger.debug(flashMessage.text);
 
-      return message(form, { status: "error", text: "Invalid form" });
+      return message(form, flashMessage);
     }
 
-    const { email: newEmail, turnstileToken } = form.data;
     // ! user is defined here because of "isUserVerified"
     // TODO how can we remove that "as User" casting?
     const { id: userId, name } = locals.user as User;
+    const { email: newEmail, turnstileToken } = form.data;
 
     const ip = getClientAddress();
     const validatedTurnstileToken = await validateTurnstileToken(turnstileToken, ip);
     if (!validatedTurnstileToken.success) {
-      logger.debug(validatedTurnstileToken.error, "Invalid turnstile");
+      flashMessage.text = "Invalid turnstile";
+      logger.debug(validatedTurnstileToken.error, flashMessage.text);
 
-      return message(form, { status: "error", text: "Invalid Turnstile" }, { status: 400 });
+      return message(form, flashMessage, { status: 400 });
     }
 
     const newToken = await generateToken(locals.db, userId, TOKEN_TYPE.EMAIL_CHANGE);
     if (!newToken) {
-      return message(form, { status: "error", text: "Failed to generate change email token" }, { status: 500 });
+      flashMessage.text = "Failed to generate token";
+      logger.debug(flashMessage.text);
+
+      return message(form, flashMessage, { status: 500 });
     }
 
     const mailSent = await sendEmailChangeEmail(newEmail, name, newToken.token);
     if (!mailSent) {
-      return message(form, { status: "error", text: "Failed to send email change mail" }, { status: 500 });
+      flashMessage.text = "Failed to send email";
+      logger.debug(flashMessage.text);
+
+      return message(form, flashMessage, { status: 500 });
     }
 
     // TODO export this name into constant
-    // TODO this is bad, need to save it server side!
-    cookies.set("email_change", newEmail, {
-      path: route("/auth/change-email/confirm"),
-      secure: !dev,
-      httpOnly: true,
-      maxAge: 60 * 10, // TODO should we export into a constant?
-      sameSite: "lax"
-    });
+    await event.platform?.env.KV.put(`change-email-${userId}`, newEmail);
 
-    redirect(route("/auth/change-email/confirm"), { status: "success", text: "Email sent successfully" }, cookies);
+    flashMessage.status = FLASH_MESSAGE_STATUS.SUCCESS;
+    flashMessage.text = "Email sent successfully";
+
+    redirect(route("/auth/change-email/confirm"), flashMessage, cookies);
   }
 };

@@ -27,11 +27,11 @@ export async function getUserByEmail(db: Database, email: string): Promise<DbUse
   return await db.query.users.findFirst({ where: eq(users.email, email) });
 }
 
-// export async function getUserById(db: Database, id: string): Promise<DbUser | undefined> {
-//   if (!id) return;
+export async function getUserById(db: Database, id: string): Promise<DbUser | undefined> {
+  if (!id) return;
 
-//   return await db.query.users.findFirst({ where: eq(users.id, id) });
-// }
+  return await db.query.users.findFirst({ where: eq(users.id, id) });
+}
 
 /*
  * UPDATE

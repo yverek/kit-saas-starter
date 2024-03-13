@@ -10,6 +10,7 @@
   import { changeEmailFormSchemaSecondStep } from "$validations/auth";
   import Turnstile from "$components/layout/Turnstile.svelte";
   import { Loader2 } from "lucide-svelte";
+  import { enhance } from "$app/forms";
 
   let { data } = $props();
 
@@ -23,7 +24,7 @@
     onUpdate: () => resetTurnstile()
   });
 
-  const { form: formData, enhance, delayed } = form;
+  const { form: formData, enhance: enhanceConfirmForm, delayed } = form;
 
   let resetTurnstile = $state(() => {});
 </script>
@@ -36,7 +37,7 @@
     <div class="text-muted-foreground">
       Please check your email account for a message to confirm your email address change for {APP_NAME}.
     </div>
-    <form class="flex flex-col" method="post" use:enhance>
+    <form class="flex flex-col" method="post" action={route("confirm /auth/change-email/confirm")} use:enhanceConfirmForm>
       <Form.Field {form} name="token" class="space-y-1">
         <Form.Control let:attrs>
           <Form.Label>Token</Form.Label>
@@ -55,10 +56,10 @@
     </form>
   </Card.Content>
   <Card.Footer>
-    <p class="text-sm">
-      If you did not receive the email,
-      <!-- Implement this route -->
-      <a href={route("/")} class="underline">click here</a> to resend it.
-    </p>
+    If you did not receive the email,
+    <form class="mx-1 flex flex-col" method="post" action={route("resendEmail /auth/change-email/confirm")} use:enhance>
+      <button type="submit" class="underline">click here</button>
+    </form>
+    to resend it.
   </Card.Footer>
 </Card.Root>

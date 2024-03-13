@@ -9,7 +9,9 @@
   import { enhance } from "$app/forms";
   import { route } from "$lib/ROUTES";
 
-  let { user } = $props<{ user: User | null }>();
+  type Props = { user: User | null };
+
+  let { user }: Props = $props();
 </script>
 
 <header class="border-b border-gray-500 py-4 dark:border-gray-600">
