@@ -59,7 +59,8 @@ const ACTIONS = {
   "default /auth/reset-password/[userId=userId]/new-password": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
     return `/auth/reset-password/${params.userId}/new-password`;
   },
-  "default /auth/verify-email": `/auth/verify-email`
+  "confirm /auth/verify-email": `/auth/verify-email?/confirm`,
+  "resendEmail /auth/verify-email": `/auth/verify-email?/resendEmail`
 };
 
 /**
@@ -211,7 +212,8 @@ export type KIT_ROUTES = {
     "default /auth/reset-password": never;
     "default /auth/reset-password/[userId=userId]": "userId";
     "default /auth/reset-password/[userId=userId]/new-password": "userId";
-    "default /auth/verify-email": never;
+    "confirm /auth/verify-email": never;
+    "resendEmail /auth/verify-email": never;
   };
   LINKS: {
     discord: never;

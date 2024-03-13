@@ -1,20 +1,21 @@
 import { route } from "$lib/ROUTES";
 import type { PageServerLoad } from "./$types";
-import { redirect, type Actions, fail } from "@sveltejs/kit";
+import { type Actions, fail } from "@sveltejs/kit";
 import { verifyEmailFormSchema, type VerifyEmailFormSchema } from "$validations/auth";
 import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { logger } from "$lib/logger";
-import { createAndSetSession, verifyToken } from "$lib/server/auth/auth-utils";
+import { createAndSetSession, generateToken, verifyToken } from "$lib/server/auth/auth-utils";
 import { getUserByEmail, updateUserById } from "$lib/server/db/users";
-import { sendWelcomeEmail } from "$lib/server/email/send";
+import { sendEmailVerificationEmail, sendWelcomeEmail } from "$lib/server/email/send";
 import { AUTH_METHODS } from "$configs/auth-methods";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { isUserNotVerified, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { verifyEmailLimiter } from "$configs/rate-limiters";
 import type { User } from "lucia";
 import { FLASH_MESSAGE_STATUS } from "$configs/general";
-import { setFlash } from "sveltekit-flash-message/server";
+import { redirect, setFlash } from "sveltekit-flash-message/server";
+import { resendVerifyEmailLimiter } from "$configs/rate-limiters/resend-email.limiter";
 
 export const load = (async ({ locals, cookies, url }) => {
   isUserNotVerified(locals, cookies, url);
@@ -25,14 +26,16 @@ export const load = (async ({ locals, cookies, url }) => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  default: async (event) => {
+  confirm: async (event) => {
     const { request, locals, url, cookies, getClientAddress } = event;
+    const flashMessage = { status: FLASH_MESSAGE_STATUS.ERROR, text: "" };
 
     isUserNotVerified(locals, cookies, url);
 
     const retryAfter = await verifyRateLimiter(event, verifyEmailLimiter);
     if (retryAfter) {
-      const flashMessage = { status: FLASH_MESSAGE_STATUS.ERROR, text: `Too many requests, retry in ${retryAfter} minutes` };
+      flashMessage.text = `Too many requests, retry in ${retryAfter} minutes`;
+      logger.debug(flashMessage.text);
 
       setFlash(flashMessage, cookies);
       return fail(429);
@@ -41,34 +44,42 @@ export const actions: Actions = {
     const form = await superValidate<VerifyEmailFormSchema, FlashMessage>(request, zod(verifyEmailFormSchema));
 
     if (!form.valid) {
-      logger.debug("Invalid form");
+      flashMessage.text = "Invalid form";
+      logger.debug(flashMessage.text);
 
-      return message(form, { status: "error", text: "Invalid form" });
+      return message(form, flashMessage);
     }
 
-    const { token, turnstileToken } = form.data;
     // ! user is defined here because of "isUserVerified"
     // TODO how can we remove that "as User" casting?
     const { id: userId, email, name } = locals.user as User;
-
+    const { token, turnstileToken } = form.data;
     const ip = getClientAddress();
+
     const validatedTurnstileToken = await validateTurnstileToken(turnstileToken, ip);
     if (!validatedTurnstileToken.success) {
-      logger.debug(validatedTurnstileToken.error, "Invalid turnstile");
+      flashMessage.text = "Invalid Turnstile";
+      logger.debug(validatedTurnstileToken.error, flashMessage.text);
 
-      return message(form, { status: "error", text: "Invalid Turnstile" }, { status: 400 });
+      return message(form, flashMessage, { status: 400 });
     }
 
     const isValidToken = await verifyToken(locals.db, userId, token, TOKEN_TYPE.EMAIL_VERIFICATION);
     if (!isValidToken) {
-      return message(form, { status: "error", text: "Invalid token" }, { status: 500 });
+      flashMessage.text = "Invalid token";
+      logger.debug(flashMessage.text);
+
+      return message(form, flashMessage, { status: 500 });
     }
 
     await locals.lucia.invalidateUserSessions(userId);
 
     const existingUser = await getUserByEmail(locals.db, email);
     if (!existingUser) {
-      return message(form, { status: "error", text: "User not found" }, { status: 404 });
+      flashMessage.text = "User not found";
+      logger.debug(flashMessage.text);
+
+      return message(form, flashMessage, { status: 404 });
     }
 
     const authMethods = existingUser.authMethods ?? [];
@@ -76,13 +87,61 @@ export const actions: Actions = {
 
     const updatedUser = await updateUserById(locals.db, userId, { isVerified: true, authMethods });
     if (!updatedUser) {
-      return message(form, { status: "error", text: "User not found" }, { status: 404 });
+      flashMessage.text = "Failed to update user";
+      logger.debug(flashMessage.text);
+
+      return message(form, flashMessage, { status: 404 });
     }
 
     await createAndSetSession(locals.lucia, userId, cookies);
-
     await sendWelcomeEmail(email, name);
 
-    redirect(302, route("/dashboard"));
+    flashMessage.status = FLASH_MESSAGE_STATUS.SUCCESS;
+    flashMessage.text = "Email sent successfully";
+
+    redirect(route("/dashboard"), flashMessage, cookies);
+  },
+
+  resendEmail: async (event) => {
+    const { locals, url, cookies } = event;
+    const flashMessage = { status: FLASH_MESSAGE_STATUS.ERROR, text: "" };
+
+    isUserNotVerified(locals, cookies, url);
+
+    const retryAfter = await verifyRateLimiter(event, resendVerifyEmailLimiter);
+    if (retryAfter) {
+      flashMessage.text = `Too many requests, retry in ${retryAfter} minutes`;
+      logger.debug(flashMessage.text);
+
+      setFlash(flashMessage, cookies);
+      return fail(429);
+    }
+
+    // ! user is defined here because of "isUserVerified"
+    // TODO how can we remove that "as User" casting?
+    const { id: userId, name, email } = locals.user as User;
+
+    const newToken = await generateToken(locals.db, userId, TOKEN_TYPE.EMAIL_VERIFICATION);
+    if (!newToken) {
+      flashMessage.text = "Failed to generate token";
+      logger.debug(flashMessage.text);
+
+      setFlash(flashMessage, cookies);
+      return fail(500);
+    }
+
+    const mailSent = await sendEmailVerificationEmail(email, name, newToken.token);
+    if (!mailSent) {
+      flashMessage.text = "Failed to send email";
+      logger.debug(flashMessage.text);
+
+      setFlash(flashMessage, cookies);
+      return fail(500);
+    }
+
+    flashMessage.status = FLASH_MESSAGE_STATUS.SUCCESS;
+    flashMessage.text = "Email sent successfully";
+
+    redirect(route("/auth/verify-email"), flashMessage, cookies);
   }
 };
