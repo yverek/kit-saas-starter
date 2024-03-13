@@ -1,13 +1,9 @@
-import { route } from "$lib/ROUTES";
 import { deleteUserById, getAllUsers } from "$lib/server/db/users";
 import { type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { redirect, setFlash } from "sveltekit-flash-message/server";
+import { setFlash } from "sveltekit-flash-message/server";
 
-export const load = (async ({ locals, cookies }) => {
-  if (!locals.user) redirect(route("/auth/login"), { status: "error", text: "You must be logged in to view the dashboard." }, cookies);
-  if (!locals.user.isAdmin) redirect(302, route("/dashboard"));
-
+export const load = (async ({ locals }) => {
   const users = await getAllUsers(locals.db);
 
   return { users };
