@@ -46,7 +46,8 @@ const SERVERS = {
  */
 const ACTIONS = {
   "default /admin/dashboard": `/admin/dashboard`,
-  "default /auth/change-email/confirm": `/auth/change-email/confirm`,
+  "confirm /auth/change-email/confirm": `/auth/change-email/confirm?/confirm`,
+  "resendEmail /auth/change-email/confirm": `/auth/change-email/confirm?/resendEmail`,
   "default /auth/change-email/submit": `/auth/change-email/submit`,
   "default /auth/login": `/auth/login`,
   "default /auth/logout": `/auth/logout`,
@@ -201,7 +202,8 @@ export type KIT_ROUTES = {
   };
   ACTIONS: {
     "default /admin/dashboard": never;
-    "default /auth/change-email/confirm": never;
+    "confirm /auth/change-email/confirm": never;
+    "resendEmail /auth/change-email/confirm": never;
     "default /auth/change-email/submit": never;
     "default /auth/login": never;
     "default /auth/logout": never;

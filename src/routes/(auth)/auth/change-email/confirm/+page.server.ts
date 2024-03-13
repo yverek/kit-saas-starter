@@ -1,22 +1,23 @@
 import { route } from "$lib/ROUTES";
 import type { PageServerLoad } from "./$types";
 import { fail, type Actions } from "@sveltejs/kit";
-import { changeEmailFormSchemaFirstStep, changeEmailFormSchemaSecondStep, type ChangeEmailFormSchemaSecondStep } from "$validations/auth";
+import { changeEmailFormSchemaSecondStep, type ChangeEmailFormSchemaSecondStep } from "$validations/auth";
 import { superValidate, message } from "sveltekit-superforms/server";
 import { zod } from "sveltekit-superforms/adapters";
 import { logger } from "$lib/logger";
 import { updateUserById } from "$lib/server/db/users";
 import { redirect, setFlash } from "sveltekit-flash-message/server";
-import { verifyToken } from "$lib/server/auth/auth-utils";
+import { generateToken, verifyToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
-import { dev } from "$app/environment";
-import { isUserAuthenticated, isUserNotVerified, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
+import { isUserAuthenticated, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { changeEmailLimiter } from "$configs/rate-limiters";
 import type { User } from "lucia";
 import { FLASH_MESSAGE_STATUS } from "$configs/general";
+import { sendEmailChangeEmail } from "$lib/server/email/send";
+import { resendEmailLimiter } from "$configs/rate-limiters/resend-email.limiter";
 
 export const load = (async ({ locals, cookies, url }) => {
-  isUserNotVerified(locals, cookies, url);
+  isUserAuthenticated(locals, cookies, url);
 
   const form = await superValidate<ChangeEmailFormSchemaSecondStep, FlashMessage>(zod(changeEmailFormSchemaSecondStep));
 
@@ -24,71 +25,127 @@ export const load = (async ({ locals, cookies, url }) => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  default: async (event) => {
+  confirm: async (event) => {
     const { request, locals, url, cookies, getClientAddress } = event;
+    const flashMessage = { status: FLASH_MESSAGE_STATUS.ERROR, text: "" };
 
     isUserAuthenticated(locals, cookies, url);
 
     const retryAfter = await verifyRateLimiter(event, changeEmailLimiter);
     if (retryAfter) {
-      const flashMessage = { status: FLASH_MESSAGE_STATUS.ERROR, text: `Too many requests, retry in ${retryAfter} minutes` };
+      flashMessage.text = `Too many requests, retry in ${retryAfter} minutes`;
+      logger.debug(flashMessage.text);
 
       setFlash(flashMessage, cookies);
       return fail(429);
     }
 
     const form = await superValidate<ChangeEmailFormSchemaSecondStep, FlashMessage>(request, zod(changeEmailFormSchemaSecondStep));
-
     if (!form.valid) {
-      logger.debug("Invalid form");
+      flashMessage.text = "Invalid form";
+      logger.debug(flashMessage.text);
 
-      return message(form, { status: "error", text: "Invalid form" });
+      return message(form, flashMessage);
     }
 
     const { token, turnstileToken } = form.data;
-
     const ip = getClientAddress();
+
     const validatedTurnstileToken = await validateTurnstileToken(turnstileToken, ip);
     if (!validatedTurnstileToken.success) {
-      logger.debug(validatedTurnstileToken.error, "Invalid turnstile");
+      flashMessage.text = "Invalid Turnstile";
+      logger.debug(validatedTurnstileToken.error, flashMessage.text);
 
-      return message(form, { status: "error", text: "Invalid Turnstile" }, { status: 400 });
+      return message(form, flashMessage, { status: 400 });
     }
 
-    let newEmail = "";
     // ! user is defined here because of "isUserAuthenticated"
     // TODO how can we remove that "as User" casting?
     const { id: userId } = locals.user as User;
-    const newEmailFromCookies = cookies.get("email_change");
-
-    const parsedNewEmail = changeEmailFormSchemaFirstStep.safeParse({ email: newEmailFromCookies });
-    if (!parsedNewEmail.success) {
-      return message(form, { status: "error", text: "Invalid new email" }, { status: 401 });
-    } else {
-      newEmail = parsedNewEmail.data.email;
-    }
 
     // TODO export this name into constant
-    cookies.delete("email_change", {
-      path: route("/auth/change-email/confirm"),
-      secure: !dev,
-      httpOnly: true,
-      maxAge: 60 * 10, // TODO should we export into a constant?
-      sameSite: "lax"
-    });
+    const newEmail = await event.platform?.env.KV.get(`change-email-${userId}`);
+    if (!newEmail) {
+      flashMessage.text = "Invalid new email";
+      logger.debug("Failed to retrieve email from KV");
+
+      return message(form, flashMessage, { status: 401 });
+    }
 
     const tokenFromDatabase = await verifyToken(locals.db, userId, token, TOKEN_TYPE.EMAIL_CHANGE);
     if (!tokenFromDatabase) {
-      return message(form, { status: "error", text: "Invalid token" }, { status: 500 });
+      flashMessage.text = "Invalid token";
+      logger.debug("Failed to retrieve token from db");
+
+      return message(form, flashMessage, { status: 500 });
     }
 
     await locals.lucia.invalidateUserSessions(userId);
 
     const updatedUser = await updateUserById(locals.db, userId, { email: newEmail });
     if (!updatedUser) {
-      return message(form, { status: "error", text: "User not found" }, { status: 404 });
+      flashMessage.text = "User not found";
+      logger.debug("Failed to update user");
+
+      return message(form, flashMessage, { status: 404 });
     }
 
-    redirect(route("/auth/login"), { status: "success", text: "Email changed successfully. You can login now!" }, cookies);
+    flashMessage.status = FLASH_MESSAGE_STATUS.SUCCESS;
+    flashMessage.text = "Email changed successfully. You can login now!";
+
+    redirect(route("/auth/login"), flashMessage, cookies);
+  },
+
+  resendEmail: async (event) => {
+    const { locals, url, cookies, platform } = event;
+    const flashMessage = { status: FLASH_MESSAGE_STATUS.ERROR, text: "" };
+
+    isUserAuthenticated(locals, cookies, url);
+
+    const retryAfter = await verifyRateLimiter(event, resendEmailLimiter);
+    if (retryAfter) {
+      flashMessage.text = `Too many requests, retry in ${retryAfter} minutes`;
+      logger.debug(flashMessage.text);
+
+      setFlash(flashMessage, cookies);
+      return fail(429);
+    }
+
+    // ! user is defined here because of "isUserVerified"
+    // TODO how can we remove that "as User" casting?
+    const { id: userId, name } = locals.user as User;
+
+    // TODO export this name into constant
+    const newEmail = await platform?.env.KV.get(`change-email-${userId}`);
+    if (!newEmail) {
+      flashMessage.text = "Invalid new email";
+      logger.debug(flashMessage.text);
+
+      setFlash(flashMessage, cookies);
+      return fail(401);
+    }
+
+    const newToken = await generateToken(locals.db, userId, TOKEN_TYPE.EMAIL_CHANGE);
+    if (!newToken) {
+      flashMessage.text = "Failed to generate token";
+      logger.debug(flashMessage.text);
+
+      setFlash(flashMessage, cookies);
+      return fail(500);
+    }
+
+    const mailSent = await sendEmailChangeEmail(newEmail, name, newToken.token);
+    if (!mailSent) {
+      flashMessage.text = "Failed to send email";
+      logger.debug(flashMessage.text);
+
+      setFlash(flashMessage, cookies);
+      return fail(500);
+    }
+
+    flashMessage.status = FLASH_MESSAGE_STATUS.SUCCESS;
+    flashMessage.text = "Email sent successfully";
+
+    redirect(route("/auth/change-email/confirm"), flashMessage, cookies);
   }
 };
