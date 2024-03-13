@@ -15,7 +15,7 @@ import { verifyEmailLimiter } from "$configs/rate-limiters";
 import type { User } from "lucia";
 import { FLASH_MESSAGE_STATUS } from "$configs/general";
 import { redirect, setFlash } from "sveltekit-flash-message/server";
-import { resendVerifyEmailLimiter } from "$configs/rate-limiters/resend-email.limiter";
+import { resendVerifyEmailLimiter } from "$configs/rate-limiters";
 
 export const load = (async ({ locals, cookies, url }) => {
   isUserNotVerified(locals, cookies, url);
@@ -42,7 +42,6 @@ export const actions: Actions = {
     }
 
     const form = await superValidate<VerifyEmailFormSchema, FlashMessage>(request, zod(verifyEmailFormSchema));
-
     if (!form.valid) {
       flashMessage.text = "Invalid form";
       logger.debug(flashMessage.text);

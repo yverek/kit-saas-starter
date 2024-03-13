@@ -53,8 +53,11 @@ const ACTIONS = {
   "default /auth/logout": `/auth/logout`,
   "default /auth/register": `/auth/register`,
   "default /auth/reset-password": `/auth/reset-password`,
-  "default /auth/reset-password/[userId=userId]": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
-    return `/auth/reset-password/${params.userId}`;
+  "confirm /auth/reset-password/[userId=userId]": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
+    return `/auth/reset-password/${params.userId}?/confirm`;
+  },
+  "resendEmail /auth/reset-password/[userId=userId]": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
+    return `/auth/reset-password/${params.userId}?/resendEmail`;
   },
   "default /auth/reset-password/[userId=userId]/new-password": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
     return `/auth/reset-password/${params.userId}/new-password`;
@@ -210,7 +213,8 @@ export type KIT_ROUTES = {
     "default /auth/logout": never;
     "default /auth/register": never;
     "default /auth/reset-password": never;
-    "default /auth/reset-password/[userId=userId]": "userId";
+    "confirm /auth/reset-password/[userId=userId]": "userId";
+    "resendEmail /auth/reset-password/[userId=userId]": "userId";
     "default /auth/reset-password/[userId=userId]/new-password": "userId";
     "confirm /auth/verify-email": never;
     "resendEmail /auth/verify-email": never;

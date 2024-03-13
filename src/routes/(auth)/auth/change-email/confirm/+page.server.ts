@@ -14,7 +14,7 @@ import { changeEmailLimiter } from "$configs/rate-limiters";
 import type { User } from "lucia";
 import { FLASH_MESSAGE_STATUS } from "$configs/general";
 import { sendEmailChangeEmail } from "$lib/server/email/send";
-import { resendChangeEmailLimiter } from "$configs/rate-limiters/resend-email.limiter";
+import { resendChangeEmailLimiter } from "$configs/rate-limiters";
 
 export const load = (async ({ locals, cookies, url }) => {
   isUserAuthenticated(locals, cookies, url);

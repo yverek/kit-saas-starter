@@ -5,6 +5,11 @@ export const resendChangeEmailLimiter = new RetryAfterRateLimiter({
   IPUA: [1, "h"]
 });
 
+export const resendResetPasswordLimiter = new RetryAfterRateLimiter({
+  IP: [1, "h"],
+  IPUA: [1, "h"]
+});
+
 export const resendVerifyEmailLimiter = new RetryAfterRateLimiter({
   IP: [1, "h"],
   IPUA: [1, "h"]
