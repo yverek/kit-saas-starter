@@ -10,12 +10,12 @@ import { getUserByEmail, updateUserById } from "$lib/server/db/users";
 import { sendWelcomeEmail } from "$lib/server/email/send";
 import { AUTH_METHODS } from "$configs/auth-methods";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
-import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
+import { isUserNotVerified, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { verifyEmailLimiter } from "$configs/rate-limiters";
+import type { User } from "lucia";
 
-export const load = (async ({ locals: { user } }) => {
-  if (!user) redirect(302, route("/auth/login"));
-  if (user.isVerified) redirect(302, route("/dashboard"));
+export const load = (async ({ locals }) => {
+  isUserNotVerified(locals);
 
   const form = await superValidate<VerifyEmailFormSchema, FlashMessage>(zod(verifyEmailFormSchema));
 
@@ -31,10 +31,9 @@ export const actions: Actions = {
       locals: { db, lucia, user }
     } = event;
 
-    if (!user) redirect(302, route("/auth/login"));
-    if (user.isVerified) redirect(302, route("/dashboard"));
+    isUserNotVerified(event.locals);
 
-    verifyRateLimiter(event, verifyEmailLimiter);
+    await verifyRateLimiter(event, verifyEmailLimiter);
 
     const form = await superValidate<VerifyEmailFormSchema, FlashMessage>(request, zod(verifyEmailFormSchema));
 
@@ -45,7 +44,9 @@ export const actions: Actions = {
     }
 
     const { token, turnstileToken } = form.data;
-    const { id: userId, email, name } = user;
+    // ! user is defined here because of "isUserVerified"
+    // TODO how can we remove that "as User" casting?
+    const { id: userId, email, name } = user as User;
 
     const ip = getClientAddress();
     const validatedTurnstileToken = await validateTurnstileToken(turnstileToken, ip);
