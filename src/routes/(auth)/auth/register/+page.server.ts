@@ -122,6 +122,9 @@ export const actions: Actions = {
 
     await createAndSetSession(locals.lucia, userId, cookies);
 
-    redirect(route("/auth/verify-email"), { status: "success", text: "Account created. Please check your email to verify your account." }, cookies);
+    flashMessage.status = FLASH_MESSAGE_STATUS.SUCCESS;
+    flashMessage.text = "Account created. Please check your email to verify your account.";
+
+    redirect(route("/auth/verify-email"), flashMessage, cookies);
   }
 };
