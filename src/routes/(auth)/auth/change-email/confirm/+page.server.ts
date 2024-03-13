@@ -10,11 +10,12 @@ import { redirect } from "sveltekit-flash-message/server";
 import { verifyToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { dev } from "$app/environment";
-import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
+import { isUserAuthenticated, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { changeEmailLimiter } from "$configs/rate-limiters";
+import type { User } from "lucia";
 
-export const load = (async ({ locals: { user } }) => {
-  if (!user) redirect(302, route("/auth/login"));
+export const load = (async ({ locals }) => {
+  isUserAuthenticated(locals);
 
   const form = await superValidate<ChangeEmailFormSchemaSecondStep, FlashMessage>(zod(changeEmailFormSchemaSecondStep));
 
@@ -23,16 +24,11 @@ export const load = (async ({ locals: { user } }) => {
 
 export const actions: Actions = {
   default: async (event) => {
-    const {
-      request,
-      cookies,
-      getClientAddress,
-      locals: { db, user, lucia }
-    } = event;
+    const { request, cookies, getClientAddress, locals } = event;
 
-    verifyRateLimiter(event, changeEmailLimiter);
+    isUserAuthenticated(locals);
 
-    if (!user) redirect(302, route("/auth/login"));
+    await verifyRateLimiter(event, changeEmailLimiter);
 
     const form = await superValidate<ChangeEmailFormSchemaSecondStep, FlashMessage>(request, zod(changeEmailFormSchemaSecondStep));
 
@@ -53,7 +49,9 @@ export const actions: Actions = {
     }
 
     let newEmail = "";
-    const { id: userId } = user;
+    // ! user is defined here because of "isUserAuthenticated"
+    // TODO how can we remove that "as User" casting?
+    const { id: userId } = locals.user as User;
     const newEmailFromCookies = cookies.get("email_change");
 
     const parsedNewEmail = changeEmailFormSchemaFirstStep.safeParse({ email: newEmailFromCookies });
@@ -72,14 +70,14 @@ export const actions: Actions = {
       sameSite: "lax"
     });
 
-    const tokenFromDatabase = await verifyToken(db, userId, token, TOKEN_TYPE.EMAIL_CHANGE);
+    const tokenFromDatabase = await verifyToken(locals.db, userId, token, TOKEN_TYPE.EMAIL_CHANGE);
     if (!tokenFromDatabase) {
       return message(form, { status: "error", text: "Invalid token" }, { status: 500 });
     }
 
-    await lucia.invalidateUserSessions(userId);
+    await locals.lucia.invalidateUserSessions(userId);
 
-    const updatedUser = await updateUserById(db, userId, { email: newEmail });
+    const updatedUser = await updateUserById(locals.db, userId, { email: newEmail });
     if (!updatedUser) {
       return message(form, { status: "error", text: "User not found" }, { status: 404 });
     }
