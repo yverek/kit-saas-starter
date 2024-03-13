@@ -7,11 +7,11 @@ import { zod } from "sveltekit-superforms/adapters";
 import { route } from "$lib/ROUTES";
 import { updateUserById } from "$lib/server/db/users";
 import { hashPassword } from "worker-password-auth";
-import { validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
+import { isAnonymous, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { resetPasswordLimiter } from "$configs/rate-limiters";
 
-export const load = (async ({ cookies, locals: { user } }) => {
-  if (user) redirect(route("/dashboard"), { status: "error", text: "You are already logged in, change your email from dashboard." }, cookies);
+export const load = (async ({ locals }) => {
+  isAnonymous(locals);
 
   const form = await superValidate<ResetPasswordFormSchemaThirdStep, FlashMessage>(zod(resetPasswordFormSchemaThirdStep));
 
@@ -20,17 +20,11 @@ export const load = (async ({ cookies, locals: { user } }) => {
 
 export const actions: Actions = {
   default: async (event) => {
-    const {
-      params,
-      request,
-      cookies,
-      getClientAddress,
-      locals: { db, lucia, user }
-    } = event;
+    const { params, request, cookies, getClientAddress, locals } = event;
 
-    if (user) redirect(route("/dashboard"), { status: "error", text: "You are already logged in, change your email from dashboard." }, cookies);
+    isAnonymous(locals);
 
-    verifyRateLimiter(event, resetPasswordLimiter);
+    await verifyRateLimiter(event, resetPasswordLimiter);
 
     const form = await superValidate<ResetPasswordFormSchemaThirdStep, FlashMessage>(request, zod(resetPasswordFormSchemaThirdStep));
 
@@ -55,10 +49,10 @@ export const actions: Actions = {
 
     const { userId } = params;
 
-    await lucia.invalidateUserSessions(userId);
+    await locals.lucia.invalidateUserSessions(userId);
 
     const hashedPassword = await hashPassword(password);
-    const updatedUser = await updateUserById(db, userId, { password: hashedPassword });
+    const updatedUser = await updateUserById(locals.db, userId, { password: hashedPassword });
     if (!updatedUser) {
       return message(form, { status: "error", text: "Error while changing password" }, { status: 500 });
     }
