@@ -10,7 +10,13 @@
  */
 const PAGES = {
   "/admin/dashboard": `/admin/dashboard`,
-  "/dashboard": `/dashboard`,
+  "/app/billing": `/app/billing`,
+  "/app/dashboard": `/app/dashboard`,
+  "/app/profile": `/app/profile`,
+  "/app/settings": `/app/settings`,
+  "/app/settings/account": `/app/settings/account`,
+  "/app/settings/notifications": `/app/settings/notifications`,
+  "/app/settings/profile": `/app/settings/profile`,
   "/auth/change-email/confirm": `/auth/change-email/confirm`,
   "/auth/change-email/submit": `/auth/change-email/submit`,
   "/auth/login": (params?: { redirectTo?: string }) => {
@@ -184,7 +190,13 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 export type KIT_ROUTES = {
   PAGES: {
     "/admin/dashboard": never;
-    "/dashboard": never;
+    "/app/billing": never;
+    "/app/dashboard": never;
+    "/app/profile": never;
+    "/app/settings": never;
+    "/app/settings/account": never;
+    "/app/settings/notifications": never;
+    "/app/settings/profile": never;
     "/auth/change-email/confirm": never;
     "/auth/change-email/submit": never;
     "/auth/login": never;
