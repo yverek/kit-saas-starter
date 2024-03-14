@@ -5,3 +5,4 @@ export * from "./password-confirm.field";
 export * from "./token.field";
 export * from "./turnstile-token.field";
 export * from "./user-id.field";
+export * from "./username.field";

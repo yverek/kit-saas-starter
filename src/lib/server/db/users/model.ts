@@ -33,6 +33,12 @@ export async function getUserById(db: Database, id: string): Promise<DbUser | un
   return await db.query.users.findFirst({ where: eq(users.id, id) });
 }
 
+export async function getUserByUsername(db: Database, username: string): Promise<DbUser | undefined> {
+  if (!username) return;
+
+  return await db.query.users.findFirst({ where: eq(users.username, username) });
+}
+
 /*
  * UPDATE
  **/
