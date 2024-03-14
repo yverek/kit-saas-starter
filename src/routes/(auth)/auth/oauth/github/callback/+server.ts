@@ -133,5 +133,5 @@ export const GET: RequestHandler = async ({ url, cookies, locals: { db, lucia } 
     error(500);
   }
 
-  redirect(303, route("/dashboard"));
+  redirect(303, route("/app/dashboard"));
 };

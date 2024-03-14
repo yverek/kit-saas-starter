@@ -98,7 +98,7 @@ export const actions: Actions = {
     flashMessage.status = FLASH_MESSAGE_STATUS.SUCCESS;
     flashMessage.text = "Email sent successfully";
 
-    redirect(route("/dashboard"), flashMessage, cookies);
+    redirect(route("/app/dashboard"), flashMessage, cookies);
   },
 
   resendEmail: async (event) => {

@@ -11,7 +11,7 @@ import { redirect } from "sveltekit-flash-message/server";
  * @returns void
  */
 export function isAnonymous(locals: App.Locals) {
-  if (locals.user && locals.session) redirect(303, route("/dashboard"));
+  if (locals.user && locals.session) redirect(303, route("/app/dashboard"));
 }
 
 /**
@@ -47,7 +47,7 @@ export function isUserNotVerified(locals: App.Locals, cookies: Cookies, url: URL
   if (locals.user?.isVerified) {
     const flashMessage = { status: FLASH_MESSAGE_STATUS.SUCCESS, text: "Your account is already verified" };
 
-    redirect(route("/dashboard"), flashMessage, cookies);
+    redirect(route("/app/dashboard"), flashMessage, cookies);
   }
 }
 

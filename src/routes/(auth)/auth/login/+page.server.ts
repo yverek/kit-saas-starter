@@ -94,6 +94,6 @@ export const actions: Actions = {
       redirectTo = `/${redirectTo.slice(1)}`;
     }
 
-    redirect(303, redirectTo ?? route("/dashboard"));
+    redirect(303, redirectTo ?? route("/app/dashboard"));
   }
 };
