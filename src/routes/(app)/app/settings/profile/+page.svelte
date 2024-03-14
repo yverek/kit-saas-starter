@@ -41,7 +41,7 @@
         {/if}
       </Form.FieldErrors>
     </Form.Field>
-    <Form.Button type="submit" disabled={$delayed} class="w-36">
+    <Form.Button type="submit" disabled={$delayed} class="w-44">
       {#if $delayed}
         <Loader2 class="mr-2 h-4 w-4 animate-spin" /> Loading...
       {:else}

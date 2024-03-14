@@ -53,6 +53,7 @@ const SERVERS = {
 const ACTIONS = {
   "default /admin/dashboard": `/admin/dashboard`,
   "default /app/settings/account": `/app/settings/account`,
+  "default /app/settings/notifications": `/app/settings/notifications`,
   "default /app/settings/profile": `/app/settings/profile`,
   "confirm /auth/change-email/confirm": `/auth/change-email/confirm?/confirm`,
   "resendEmail /auth/change-email/confirm": `/auth/change-email/confirm?/resendEmail`,
@@ -221,6 +222,7 @@ export type KIT_ROUTES = {
   ACTIONS: {
     "default /admin/dashboard": never;
     "default /app/settings/account": never;
+    "default /app/settings/notifications": never;
     "default /app/settings/profile": never;
     "confirm /auth/change-email/confirm": never;
     "resendEmail /auth/change-email/confirm": never;

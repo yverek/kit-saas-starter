@@ -1,11 +1,11 @@
 import { message, superValidate } from "sveltekit-superforms";
 import type { PageServerLoad } from "./$types";
 import { zod } from "sveltekit-superforms/adapters";
-import { settingsAccountFormSchema, type SettingsAccountFormSchema } from "$validations/app/settings/account.schema";
+import { settingsAccountFormSchema, type SettingsAccountFormSchema } from "$validations/app/settings";
 import { fail, type Actions } from "@sveltejs/kit";
 import { FLASH_MESSAGE_STATUS } from "$configs/general";
 import { verifyRateLimiter } from "$lib/server/security";
-import { accountSettingsLimiter } from "$configs/rate-limiters/account-settings.limiter";
+import { accountSettingsLimiter } from "$configs/rate-limiters";
 import { logger } from "$lib/logger";
 import { redirect, setFlash } from "sveltekit-flash-message/server";
 import { updateUserById } from "$lib/server/db/users";
