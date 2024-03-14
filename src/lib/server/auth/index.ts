@@ -29,6 +29,7 @@ export function initializeLucia(db: D1Database) {
     getUserAttributes: (data) => {
       return {
         id: data.id,
+        username: data.username,
         name: data.name,
         email: data.email,
         authMethods: JSON.parse(data.auth_methods),
@@ -46,6 +47,7 @@ export function initializeLucia(db: D1Database) {
 interface DatabaseUserAttributes {
   id: string;
   name: string;
+  username: string;
   email: string;
   password: string;
   auth_methods: string;

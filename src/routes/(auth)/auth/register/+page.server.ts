@@ -81,6 +81,7 @@ export const actions: Actions = {
         id: userId,
         name,
         email,
+        username: email.split("@")[0] + generateId(5),
         password: hashedPassword,
         isVerified: false,
         isAdmin: false,

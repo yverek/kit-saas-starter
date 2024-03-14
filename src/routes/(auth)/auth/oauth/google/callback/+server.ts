@@ -94,6 +94,7 @@ export const GET: RequestHandler = async ({ cookies, url, locals: { db, lucia } 
         createUser(db, {
           id: userId,
           name: googleUser.name,
+          username: googleUser.email.split("@")[0] + generateId(5),
           avatarUrl: googleUser.picture,
           email: googleUser.email,
           isVerified: true,
