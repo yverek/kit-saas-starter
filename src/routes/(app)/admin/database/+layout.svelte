@@ -1,15 +1,16 @@
 <script lang="ts">
   import { Separator } from "$lib/components/ui/separator";
   import SidebarSettingsNav from "$lib/components/layout/app/sidebar-nav-settings.svelte";
+  import { route } from "$lib/ROUTES";
 
   const sidebarNavItems = [
     {
       title: "Users",
-      href: "/admin/dashboard"
+      href: route("/admin/database/users")
     },
     {
       title: "Tokens",
-      href: "/admin/dashboard/tokens"
+      href: route("/admin/database/tokens")
     }
   ];
 
