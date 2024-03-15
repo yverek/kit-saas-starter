@@ -1,4 +1,4 @@
-# Auth section
+# TODO
 
 - [ ] Can't return immediately error on login to prevent attacks based on return time
 - [ ] Should I add salt to Argon2id generated password?
@@ -9,3 +9,4 @@
 - [ ] Add [@sveltejs/enhanced-img](https://kit.svelte.dev/docs/images)
 - [ ] Add username to users table, insert first half of email for filler
 - [ ] Check data that returns from oauth providers and fill db (name, avatar, ecc)
+- [ ] Refactor rate limiters folder
