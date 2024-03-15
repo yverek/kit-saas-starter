@@ -14,7 +14,7 @@ import { AUTH_METHODS } from "$configs/auth-methods";
 import { hashPassword } from "worker-password-auth";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { isAnonymous, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
-import { registerLimiter } from "$configs/rate-limiters";
+import { registerLimiter } from "$configs/rate-limiters/auth";
 import { FLASH_MESSAGE_STATUS } from "$configs/general";
 import { fail } from "@sveltejs/kit";
 

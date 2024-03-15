@@ -5,7 +5,7 @@ import { settingsAccountFormSchema, type SettingsAccountFormSchema } from "$vali
 import { fail, type Actions } from "@sveltejs/kit";
 import { FLASH_MESSAGE_STATUS } from "$configs/general";
 import { verifyRateLimiter } from "$lib/server/security";
-import { accountSettingsLimiter } from "$configs/rate-limiters";
+import { accountSettingsLimiter } from "$configs/rate-limiters/app";
 import { logger } from "$lib/logger";
 import { redirect, setFlash } from "sveltekit-flash-message/server";
 import { updateUserById } from "$lib/server/db/users";

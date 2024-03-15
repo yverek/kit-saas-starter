@@ -10,7 +10,7 @@ import { logger } from "$lib/logger";
 import { verifyPassword } from "worker-password-auth";
 import { AUTH_METHODS } from "$configs/auth-methods";
 import { isAnonymous, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
-import { loginLimiter } from "$configs/rate-limiters";
+import { loginLimiter } from "$configs/rate-limiters/auth";
 import { FLASH_MESSAGE_STATUS } from "$configs/general";
 import { fail } from "@sveltejs/kit";
 

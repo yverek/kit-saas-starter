@@ -5,7 +5,7 @@ import { settingsProfileFormSchema, type SettingsProfileFormSchema } from "$vali
 import { fail, type Actions } from "@sveltejs/kit";
 import { FLASH_MESSAGE_STATUS } from "$configs/general";
 import { verifyRateLimiter } from "$lib/server/security";
-import { profileSettingsLimiter } from "$configs/rate-limiters";
+import { profileSettingsLimiter } from "$configs/rate-limiters/app";
 import { logger } from "$lib/logger";
 import { redirect, setFlash } from "sveltekit-flash-message/server";
 import { route } from "$lib/ROUTES";

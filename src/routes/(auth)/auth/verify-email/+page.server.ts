@@ -11,11 +11,10 @@ import { sendEmailVerificationEmail, sendWelcomeEmail } from "$lib/server/email/
 import { AUTH_METHODS } from "$configs/auth-methods";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { isUserNotVerified, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
-import { verifyEmailLimiter } from "$configs/rate-limiters";
 import type { User } from "lucia";
 import { FLASH_MESSAGE_STATUS } from "$configs/general";
 import { redirect, setFlash } from "sveltekit-flash-message/server";
-import { resendVerifyEmailLimiter } from "$configs/rate-limiters";
+import { verifyEmailLimiter, resendVerifyEmailLimiter } from "$configs/rate-limiters/auth";
 
 export const load = (async ({ locals, cookies, url }) => {
   isUserNotVerified(locals, cookies, url);

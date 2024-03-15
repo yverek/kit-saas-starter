@@ -9,7 +9,7 @@ import { redirect, setFlash } from "sveltekit-flash-message/server";
 import { route } from "$lib/ROUTES";
 import { updateUserById } from "$lib/server/db/users";
 import { settingsNotificationsFormSchema, type SettingsNotificationsFormSchema } from "$validations/app/settings";
-import { notificationsSettingsLimiter } from "$configs/rate-limiters";
+import { notificationsSettingsLimiter } from "$configs/rate-limiters/app";
 
 export const load: PageServerLoad = async ({ locals: { user } }) => {
   const { name } = user!;

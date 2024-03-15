@@ -11,7 +11,7 @@ import { redirect, setFlash } from "sveltekit-flash-message/server";
 import { generateToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { isAnonymous, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
-import { resetPasswordLimiter } from "$configs/rate-limiters";
+import { resetPasswordLimiter } from "$configs/rate-limiters/auth";
 import { FLASH_MESSAGE_STATUS } from "$configs/general";
 
 export const load = (async ({ locals }) => {
