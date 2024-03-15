@@ -10,11 +10,11 @@ import { redirect, setFlash } from "sveltekit-flash-message/server";
 import { generateToken, verifyToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { isUserAuthenticated, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
-import { changeEmailLimiter } from "$configs/rate-limiters";
+import { changeEmailLimiter } from "$configs/rate-limiters/auth";
 import type { User } from "lucia";
 import { FLASH_MESSAGE_STATUS } from "$configs/general";
 import { sendEmailChangeEmail } from "$lib/server/email/send";
-import { resendChangeEmailLimiter } from "$configs/rate-limiters";
+import { resendChangeEmailLimiter } from "$configs/rate-limiters/auth";
 
 export const load = (async ({ locals, cookies, url }) => {
   isUserAuthenticated(locals, cookies, url);

@@ -10,7 +10,7 @@ import { redirect, setFlash } from "sveltekit-flash-message/server";
 import { generateToken } from "$lib/server/auth/auth-utils";
 import { TOKEN_TYPE } from "$lib/server/db/tokens";
 import { isUserAuthenticated, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
-import { changeEmailLimiter } from "$configs/rate-limiters";
+import { changeEmailLimiter } from "$configs/rate-limiters/auth";
 import type { User } from "lucia";
 import { FLASH_MESSAGE_STATUS } from "$configs/general";
 

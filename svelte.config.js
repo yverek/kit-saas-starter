@@ -14,6 +14,7 @@ const config = {
     adapter: adapter(),
     alias: {
       $configs: "src/lib/configs",
+      $constants: "src/lib/constants",
       $components: "src/lib/components",
       $utils: "src/lib/utils",
       $validations: "src/lib/validations"

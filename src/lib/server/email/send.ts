@@ -19,7 +19,7 @@ export async function sendWelcomeEmail(email: string, name: string): Promise<boo
 
   const body = WelcomeHtml.replaceAll("{{appName}}", APP_NAME)
     .replace("{{user}}", name)
-    .replace("{{url}}", APP_URL + route("/dashboard"));
+    .replace("{{url}}", APP_URL + route("/app/dashboard"));
 
   return await sendEmail(email, `Welcome to ${APP_NAME}`, body);
 }

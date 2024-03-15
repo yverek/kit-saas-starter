@@ -27,6 +27,7 @@ CREATE TABLE `users` (
 	`name` text,
 	`email` text NOT NULL,
 	`password` text,
+	`username` text NOT NULL,
 	`auth_methods` text NOT NULL,
 	`avatar_url` text,
 	`is_verified` integer DEFAULT false NOT NULL,
@@ -35,4 +36,5 @@ CREATE TABLE `users` (
 	`modified_at` integer
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `users_email_unique` ON `users` (`email`);
+CREATE UNIQUE INDEX `users_email_unique` ON `users` (`email`);--> statement-breakpoint
+CREATE UNIQUE INDEX `users_username_unique` ON `users` (`username`);

@@ -9,8 +9,17 @@
  * PAGES
  */
 const PAGES = {
-  "/admin/dashboard": `/admin/dashboard`,
-  "/dashboard": `/dashboard`,
+  "/admin": `/admin`,
+  "/admin/database/tokens": `/admin/database/tokens`,
+  "/admin/database/users": `/admin/database/users`,
+  "/admin/settings": `/admin/settings`,
+  "/app/billing": `/app/billing`,
+  "/app/dashboard": `/app/dashboard`,
+  "/app/profile": `/app/profile`,
+  "/app/settings": `/app/settings`,
+  "/app/settings/account": `/app/settings/account`,
+  "/app/settings/notifications": `/app/settings/notifications`,
+  "/app/settings/profile": `/app/settings/profile`,
   "/auth/change-email/confirm": `/auth/change-email/confirm`,
   "/auth/change-email/submit": `/auth/change-email/submit`,
   "/auth/login": (params?: { redirectTo?: string }) => {
@@ -45,7 +54,13 @@ const SERVERS = {
  * ACTIONS
  */
 const ACTIONS = {
-  "default /admin/dashboard": `/admin/dashboard`,
+  "updateUser /admin/database/tokens": `/admin/database/tokens?/updateUser`,
+  "deleteUser /admin/database/tokens": `/admin/database/tokens?/deleteUser`,
+  "updateUser /admin/database/users": `/admin/database/users?/updateUser`,
+  "deleteUser /admin/database/users": `/admin/database/users?/deleteUser`,
+  "default /app/settings/account": `/app/settings/account`,
+  "default /app/settings/notifications": `/app/settings/notifications`,
+  "default /app/settings/profile": `/app/settings/profile`,
   "confirm /auth/change-email/confirm": `/auth/change-email/confirm?/confirm`,
   "resendEmail /auth/change-email/confirm": `/auth/change-email/confirm?/resendEmail`,
   "default /auth/change-email/submit": `/auth/change-email/submit`,
@@ -183,8 +198,17 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
  */
 export type KIT_ROUTES = {
   PAGES: {
-    "/admin/dashboard": never;
-    "/dashboard": never;
+    "/admin": never;
+    "/admin/database/tokens": never;
+    "/admin/database/users": never;
+    "/admin/settings": never;
+    "/app/billing": never;
+    "/app/dashboard": never;
+    "/app/profile": never;
+    "/app/settings": never;
+    "/app/settings/account": never;
+    "/app/settings/notifications": never;
+    "/app/settings/profile": never;
     "/auth/change-email/confirm": never;
     "/auth/change-email/submit": never;
     "/auth/login": never;
@@ -205,7 +229,13 @@ export type KIT_ROUTES = {
     "GET /auth/oauth/google/callback": never;
   };
   ACTIONS: {
-    "default /admin/dashboard": never;
+    "updateUser /admin/database/tokens": never;
+    "deleteUser /admin/database/tokens": never;
+    "updateUser /admin/database/users": never;
+    "deleteUser /admin/database/users": never;
+    "default /app/settings/account": never;
+    "default /app/settings/notifications": never;
+    "default /app/settings/profile": never;
     "confirm /auth/change-email/confirm": never;
     "resendEmail /auth/change-email/confirm": never;
     "default /auth/change-email/submit": never;

@@ -40,7 +40,7 @@
         <form method="post" action="/auth/logout" use:enhance>
           <Button type="submit" variant="outline">Logout</Button>
         </form>
-        <Button href={route("/dashboard")}>
+        <Button href={route("/app/dashboard")}>
           Dashboard
           <span class="sr-only">Dashboard</span>
         </Button>

@@ -8,7 +8,7 @@ import { route } from "$lib/ROUTES";
 import { updateUserById } from "$lib/server/db/users";
 import { hashPassword } from "worker-password-auth";
 import { isAnonymous, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
-import { resetPasswordLimiter } from "$configs/rate-limiters";
+import { resetPasswordLimiter } from "$configs/rate-limiters/auth";
 import { FLASH_MESSAGE_STATUS } from "$configs/general";
 import { fail } from "@sveltejs/kit";
 

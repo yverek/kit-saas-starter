@@ -7,20 +7,20 @@ import { redirect } from "sveltekit-flash-message/server";
  * Checks if the user is anonymous.
  * Redirects them to the dashboard if they are not.
  *
- * @param locals - The locals object.
+ * @param {App.Locals} locals - The locals object of RequestEvent.
  * @returns void
  */
 export function isAnonymous(locals: App.Locals) {
-  if (locals.user && locals.session) redirect(303, route("/dashboard"));
+  if (locals.user && locals.session) redirect(303, route("/app/dashboard"));
 }
 
 /**
  * Checks if the user is authenticated.
  * Redirects them to the login page if they are not.
  *
- * @param url - The URL object.
- * @param locals - The locals object of RequestEvent.
- * @param cookies - The cookies object of RequestEvent.
+ * @param {URL} url - The URL object.
+ * @param {App.Locals} locals - The locals object of RequestEvent.
+ * @param {Cookies} cookies - The cookies object of RequestEvent.
  * @returns void
  */
 export function isUserAuthenticated(locals: App.Locals, cookies: Cookies, url: URL) {
@@ -36,9 +36,9 @@ export function isUserAuthenticated(locals: App.Locals, cookies: Cookies, url: U
  * Checks if the user is authenticated and is not verified.
  * Redirects them to the dashboard if they are not.
  *
- * @param url - The URL object.
- * @param locals - The locals object of RequestEvent.
- * @param cookies - The cookies object of RequestEvent.
+ * @param {URL} url - The URL object.
+ * @param {App.Locals} locals - The locals object of RequestEvent.
+ * @param {Cookies} cookies - The cookies object of RequestEvent.
  * @returns void
  */
 export function isUserNotVerified(locals: App.Locals, cookies: Cookies, url: URL) {
@@ -47,7 +47,7 @@ export function isUserNotVerified(locals: App.Locals, cookies: Cookies, url: URL
   if (locals.user?.isVerified) {
     const flashMessage = { status: FLASH_MESSAGE_STATUS.SUCCESS, text: "Your account is already verified" };
 
-    redirect(route("/dashboard"), flashMessage, cookies);
+    redirect(route("/app/dashboard"), flashMessage, cookies);
   }
 }
 
@@ -55,9 +55,9 @@ export function isUserNotVerified(locals: App.Locals, cookies: Cookies, url: URL
  * Checks if the user is authenticated and has admin privileges.
  * Redirects them to the dashboard if they are not.
  *
- * @param url - The URL object.
- * @param locals - The locals object of RequestEvent.
- * @param cookies - The cookies object of RequestEvent.
+ * @param {URL} url - The URL object.
+ * @param {App.Locals} locals - The locals object of RequestEvent.
+ * @param {Cookies} cookies - The cookies object of RequestEvent.
  * @returns void
  */
 export function isUserAdmin(locals: App.Locals, cookies: Cookies, url: URL) {

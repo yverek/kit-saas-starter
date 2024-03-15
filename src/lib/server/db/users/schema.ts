@@ -7,6 +7,7 @@ export const users = sqliteTable("users", {
   name: text("name"),
   email: text("email").notNull().unique(),
   password: text("password"),
+  username: text("username").notNull().unique(),
   authMethods: text("auth_methods", { mode: "json" }).$type<AUTH_METHODS[]>().notNull(),
   avatarUrl: text("avatar_url"),
   isVerified: integer("is_verified", { mode: "boolean" }).notNull().default(false),

@@ -105,6 +105,7 @@ export const GET: RequestHandler = async ({ url, cookies, locals: { db, lucia } 
         createUser(db, {
           id: userId,
           name: githubUser.name,
+          username: primaryEmail.email.split("@")[0] + generateId(5),
           avatarUrl: githubUser.avatar_url,
           email: primaryEmail.email,
           isVerified: true,
@@ -133,5 +134,5 @@ export const GET: RequestHandler = async ({ url, cookies, locals: { db, lucia } 
     error(500);
   }
 
-  redirect(303, route("/dashboard"));
+  redirect(303, route("/app/dashboard"));
 };
