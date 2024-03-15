@@ -10,7 +10,7 @@
   import type { Snippet } from "svelte";
   import type { User } from "lucia";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
-  import { CircleUser, CreditCard, LogOut, Settings } from "lucide-svelte";
+  import { CircleUser, CreditCard, Lock, LogOut, Settings } from "lucide-svelte";
   import { Input } from "$lib/components/ui/input";
 
   type Props = {
@@ -83,6 +83,14 @@
               Settings
             </Button>
           </DropdownMenu.Item>
+          {#if data.user.isAdmin}
+            <DropdownMenu.Item>
+              <Button variant="ghost" class="h-6 w-full justify-start p-0" href={route("/admin")}>
+                <Lock class="mr-1 size-5" />
+                Admin
+              </Button>
+            </DropdownMenu.Item>
+          {/if}
         </DropdownMenu.Group>
         <DropdownMenu.Separator />
         <DropdownMenu.Item>
