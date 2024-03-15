@@ -9,7 +9,10 @@
  * PAGES
  */
 const PAGES = {
-  "/admin/dashboard": `/admin/dashboard`,
+  "/admin": `/admin`,
+  "/admin/database/tokens": `/admin/database/tokens`,
+  "/admin/database/users": `/admin/database/users`,
+  "/admin/settings": `/admin/settings`,
   "/app/billing": `/app/billing`,
   "/app/dashboard": `/app/dashboard`,
   "/app/profile": `/app/profile`,
@@ -51,7 +54,10 @@ const SERVERS = {
  * ACTIONS
  */
 const ACTIONS = {
-  "default /admin/dashboard": `/admin/dashboard`,
+  "updateUser /admin/database/tokens": `/admin/database/tokens?/updateUser`,
+  "deleteUser /admin/database/tokens": `/admin/database/tokens?/deleteUser`,
+  "updateUser /admin/database/users": `/admin/database/users?/updateUser`,
+  "deleteUser /admin/database/users": `/admin/database/users?/deleteUser`,
   "default /app/settings/account": `/app/settings/account`,
   "default /app/settings/notifications": `/app/settings/notifications`,
   "default /app/settings/profile": `/app/settings/profile`,
@@ -192,7 +198,10 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
  */
 export type KIT_ROUTES = {
   PAGES: {
-    "/admin/dashboard": never;
+    "/admin": never;
+    "/admin/database/tokens": never;
+    "/admin/database/users": never;
+    "/admin/settings": never;
     "/app/billing": never;
     "/app/dashboard": never;
     "/app/profile": never;
@@ -220,7 +229,10 @@ export type KIT_ROUTES = {
     "GET /auth/oauth/google/callback": never;
   };
   ACTIONS: {
-    "default /admin/dashboard": never;
+    "updateUser /admin/database/tokens": never;
+    "deleteUser /admin/database/tokens": never;
+    "updateUser /admin/database/users": never;
+    "deleteUser /admin/database/users": never;
     "default /app/settings/account": never;
     "default /app/settings/notifications": never;
     "default /app/settings/profile": never;
