@@ -95,7 +95,7 @@ export const actions: Actions = {
         return message(form, flashMessage, { status: 400 });
       }
     } else {
-      const updatedUser = await updateUserById(locals.db, existingUser.id, { password: hashedPassword });
+      const updatedUser = await updateUserById(locals.db, existingUser.id, { password: hashedPassword, isVerified: false });
 
       if (!updatedUser) {
         flashMessage.text = "Failed to insert new user: email already used";
