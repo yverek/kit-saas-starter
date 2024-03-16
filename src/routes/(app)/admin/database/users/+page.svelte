@@ -3,11 +3,8 @@
   import { Button, buttonVariants } from "$components/ui/button";
   import { route } from "$lib/ROUTES";
   import * as Table from "$lib/components/ui/table";
-  import { Check, Loader2, Pencil, Trash2, X } from "lucide-svelte";
-  import * as Dialog from "$lib/components/ui/dialog";
+  import { Check, Pencil, Trash2, X } from "lucide-svelte";
   import { Input } from "$lib/components/ui/input";
-  import * as Form from "$lib/components/ui/form";
-  import * as flashModule from "sveltekit-flash-message/client";
   import * as AlertDialog from "$lib/components/ui/alert-dialog";
 
   const { data } = $props();
@@ -32,17 +29,14 @@
   <Table.Body>
     {#each data.users as user (user.id)}
       <Table.Row>
-        <Table.Cell class="font-medium">{user.id}</Table.Cell>
+        <Table.Cell class="font-medium">
+          <Button variant="link" href={route("/admin/database/users/[userId=userId]", { userId: user.id })}>
+            {user.id}
+          </Button>
+        </Table.Cell>
         <Table.Cell>{user.name}</Table.Cell>
         <Table.Cell>{user.username}</Table.Cell>
         <Table.Cell>{user.email}</Table.Cell>
-        <Table.Cell>
-          {#if user.isAdmin}
-            <Check color="green" class="mx-auto" />
-          {:else}
-            <X color="red" class="mx-auto" />
-          {/if}
-        </Table.Cell>
         <Table.Cell>
           {#if user.isVerified}
             <Check color="green" class="mx-auto" />
@@ -50,56 +44,19 @@
             <X color="red" class="mx-auto" />
           {/if}
         </Table.Cell>
+        <Table.Cell>
+          {#if user.isAdmin}
+            <Check color="green" class="mx-auto" />
+          {:else}
+            <X color="red" class="mx-auto" />
+          {/if}
+        </Table.Cell>
         <Table.Cell>{user.createdAt.toLocaleString()}</Table.Cell>
         <Table.Cell>{user.modifiedAt?.toLocaleString()}</Table.Cell>
-        <Table.Cell class="w-8 px-1">
-          <Dialog.Root>
-            <Dialog.Trigger class={buttonVariants({ variant: "outline" }) + " size-10 !p-0"}>
-              <Pencil class="size-5" />
-            </Dialog.Trigger>
-            <Dialog.Content class="sm:max-w-[425px]">
-              <Dialog.Header>
-                <Dialog.Title>Edit user</Dialog.Title>
-                <Dialog.Description>Click save when you're done.</Dialog.Description>
-              </Dialog.Header>
-              <div class="grid gap-4 py-4">
-                <!-- <form class="flex flex-col gap-2" method="post" use:updateUserEnhance>
-                  <Form.Field {form} name="name" class="space-y-1">
-                    <Form.Control let:attrs>
-                      <Form.Label>Name</Form.Label>
-                      <Input {...attrs} type="name" bind:value={$formData.name} />
-                    </Form.Control>
-                    <Form.FieldErrors let:errors class="h-4 text-xs">
-                      {#if errors[0]}
-                        {errors[0]}
-                      {/if}
-                    </Form.FieldErrors>
-                  </Form.Field>
-                  <Form.Field {form} name="email" class="space-y-1">
-                    <Form.Control let:attrs>
-                      <Form.Label>Email</Form.Label>
-                      <Input {...attrs} type="email" bind:value={$formData.email} />
-                    </Form.Control>
-                    <Form.FieldErrors let:errors class="h-4 text-xs">
-                      {#if errors[0]}
-                        {errors[0]}
-                      {/if}
-                    </Form.FieldErrors>
-                  </Form.Field>
-                  <Form.Button type="submit" class="mt-4" disabled={$delayed}>
-                    {#if $delayed}
-                      <Loader2 class="mr-2 h-4 w-4 animate-spin" /> Loading...
-                    {:else}
-                      Create account
-                    {/if}
-                  </Form.Button>
-                </form> -->
-              </div>
-              <Dialog.Footer>
-                <Button type="submit">Save changes</Button>
-              </Dialog.Footer>
-            </Dialog.Content>
-          </Dialog.Root>
+        <Table.Cell class="w-8 px-2">
+          <Button class="size-10 p-0" href={route("/admin/database/users/[userId=userId]", { userId: user.id })}>
+            <Pencil class="size-5" />
+          </Button>
         </Table.Cell>
         <Table.Cell class="w-8 px-1">
           <AlertDialog.Root>
@@ -116,7 +73,7 @@
               <AlertDialog.Footer>
                 <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
                 <form method="post" action={route("deleteUser /admin/database/users")} use:enhance>
-                  <input type="hidden" name="userId" value={user.id} />
+                  <Input type="hidden" name="userId" value={user.id} />
                   <AlertDialog.Action class={buttonVariants({ variant: "destructive" })} type="submit">Submit</AlertDialog.Action>
                 </form>
               </AlertDialog.Footer>

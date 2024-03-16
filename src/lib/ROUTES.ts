@@ -12,6 +12,9 @@ const PAGES = {
   "/admin": `/admin`,
   "/admin/database/tokens": `/admin/database/tokens`,
   "/admin/database/users": `/admin/database/users`,
+  "/admin/database/users/[userId=userId]": (params: { userId: Parameters<typeof import("../params/userId.ts").match>[0] }) => {
+    return `/admin/database/users/${params.userId}`;
+  },
   "/admin/settings": `/admin/settings`,
   "/app/billing": `/app/billing`,
   "/app/dashboard": `/app/dashboard`,
@@ -56,7 +59,6 @@ const SERVERS = {
 const ACTIONS = {
   "updateUser /admin/database/tokens": `/admin/database/tokens?/updateUser`,
   "deleteUser /admin/database/tokens": `/admin/database/tokens?/deleteUser`,
-  "updateUser /admin/database/users": `/admin/database/users?/updateUser`,
   "deleteUser /admin/database/users": `/admin/database/users?/deleteUser`,
   "default /app/settings/account": `/app/settings/account`,
   "default /app/settings/notifications": `/app/settings/notifications`,
@@ -201,6 +203,7 @@ export type KIT_ROUTES = {
     "/admin": never;
     "/admin/database/tokens": never;
     "/admin/database/users": never;
+    "/admin/database/users/[userId=userId]": "userId";
     "/admin/settings": never;
     "/app/billing": never;
     "/app/dashboard": never;
@@ -231,7 +234,6 @@ export type KIT_ROUTES = {
   ACTIONS: {
     "updateUser /admin/database/tokens": never;
     "deleteUser /admin/database/tokens": never;
-    "updateUser /admin/database/users": never;
     "deleteUser /admin/database/users": never;
     "default /app/settings/account": never;
     "default /app/settings/notifications": never;
@@ -261,5 +263,5 @@ export type KIT_ROUTES = {
     drizzle: never;
     lucia: never;
   };
-  Params: { redirectTo: never; userId: never };
+  Params: { userId: never; redirectTo: never };
 };

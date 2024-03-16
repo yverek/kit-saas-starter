@@ -13,20 +13,6 @@ export const load = (async ({ locals }) => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  updateUser: async ({ request, cookies, locals: { db } }) => {
-    // TODO switch to zod
-    const data = await request.formData();
-    const userId = data.get("userId") as string;
-
-    const res = await deleteUserById(db, userId);
-    if (res) {
-      setFlash({ status: "success", text: "Success!" }, cookies);
-      return;
-    }
-
-    setFlash({ status: "error", text: "Error" }, cookies);
-  },
-
   deleteUser: async ({ request, cookies, locals: { db } }) => {
     const flashMessage: FlashMessage = { status: FLASH_MESSAGE_STATUS.SUCCESS, text: "User successfully deleted!" };
     let form: DeleteUserFormSchema;
