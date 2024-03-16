@@ -7,12 +7,13 @@ import { route } from "$lib/ROUTES";
 import { GITHUB_OAUTH_STATE_COOKIE_NAME } from "$configs/cookies-names";
 import { error } from "@sveltejs/kit";
 import { githubOauth } from "$lib/server/auth";
-import { createUser, getUserByEmail, updateUserById, type DbUser } from "$lib/server/db/users";
-import { createOauthAccount, getOAuthAccountByProviderUserId, type DbOauthAccount } from "$lib/server/db/oauth-accounts";
+import { getUserByEmail, type DbUser, users } from "$lib/server/db/users";
+import { getOAuthAccountByProviderUserId, type DbOauthAccount, oauthAccounts } from "$lib/server/db/oauth-accounts";
 import { createAndSetSession } from "$lib/server/auth/auth-utils";
 import { logger } from "$lib/logger";
 import { redirect } from "sveltekit-flash-message/server";
 import { AUTH_METHODS } from "$configs/auth-methods";
+import { eq } from "drizzle-orm";
 
 type GitHubUser = {
   id: number;
@@ -80,19 +81,21 @@ export const GET: RequestHandler = async ({ url, cookies, locals: { db, lucia } 
         const authMethods = existingUser.authMethods || [];
         authMethods.push(AUTH_METHODS.GITHUB);
 
-        const batchResponse: [DbOauthAccount | undefined, DbUser | undefined] = await db.batch([
+        await db.batch([
           // link the GitHub OAuth account to the existing user
-          createOauthAccount(db, {
-            userId: existingUser.id,
-            providerId: AUTH_METHODS.GITHUB,
-            providerUserId: githubUser.id.toString()
-          }),
+          db
+            .insert(oauthAccounts)
+            .values({
+              userId: existingUser.id,
+              providerId: AUTH_METHODS.GITHUB,
+              providerUserId: githubUser.id.toString()
+            })
+            .onConflictDoNothing()
+            .returning(),
+
           // update the user's authMethods list
-          updateUserById(db, existingUser.id, { authMethods })
+          db.update(users).set({ authMethods, modifiedAt: new Date() }).where(eq(users.id, existingUser.id)).returning()
         ]);
-        if (!batchResponse.some((r) => !r)) {
-          error(500, "Something went wrong");
-        }
       }
 
       await createAndSetSession(lucia, existingUser.id, cookies);
@@ -100,27 +103,33 @@ export const GET: RequestHandler = async ({ url, cookies, locals: { db, lucia } 
       const userId = generateId(15);
 
       // if user doesn't exist in db
-      const batchResponse: [DbUser | undefined, DbOauthAccount | undefined] = await db.batch([
+      await db.batch([
         // create a new user
-        createUser(db, {
-          id: userId,
-          name: githubUser.name,
-          username: primaryEmail.email.split("@")[0] + generateId(5),
-          avatarUrl: githubUser.avatar_url,
-          email: primaryEmail.email,
-          isVerified: true,
-          authMethods: [AUTH_METHODS.GITHUB]
-        }),
+        db
+          .insert(users)
+          .values({
+            id: userId,
+            name: githubUser.name,
+            username: primaryEmail.email.split("@")[0] + generateId(5),
+            avatarUrl: githubUser.avatar_url,
+            email: primaryEmail.email,
+            isVerified: true,
+            authMethods: [AUTH_METHODS.GITHUB]
+          })
+          .onConflictDoNothing()
+          .returning(),
+
         // create a new GitHub OAuth account
-        createOauthAccount(db, {
-          userId,
-          providerId: AUTH_METHODS.GITHUB,
-          providerUserId: githubUser.id.toString()
-        })
+        db
+          .insert(oauthAccounts)
+          .values({
+            userId,
+            providerId: AUTH_METHODS.GITHUB,
+            providerUserId: githubUser.id.toString()
+          })
+          .onConflictDoNothing()
+          .returning()
       ]);
-      if (!batchResponse.some((r) => !r)) {
-        error(500, "Something went wrong");
-      }
 
       await createAndSetSession(lucia, userId, cookies);
     }
