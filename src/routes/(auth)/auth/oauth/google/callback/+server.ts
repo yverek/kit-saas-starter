@@ -80,7 +80,16 @@ export const GET: RequestHandler = async ({ cookies, url, locals: { db, lucia } 
             .returning(),
 
           // update the user's authMethods list
-          db.update(users).set({ authMethods, modifiedAt: new Date() }).where(eq(users.id, existingUser.id)).returning()
+          db
+            .update(users)
+            .set({
+              name: googleUser.name,
+              avatarUrl: googleUser.picture,
+              modifiedAt: new Date(),
+              authMethods
+            })
+            .where(eq(users.id, existingUser.id))
+            .returning()
         ]);
       }
 

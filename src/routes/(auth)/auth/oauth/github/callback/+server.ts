@@ -1,14 +1,12 @@
 import type { RequestHandler } from "./$types";
-
 import { OAuth2RequestError } from "arctic";
 import { generateId } from "lucia";
-
 import { route } from "$lib/ROUTES";
 import { GITHUB_OAUTH_STATE_COOKIE_NAME } from "$configs/cookies-names";
 import { error } from "@sveltejs/kit";
 import { githubOauth } from "$lib/server/auth";
-import { getUserByEmail, type DbUser, users } from "$lib/server/db/users";
-import { getOAuthAccountByProviderUserId, type DbOauthAccount, oauthAccounts } from "$lib/server/db/oauth-accounts";
+import { getUserByEmail, users } from "$lib/server/db/users";
+import { getOAuthAccountByProviderUserId, oauthAccounts } from "$lib/server/db/oauth-accounts";
 import { createAndSetSession } from "$lib/server/auth/auth-utils";
 import { logger } from "$lib/logger";
 import { redirect } from "sveltekit-flash-message/server";
@@ -94,7 +92,16 @@ export const GET: RequestHandler = async ({ url, cookies, locals: { db, lucia } 
             .returning(),
 
           // update the user's authMethods list
-          db.update(users).set({ authMethods, modifiedAt: new Date() }).where(eq(users.id, existingUser.id)).returning()
+          db
+            .update(users)
+            .set({
+              name: githubUser.name,
+              avatarUrl: githubUser.avatar_url,
+              modifiedAt: new Date(),
+              authMethods
+            })
+            .where(eq(users.id, existingUser.id))
+            .returning()
         ]);
       }
 
@@ -110,7 +117,7 @@ export const GET: RequestHandler = async ({ url, cookies, locals: { db, lucia } 
           .values({
             id: userId,
             name: githubUser.name,
-            username: primaryEmail.email.split("@")[0] + generateId(5),
+            username: githubUser.login,
             avatarUrl: githubUser.avatar_url,
             email: primaryEmail.email,
             isVerified: true,
