@@ -4,7 +4,7 @@ import { AUTH_METHODS } from "../../../configs/auth-methods";
 
 export const users = sqliteTable("users", {
   id: text("id", { length: USER_ID_LEN }).notNull().primaryKey(),
-  name: text("name"),
+  name: text("name").notNull(),
   email: text("email").notNull().unique(),
   password: text("password"),
   username: text("username").notNull().unique(),

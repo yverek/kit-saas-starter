@@ -27,30 +27,28 @@
   let resetTurnstile = $state(() => {});
 </script>
 
-<Card.Root class="w-1/3">
-  <Card.Header class="space-y-1">
-    <Card.Title class="text-2xl">Change your email</Card.Title>
-  </Card.Header>
-  <Card.Content class="grid gap-4">
-    <div class="text-muted-foreground">
-      Insert your new email for {APP_NAME}.
-    </div>
-    <form class="flex flex-col" method="post" use:enhance>
-      <Form.Field {form} name="email" class="space-y-1">
-        <Form.Control let:attrs>
-          <Form.Label>Email</Form.Label>
-          <Input {...attrs} type="email" bind:value={$formData.email} />
-        </Form.Control>
-        <Form.FieldErrors class="h-4 text-xs" />
-      </Form.Field>
-      <Turnstile action={"change-email-submit"} bind:resetTurnstile />
-      <Form.Button type="submit" class="mt-2" disabled={$delayed}>
-        {#if $delayed}
-          <Loader2 class="mr-2 h-4 w-4 animate-spin" /> Loading...
-        {:else}
-          Change my email
-        {/if}
-      </Form.Button>
-    </form>
-  </Card.Content>
-</Card.Root>
+<Card.Header class="space-y-1">
+  <Card.Title class="text-2xl">Change your email</Card.Title>
+</Card.Header>
+<Card.Content class="grid gap-4">
+  <div class="text-muted-foreground">
+    Insert your new email for {APP_NAME}.
+  </div>
+  <form class="flex flex-col" method="post" use:enhance>
+    <Form.Field {form} name="email" class="space-y-1">
+      <Form.Control let:attrs>
+        <Form.Label>Email</Form.Label>
+        <Input {...attrs} type="email" bind:value={$formData.email} />
+      </Form.Control>
+      <Form.FieldErrors class="h-4 text-xs" />
+    </Form.Field>
+    <Turnstile action={"change-email-submit"} bind:resetTurnstile />
+    <Form.Button type="submit" class="mt-2" disabled={$delayed}>
+      {#if $delayed}
+        <Loader2 class="mr-2 h-4 w-4 animate-spin" /> Loading...
+      {:else}
+        Change my email
+      {/if}
+    </Form.Button>
+  </form>
+</Card.Content>

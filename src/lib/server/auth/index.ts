@@ -37,7 +37,7 @@ export function initializeLucia(db: D1Database) {
         isVerified: !!data.is_verified,
         isAdmin: !!data.is_admin,
         createdAt: new Date(data.created_at).toISOString(),
-        modifiedAt: new Date(data.modified_at).toISOString()
+        modifiedAt: data.modified_at ? new Date(data.modified_at).toISOString() : null
       };
     }
   });
