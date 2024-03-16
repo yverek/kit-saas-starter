@@ -24,7 +24,7 @@ CREATE TABLE `tokens` (
 --> statement-breakpoint
 CREATE TABLE `users` (
 	`id` text(15) PRIMARY KEY NOT NULL,
-	`name` text,
+	`name` text NOT NULL,
 	`email` text NOT NULL,
 	`password` text,
 	`username` text NOT NULL,
