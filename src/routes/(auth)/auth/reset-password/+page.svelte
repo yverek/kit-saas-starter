@@ -26,32 +26,30 @@
   let resetTurnstile = $state(() => {});
 </script>
 
-<Card.Root class="w-1/3">
-  <Card.Header class="space-y-1">
-    <Card.Title class="text-2xl">Reset your password</Card.Title>
-  </Card.Header>
-  <Card.Content class="grid gap-4">
-    <div class="text-muted-foreground">Please insert your email to receive a token to reset your password.</div>
-    <form class="flex flex-col" method="post" use:enhance>
-      <Form.Field {form} name="email" class="space-y-1">
-        <Form.Control let:attrs>
-          <Form.Label>Email</Form.Label>
-          <Input {...attrs} type="text" bind:value={$formData.email} />
-        </Form.Control>
-        <Form.FieldErrors let:errors class="h-4 text-xs">
-          {#if errors[0]}
-            {errors[0]}
-          {/if}
-        </Form.FieldErrors>
-      </Form.Field>
-      <Turnstile action={"reset-password-submit"} bind:resetTurnstile />
-      <Form.Button type="submit" disabled={$delayed}>
-        {#if $delayed}
-          <Loader2 class="mr-2 h-4 w-4 animate-spin" /> Loading...
-        {:else}
-          Send
+<Card.Header class="space-y-1">
+  <Card.Title class="text-2xl">Reset your password</Card.Title>
+</Card.Header>
+<Card.Content class="grid gap-4">
+  <div class="text-muted-foreground">Please insert your email to receive a token to reset your password.</div>
+  <form class="flex flex-col" method="post" use:enhance>
+    <Form.Field {form} name="email" class="space-y-1">
+      <Form.Control let:attrs>
+        <Form.Label>Email</Form.Label>
+        <Input {...attrs} type="text" bind:value={$formData.email} />
+      </Form.Control>
+      <Form.FieldErrors let:errors class="h-4 text-xs">
+        {#if errors[0]}
+          {errors[0]}
         {/if}
-      </Form.Button>
-    </form>
-  </Card.Content>
-</Card.Root>
+      </Form.FieldErrors>
+    </Form.Field>
+    <Turnstile action={"reset-password-submit"} bind:resetTurnstile />
+    <Form.Button type="submit" disabled={$delayed}>
+      {#if $delayed}
+        <Loader2 class="mr-2 h-4 w-4 animate-spin" /> Loading...
+      {:else}
+        Send
+      {/if}
+    </Form.Button>
+  </form>
+</Card.Content>
