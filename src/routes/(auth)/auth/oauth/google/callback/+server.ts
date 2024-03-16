@@ -1,19 +1,17 @@
 import type { RequestHandler } from "./$types";
-
 import { OAuth2RequestError } from "arctic";
 import { generateId } from "lucia";
-
 import { route } from "$lib/ROUTES";
-
 import { GOOGLE_OAUTH_CODE_VERIFIER_COOKIE_NAME, GOOGLE_OAUTH_STATE_COOKIE_NAME } from "$configs/cookies-names";
 import { AUTH_METHODS } from "$configs/auth-methods";
 import { error } from "@sveltejs/kit";
 import { googleOauth } from "$lib/server/auth";
 import { redirect } from "sveltekit-flash-message/server";
 import { logger } from "$lib/logger";
-import { createUser, getUserByEmail, updateUserById, type DbUser } from "$lib/server/db/users";
-import { createOauthAccount, getOAuthAccountByProviderUserId, type DbOauthAccount } from "$lib/server/db/oauth-accounts";
+import { getUserByEmail, users } from "$lib/server/db/users";
+import { getOAuthAccountByProviderUserId, oauthAccounts } from "$lib/server/db/oauth-accounts";
 import { createAndSetSession } from "$lib/server/auth/auth-utils";
+import { eq } from "drizzle-orm";
 
 type GoogleUser = {
   sub: string;
@@ -69,19 +67,21 @@ export const GET: RequestHandler = async ({ cookies, url, locals: { db, lucia } 
         const authMethods = existingUser.authMethods || [];
         authMethods.push(AUTH_METHODS.GOOGLE);
 
-        const batchResponse: [DbOauthAccount | undefined, DbUser | undefined] = await db.batch([
+        await db.batch([
           // link the Google OAuth account to the existing user
-          createOauthAccount(db, {
-            userId: existingUser.id,
-            providerId: AUTH_METHODS.GOOGLE,
-            providerUserId: googleUser.sub
-          }),
+          db
+            .insert(oauthAccounts)
+            .values({
+              userId: existingUser.id,
+              providerId: AUTH_METHODS.GOOGLE,
+              providerUserId: googleUser.sub
+            })
+            .onConflictDoNothing()
+            .returning(),
+
           // update the user's authMethods list
-          updateUserById(db, existingUser.id, { authMethods })
+          db.update(users).set({ authMethods, modifiedAt: new Date() }).where(eq(users.id, existingUser.id)).returning()
         ]);
-        if (!batchResponse.some((r) => !r)) {
-          error(500, "Something went wrong");
-        }
       }
 
       await createAndSetSession(lucia, existingUser.id, cookies);
@@ -89,27 +89,33 @@ export const GET: RequestHandler = async ({ cookies, url, locals: { db, lucia } 
       const userId = generateId(15);
 
       // if user doesn't exist in db
-      const batchResponse: [DbUser | undefined, DbOauthAccount | undefined] = await db.batch([
+      await db.batch([
         // create a new user
-        createUser(db, {
-          id: userId,
-          name: googleUser.name,
-          username: googleUser.email.split("@")[0] + generateId(5),
-          avatarUrl: googleUser.picture,
-          email: googleUser.email,
-          isVerified: true,
-          authMethods: [AUTH_METHODS.GOOGLE]
-        }),
+        db
+          .insert(users)
+          .values({
+            id: userId,
+            name: googleUser.name,
+            username: googleUser.email.split("@")[0] + generateId(5),
+            avatarUrl: googleUser.picture,
+            email: googleUser.email,
+            isVerified: true,
+            authMethods: [AUTH_METHODS.GOOGLE]
+          })
+          .onConflictDoNothing()
+          .returning(),
+
         // create a new Google OAuth account
-        createOauthAccount(db, {
-          userId,
-          providerId: AUTH_METHODS.GOOGLE,
-          providerUserId: googleUser.sub
-        })
+        db
+          .insert(oauthAccounts)
+          .values({
+            userId,
+            providerId: AUTH_METHODS.GOOGLE,
+            providerUserId: googleUser.sub
+          })
+          .onConflictDoNothing()
+          .returning()
       ]);
-      if (!batchResponse.some((r) => !r)) {
-        error(500, "Something went wrong");
-      }
 
       await createAndSetSession(lucia, userId, cookies);
     }
