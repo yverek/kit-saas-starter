@@ -7,22 +7,10 @@
   import * as Dialog from "$lib/components/ui/dialog";
   import { Input } from "$lib/components/ui/input";
   import * as Form from "$lib/components/ui/form";
-  import { superForm } from "sveltekit-superforms";
-  import { zodClient } from "sveltekit-superforms/adapters";
-  import { updateUserFormSchema } from "$validations/app/update-user.schema.js";
   import * as flashModule from "sveltekit-flash-message/client";
+  import * as AlertDialog from "$lib/components/ui/alert-dialog";
 
   const { data } = $props();
-
-  const form = superForm(data.form, {
-    validators: zodClient(updateUserFormSchema),
-    delayMs: 500,
-    timeoutMs: 5000,
-    multipleSubmits: "prevent",
-    syncFlashMessage: true,
-    flashMessage: { module: flashModule }
-  });
-  const { form: formData, enhance: updateUserEnhance, delayed } = form;
 </script>
 
 <Table.Root class="mb-10 w-full">
@@ -75,7 +63,7 @@
                 <Dialog.Description>Click save when you're done.</Dialog.Description>
               </Dialog.Header>
               <div class="grid gap-4 py-4">
-                <form class="flex flex-col gap-2" method="post" use:updateUserEnhance>
+                <!-- <form class="flex flex-col gap-2" method="post" use:updateUserEnhance>
                   <Form.Field {form} name="name" class="space-y-1">
                     <Form.Control let:attrs>
                       <Form.Label>Name</Form.Label>
@@ -105,7 +93,7 @@
                       Create account
                     {/if}
                   </Form.Button>
-                </form>
+                </form> -->
               </div>
               <Dialog.Footer>
                 <Button type="submit">Save changes</Button>
@@ -114,12 +102,26 @@
           </Dialog.Root>
         </Table.Cell>
         <Table.Cell class="w-8 px-1">
-          <form method="post" action={route("deleteUser /admin/database/users")} use:enhance>
-            <input type="hidden" name="userId" value={user.id} />
-            <Button variant="destructive" type="submit" class="size-10 p-0">
+          <AlertDialog.Root>
+            <AlertDialog.Trigger class={buttonVariants({ variant: "destructive" }) + " size-10 !p-0"}>
               <Trash2 class="size-5" />
-            </Button>
-          </form>
+            </AlertDialog.Trigger>
+            <AlertDialog.Content>
+              <AlertDialog.Header>
+                <AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
+                <AlertDialog.Description>
+                  This action cannot be undone. This will permanently delete this user from our servers.
+                </AlertDialog.Description>
+              </AlertDialog.Header>
+              <AlertDialog.Footer>
+                <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+                <form method="post" action={route("deleteUser /admin/database/users")} use:enhance>
+                  <input type="hidden" name="userId" value={user.id} />
+                  <AlertDialog.Action class={buttonVariants({ variant: "destructive" })} type="submit">Submit</AlertDialog.Action>
+                </form>
+              </AlertDialog.Footer>
+            </AlertDialog.Content>
+          </AlertDialog.Root>
         </Table.Cell>
       </Table.Row>
     {/each}
