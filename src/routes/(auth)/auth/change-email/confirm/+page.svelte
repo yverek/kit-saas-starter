@@ -29,37 +29,35 @@
   let resetTurnstile = $state(() => {});
 </script>
 
-<Card.Root class="w-1/3">
-  <Card.Header class="space-y-1">
-    <Card.Title class="text-2xl">Confirm your email address change</Card.Title>
-  </Card.Header>
-  <Card.Content class="grid gap-4">
-    <div class="text-muted-foreground">
-      Please check your email account for a message to confirm your email address change for {APP_NAME}.
-    </div>
-    <form class="flex flex-col" method="post" action={route("confirm /auth/change-email/confirm")} use:enhanceConfirmForm>
-      <Form.Field {form} name="token" class="space-y-1">
-        <Form.Control let:attrs>
-          <Form.Label>Token</Form.Label>
-          <Input {...attrs} type="text" bind:value={$formData.token} />
-        </Form.Control>
-        <Form.FieldErrors class="h-4 text-xs" />
-      </Form.Field>
-      <Turnstile action={"change-email-confirm"} bind:resetTurnstile />
-      <Form.Button type="submit" class="mt-2" disabled={$delayed}>
-        {#if $delayed}
-          <Loader2 class="mr-2 h-4 w-4 animate-spin" /> Loading...
-        {:else}
-          Verify
-        {/if}
-      </Form.Button>
-    </form>
-  </Card.Content>
-  <Card.Footer>
-    If you did not receive the email,
-    <form class="mx-1 flex flex-col" method="post" action={route("resendEmail /auth/change-email/confirm")} use:enhance>
-      <button type="submit" class="underline">click here</button>
-    </form>
-    to resend it.
-  </Card.Footer>
-</Card.Root>
+<Card.Header class="space-y-1">
+  <Card.Title class="text-2xl">Confirm your email address change</Card.Title>
+</Card.Header>
+<Card.Content class="grid gap-4">
+  <div class="text-muted-foreground">
+    Please check your email account for a message to confirm your email address change for {APP_NAME}.
+  </div>
+  <form class="flex flex-col" method="post" action={route("confirm /auth/change-email/confirm")} use:enhanceConfirmForm>
+    <Form.Field {form} name="token" class="space-y-1">
+      <Form.Control let:attrs>
+        <Form.Label>Token</Form.Label>
+        <Input {...attrs} type="text" bind:value={$formData.token} />
+      </Form.Control>
+      <Form.FieldErrors class="h-4 text-xs" />
+    </Form.Field>
+    <Turnstile action={"change-email-confirm"} bind:resetTurnstile />
+    <Form.Button type="submit" class="mt-2" disabled={$delayed}>
+      {#if $delayed}
+        <Loader2 class="mr-2 h-4 w-4 animate-spin" /> Loading...
+      {:else}
+        Verify
+      {/if}
+    </Form.Button>
+  </form>
+</Card.Content>
+<Card.Footer>
+  If you did not receive the email,
+  <form class="mx-1 flex flex-col" method="post" action={route("resendEmail /auth/change-email/confirm")} use:enhance>
+    <button type="submit" class="underline">click here</button>
+  </form>
+  to resend it.
+</Card.Footer>

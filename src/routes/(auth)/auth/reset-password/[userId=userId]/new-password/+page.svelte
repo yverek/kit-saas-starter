@@ -56,58 +56,56 @@
   });
 </script>
 
-<Card.Root class="w-1/3">
-  <Card.Header class="space-y-1">
-    <Card.Title class="text-2xl">Change your password</Card.Title>
-  </Card.Header>
-  <Card.Content class="grid gap-4">
-    <form class="flex flex-col gap-3" method="post" use:enhance>
-      <Form.Field {form} name="password" class="relative space-y-1">
-        <Form.Control let:attrs>
-          <Form.Label>Password</Form.Label>
-          <Input
-            {...attrs}
-            type={passwordInputType}
-            bind:value={$formData.password}
-            onfocus={() => (isPasswordFieldFocused = true)}
-            onblur={() => (isPasswordFieldFocused = false)}
-          />
-          <Button variant="ghost" class="absolute right-1 top-7 size-8 p-0" on:click={() => (revealPassword = !revealPassword)}>
-            {#if passwordInputType === "text"}
-              <Eye size={22} />
-            {:else}
-              <EyeOff size={22} />
-            {/if}
-          </Button>
-          {#if isPasswordFieldFocused}
-            <PasswordStrength {pwd} {myData}></PasswordStrength>
+<Card.Header class="space-y-1">
+  <Card.Title class="text-2xl">Change your password</Card.Title>
+</Card.Header>
+<Card.Content class="grid gap-4">
+  <form class="flex flex-col gap-3" method="post" use:enhance>
+    <Form.Field {form} name="password" class="relative space-y-1">
+      <Form.Control let:attrs>
+        <Form.Label>Password</Form.Label>
+        <Input
+          {...attrs}
+          type={passwordInputType}
+          bind:value={$formData.password}
+          onfocus={() => (isPasswordFieldFocused = true)}
+          onblur={() => (isPasswordFieldFocused = false)}
+        />
+        <Button variant="ghost" class="absolute right-1 top-7 size-8 p-0" on:click={() => (revealPassword = !revealPassword)}>
+          {#if passwordInputType === "text"}
+            <Eye size={22} />
+          {:else}
+            <EyeOff size={22} />
           {/if}
-        </Form.Control>
-        <Form.FieldErrors let:errors class="h-4 text-xs">
-          {#if errors[0]}
-            {errors[0]}
-          {/if}
-        </Form.FieldErrors>
-      </Form.Field>
-      <Form.Field {form} name="passwordConfirm" class="mt-2 space-y-1">
-        <Form.Control let:attrs>
-          <Form.Label>Password Confirm</Form.Label>
-          <Input {...attrs} type="password" bind:value={$formData.passwordConfirm} />
-        </Form.Control>
-        <Form.FieldErrors let:errors class="h-4 text-xs">
-          {#if errors[0]}
-            {errors[0]}
-          {/if}
-        </Form.FieldErrors>
-      </Form.Field>
-      <Turnstile action={"reset-password-change"} bind:resetTurnstile />
-      <Form.Button type="submit" disabled={$delayed}>
-        {#if $delayed}
-          <Loader2 class="mr-2 h-4 w-4 animate-spin" /> Loading...
-        {:else}
-          Change password
+        </Button>
+        {#if isPasswordFieldFocused}
+          <PasswordStrength {pwd} {myData}></PasswordStrength>
         {/if}
-      </Form.Button>
-    </form>
-  </Card.Content>
-</Card.Root>
+      </Form.Control>
+      <Form.FieldErrors let:errors class="h-4 text-xs">
+        {#if errors[0]}
+          {errors[0]}
+        {/if}
+      </Form.FieldErrors>
+    </Form.Field>
+    <Form.Field {form} name="passwordConfirm" class="mt-2 space-y-1">
+      <Form.Control let:attrs>
+        <Form.Label>Password Confirm</Form.Label>
+        <Input {...attrs} type="password" bind:value={$formData.passwordConfirm} />
+      </Form.Control>
+      <Form.FieldErrors let:errors class="h-4 text-xs">
+        {#if errors[0]}
+          {errors[0]}
+        {/if}
+      </Form.FieldErrors>
+    </Form.Field>
+    <Turnstile action={"reset-password-change"} bind:resetTurnstile />
+    <Form.Button type="submit" disabled={$delayed}>
+      {#if $delayed}
+        <Loader2 class="mr-2 h-4 w-4 animate-spin" /> Loading...
+      {:else}
+        Change password
+      {/if}
+    </Form.Button>
+  </form>
+</Card.Content>
