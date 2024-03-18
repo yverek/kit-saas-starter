@@ -1,16 +1,16 @@
 # SvelteKit SaaS Starter
 
 <p align="center">
-  <a href="https://kit.svelte.dev" title="Open SvelteKit Website">
+  <a style="text-decoration: none;" href="https://kit.svelte.dev" title="Open SvelteKit Website">
     <img src="https://img.shields.io/badge/SvelteKit-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00" alt="Made with SvelteKit" />
   </a>
-  <a href="https://www.typescriptlang.org/docs" title="Open TypeScript Website">
+  <a style="text-decoration: none;" href="https://www.typescriptlang.org/docs" title="Open TypeScript Website">
     <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="Made with TypeScript" />
   </a>
-  <a href="https://tailwindcss.com" title="Open Tailwind Website">
+  <a style="text-decoration: none;" href="https://tailwindcss.com" title="Open Tailwind Website">
     <img src="https://img.shields.io/badge/Tailwind-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Made with Tailwind" />
   </a>
-    <a href="./LICENSE" title="Show the MIT License">
+  <a style="text-decoration: none;" href="./LICENSE" title="Show the MIT License">
     <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="License MIT">
   </a>
 </p>

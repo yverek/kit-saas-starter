@@ -6,6 +6,14 @@ import { sendEmail } from ".";
 import { APP_NAME, APP_URL } from "$configs/general";
 import { route } from "$lib/ROUTES";
 
+/**
+ * Sends a verification email to the specified email address.
+ *
+ * @param {string} email - The email address to send the verification email to.
+ * @param {string} name - The name of the user to include in the email.
+ * @param {string} token - The verification token to include in the email.
+ * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the email was sent successfully.
+ */
 export async function sendEmailVerificationEmail(email: string, name: string, token: string): Promise<boolean> {
   if (!email || !name || !token) return false;
 

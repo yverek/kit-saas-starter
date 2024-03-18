@@ -1,4 +1,6 @@
 export * from "./email.field";
+export * from "./is-admin.field";
+export * from "./is-verified.field";
 export * from "./name.field";
 export * from "./password.field";
 export * from "./password-confirm.field";
