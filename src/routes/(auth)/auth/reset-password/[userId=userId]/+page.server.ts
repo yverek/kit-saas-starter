@@ -50,6 +50,15 @@ export const actions: Actions = {
 
     const { token, turnstileToken } = form.data;
     const userId = params.userId as string;
+    const user = await getUserById(locals.db, userId);
+    if (!user) {
+      flashMessage.text = "User not found";
+      logger.debug(flashMessage.text);
+
+      return message(form, flashMessage, { status: 404 });
+    }
+
+    const { email } = user;
 
     const ip = getClientAddress();
     const validatedTurnstileToken = await validateTurnstileToken(turnstileToken, ip);
@@ -60,7 +69,7 @@ export const actions: Actions = {
       return message(form, flashMessage, { status: 400 });
     }
 
-    const isValidToken = await verifyToken(locals.db, userId, token, TOKEN_TYPE.PASSWORD_RESET);
+    const isValidToken = await verifyToken(locals.db, userId, token, TOKEN_TYPE.PASSWORD_RESET, email);
     if (!isValidToken) {
       flashMessage.text = "Invalid token";
       logger.debug(flashMessage.text);
@@ -101,7 +110,7 @@ export const actions: Actions = {
 
     const { email } = user;
 
-    const newToken = await generateToken(locals.db, userId, TOKEN_TYPE.PASSWORD_RESET);
+    const newToken = await generateToken(locals.db, userId, email, TOKEN_TYPE.PASSWORD_RESET);
     if (!newToken) {
       flashMessage.text = "Failed to generate token";
       logger.debug(flashMessage.text);

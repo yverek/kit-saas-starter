@@ -6,6 +6,7 @@ import { SESSION_COOKIE_NAME } from "$configs/cookies-names";
 import { GitHub, Google } from "arctic";
 import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from "$env/static/private";
 
+// TODO fix this!
 // const GOOGLE_REDIRECT_URL = dev? '' : '';
 const GOOGLE_REDIRECT_URI = "http://localhost:5173/auth/oauth/google/callback";
 

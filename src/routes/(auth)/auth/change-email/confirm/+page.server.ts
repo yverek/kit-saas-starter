@@ -8,7 +8,7 @@ import { logger } from "$lib/logger";
 import { updateUserById } from "$lib/server/db/users";
 import { redirect, setFlash } from "sveltekit-flash-message/server";
 import { generateToken, verifyToken } from "$lib/server/auth/auth-utils";
-import { TOKEN_TYPE } from "$lib/server/db/tokens";
+import { TOKEN_TYPE, getTokenByUserId } from "$lib/server/db/tokens";
 import { isUserAuthenticated, validateTurnstileToken, verifyRateLimiter } from "$lib/server/security";
 import { changeEmailLimiter } from "$configs/rate-limiters/auth";
 import type { User } from "lucia";
@@ -63,17 +63,8 @@ export const actions: Actions = {
     // TODO how can we remove that "as User" casting?
     const { id: userId } = locals.user as User;
 
-    // TODO export this name into constant
-    const newEmail = await event.platform?.env.KV.get(`change-email-${userId}`);
-    if (!newEmail) {
-      flashMessage.text = "Invalid new email";
-      logger.debug("Failed to retrieve email from KV");
-
-      return message(form, flashMessage, { status: 401 });
-    }
-
-    const tokenFromDatabase = await verifyToken(locals.db, userId, token, TOKEN_TYPE.EMAIL_CHANGE);
-    if (!tokenFromDatabase) {
+    const emailFromDatabase = await verifyToken(locals.db, userId, token, TOKEN_TYPE.EMAIL_CHANGE);
+    if (!emailFromDatabase) {
       flashMessage.text = "Invalid token";
       logger.debug("Failed to retrieve token from db");
 
@@ -82,7 +73,7 @@ export const actions: Actions = {
 
     await locals.lucia.invalidateUserSessions(userId);
 
-    const updatedUser = await updateUserById(locals.db, userId, { email: newEmail });
+    const updatedUser = await updateUserById(locals.db, userId, { email: emailFromDatabase });
     if (!updatedUser) {
       flashMessage.text = "User not found";
       logger.debug("Failed to update user");
@@ -97,7 +88,7 @@ export const actions: Actions = {
   },
 
   resendEmail: async (event) => {
-    const { locals, url, cookies, platform } = event;
+    const { locals, url, cookies } = event;
     const flashMessage = { status: FLASH_MESSAGE_STATUS.ERROR, text: "" };
 
     isUserAuthenticated(locals, cookies, url);
@@ -115,17 +106,18 @@ export const actions: Actions = {
     // TODO how can we remove that "as User" casting?
     const { id: userId, name } = locals.user as User;
 
-    // TODO export this name into constant
-    const newEmail = await platform?.env.KV.get(`change-email-${userId}`);
-    if (!newEmail) {
-      flashMessage.text = "Invalid new email";
-      logger.debug(flashMessage.text);
+    const tokenFromDatabase = await getTokenByUserId(locals.db, userId, TOKEN_TYPE.EMAIL_CHANGE);
+    if (!tokenFromDatabase) {
+      flashMessage.text = "Invalid token";
+      logger.debug("Failed to retrieve token from db");
 
       setFlash(flashMessage, cookies);
-      return fail(401);
+      return fail(500);
     }
 
-    const newToken = await generateToken(locals.db, userId, TOKEN_TYPE.EMAIL_CHANGE);
+    const newEmail = tokenFromDatabase.email;
+
+    const newToken = await generateToken(locals.db, userId, newEmail, TOKEN_TYPE.EMAIL_CHANGE);
     if (!newToken) {
       flashMessage.text = "Failed to generate token";
       logger.debug(flashMessage.text);
