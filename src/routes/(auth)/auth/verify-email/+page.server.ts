@@ -48,7 +48,7 @@ export const actions: Actions = {
       return message(form, flashMessage);
     }
 
-    // ! user is defined here because of "isUserVerified"
+    // ! user is defined here because of "isUserNotVerified"
     // TODO how can we remove that "as User" casting?
     const { id: userId, email, name } = locals.user as User;
     const { token, turnstileToken } = form.data;
@@ -62,7 +62,7 @@ export const actions: Actions = {
       return message(form, flashMessage, { status: 400 });
     }
 
-    const isValidToken = await verifyToken(locals.db, userId, token, TOKEN_TYPE.EMAIL_VERIFICATION);
+    const isValidToken = await verifyToken(locals.db, userId, token, TOKEN_TYPE.EMAIL_VERIFICATION, email);
     if (!isValidToken) {
       flashMessage.text = "Invalid token";
       logger.debug(flashMessage.text);
@@ -95,7 +95,7 @@ export const actions: Actions = {
     await sendWelcomeEmail(email, name);
 
     flashMessage.status = FLASH_MESSAGE_STATUS.SUCCESS;
-    flashMessage.text = "Email sent successfully";
+    flashMessage.text = "Email verified successfully";
 
     redirect(route("/app/dashboard"), flashMessage, cookies);
   },
@@ -119,7 +119,7 @@ export const actions: Actions = {
     // TODO how can we remove that "as User" casting?
     const { id: userId, name, email } = locals.user as User;
 
-    const newToken = await generateToken(locals.db, userId, TOKEN_TYPE.EMAIL_VERIFICATION);
+    const newToken = await generateToken(locals.db, userId, email, TOKEN_TYPE.EMAIL_VERIFICATION);
     if (!newToken) {
       flashMessage.text = "Failed to generate token";
       logger.debug(flashMessage.text);

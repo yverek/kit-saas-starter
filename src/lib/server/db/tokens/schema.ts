@@ -13,6 +13,7 @@ export const tokens = sqliteTable("tokens", {
     .notNull()
     .$default(() => createDate(new TimeSpan(TOKEN_EXPIRATION_TIME, "m"))),
   type: text("type", { enum: [TOKEN_TYPE.EMAIL_CHANGE, TOKEN_TYPE.EMAIL_VERIFICATION, TOKEN_TYPE.PASSWORD_RESET] }),
+  email: text("email").notNull(),
   userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" })

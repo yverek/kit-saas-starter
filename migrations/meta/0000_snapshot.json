@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "7491f11f-9db2-4b6d-a6ad-4254660a2d04",
+  "id": "f3d3642f-823b-4c45-8ef6-e681cb5cdff1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "oauth_accounts": {
@@ -129,6 +129,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false,
+          "autoincrement": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
           "autoincrement": false
         },
         "user_id": {

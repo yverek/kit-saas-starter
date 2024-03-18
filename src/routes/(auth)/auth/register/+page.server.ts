@@ -105,7 +105,7 @@ export const actions: Actions = {
       }
     }
 
-    const newToken = await generateToken(locals.db, userId, TOKEN_TYPE.EMAIL_VERIFICATION);
+    const newToken = await generateToken(locals.db, userId, email, TOKEN_TYPE.EMAIL_VERIFICATION);
     if (!newToken) {
       flashMessage.text = "Failed to generate email verification token";
       logger.debug(flashMessage.text);

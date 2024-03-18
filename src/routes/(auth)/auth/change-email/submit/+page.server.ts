@@ -13,6 +13,7 @@ import { isUserAuthenticated, validateTurnstileToken, verifyRateLimiter } from "
 import { changeEmailLimiter } from "$configs/rate-limiters/auth";
 import type { User } from "lucia";
 import { FLASH_MESSAGE_STATUS } from "$configs/general";
+import { getUserByEmail } from "$lib/server/db/users";
 
 export const load = (async ({ locals, cookies, url }) => {
   isUserAuthenticated(locals, cookies, url);
@@ -60,7 +61,15 @@ export const actions: Actions = {
       return message(form, flashMessage, { status: 400 });
     }
 
-    const newToken = await generateToken(locals.db, userId, TOKEN_TYPE.EMAIL_CHANGE);
+    const existingUser = await getUserByEmail(locals.db, newEmail);
+    if (existingUser) {
+      flashMessage.text = "Email already used";
+      logger.debug(flashMessage.text);
+
+      return message(form, flashMessage, { status: 401 });
+    }
+
+    const newToken = await generateToken(locals.db, userId, newEmail, TOKEN_TYPE.EMAIL_CHANGE);
     if (!newToken) {
       flashMessage.text = "Failed to generate token";
       logger.debug(flashMessage.text);
@@ -75,9 +84,6 @@ export const actions: Actions = {
 
       return message(form, flashMessage, { status: 500 });
     }
-
-    // TODO export this name into constant
-    await event.platform?.env.KV.put(`change-email-${userId}`, newEmail);
 
     flashMessage.status = FLASH_MESSAGE_STATUS.SUCCESS;
     flashMessage.text = "Email sent successfully";

@@ -68,7 +68,7 @@ export const actions: Actions = {
 
     const { id: userId } = userFromDb;
 
-    const newToken = await generateToken(locals.db, userId, TOKEN_TYPE.PASSWORD_RESET);
+    const newToken = await generateToken(locals.db, userId, email, TOKEN_TYPE.PASSWORD_RESET);
     if (!newToken) {
       flashMessage.text = "Failed to generate token";
       logger.debug(flashMessage.text);
