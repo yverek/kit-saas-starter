@@ -139,6 +139,9 @@ devDependencies:
   sveltekit-rate-limiter:
     specifier: ^0.5.1
     version: 0.5.1(@sveltejs/kit@2.5.4)
+  sveltekit-view-transition:
+    specifier: ^0.5.3
+    version: 0.5.3(@sveltejs/kit@2.5.4)(svelte@5.0.0-next.80)
   tailwindcss:
     specifier: ^3.4.1
     version: 3.4.1
