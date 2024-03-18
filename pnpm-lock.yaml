@@ -25,7 +25,7 @@ dependencies:
     version: 0.30.2(@cloudflare/workers-types@4.20240314.0)
   formsnap:
     specifier: ^0.5.1
-    version: 0.5.1(svelte@5.0.0-next.80)(sveltekit-superforms@2.9.0)
+    version: 0.5.1(svelte@5.0.0-next.80)(sveltekit-superforms@2.10.1)
   lucia:
     specifier: ^3.1.1
     version: 3.1.1
@@ -45,8 +45,8 @@ dependencies:
     specifier: ^0.3.19
     version: 0.3.19(svelte@5.0.0-next.80)
   sveltekit-superforms:
-    specifier: ^2.9.0
-    version: 2.9.0(@sveltejs/kit@2.5.4)(@types/json-schema@7.0.15)(esbuild-runner@2.2.2)(esbuild@0.20.2)(svelte@5.0.0-next.80)
+    specifier: ^2.10.1
+    version: 2.10.1(@sveltejs/kit@2.5.4)(@types/json-schema@7.0.15)(esbuild-runner@2.2.2)(esbuild@0.20.2)(svelte@5.0.0-next.80)
   tailwind-merge:
     specifier: ^2.2.2
     version: 2.2.2
@@ -137,8 +137,8 @@ devDependencies:
     specifier: ^2.4.4
     version: 2.4.4(@sveltejs/kit@2.5.4)(svelte@5.0.0-next.80)
   sveltekit-rate-limiter:
-    specifier: ^0.5.0
-    version: 0.5.0(@sveltejs/kit@2.5.4)
+    specifier: ^0.5.1
+    version: 0.5.1(@sveltejs/kit@2.5.4)
   tailwindcss:
     specifier: ^3.4.1
     version: 3.4.1
@@ -3702,7 +3702,7 @@ packages:
       cross-spawn: 7.0.3
       signal-exit: 4.1.0
 
-  /formsnap@0.5.1(svelte@5.0.0-next.80)(sveltekit-superforms@2.9.0):
+  /formsnap@0.5.1(svelte@5.0.0-next.80)(sveltekit-superforms@2.10.1):
     resolution: {integrity: sha512-8ppOlOu7llBEJbV0PzUz/KWh1J8KfiGqwjiyb8emQ2m+/nYXohLBtMcLVpW3XwlMkUbYaIXM+5lhfGjw8xbGJw==}
     peerDependencies:
       svelte: ^4.0.0
@@ -3710,7 +3710,7 @@ packages:
     dependencies:
       nanoid: 5.0.6
       svelte: 5.0.0-next.80
-      sveltekit-superforms: 2.9.0(@sveltejs/kit@2.5.4)(@types/json-schema@7.0.15)(esbuild-runner@2.2.2)(esbuild@0.20.2)(svelte@5.0.0-next.80)
+      sveltekit-superforms: 2.10.1(@sveltejs/kit@2.5.4)(@types/json-schema@7.0.15)(esbuild-runner@2.2.2)(esbuild@0.20.2)(svelte@5.0.0-next.80)
     dev: false
 
   /fraction.js@4.3.7:
@@ -5365,8 +5365,8 @@ packages:
       svelte: 5.0.0-next.80
     dev: true
 
-  /sveltekit-rate-limiter@0.5.0(@sveltejs/kit@2.5.4):
-    resolution: {integrity: sha512-q5RnqgAWP3fhDR+InWdOvsmYZ/x27Qojrk00scy+ob3Q+hawzHmLjQSL6XmSJrx82ceGZlw3G/hKyb/952oGWA==}
+  /sveltekit-rate-limiter@0.5.1(@sveltejs/kit@2.5.4):
+    resolution: {integrity: sha512-Q2C7mT9PdoL6v3VXgxngyXiEg2i3Dp0iVjVvKi722lroTM7oHxAJsmj66607BiSw8mdQk1Me6nhE6uRXrkDVIg==}
     peerDependencies:
       '@sveltejs/kit': 1.x || 2.x
     dependencies:
@@ -5374,8 +5374,8 @@ packages:
       '@sveltejs/kit': 2.5.4(@sveltejs/vite-plugin-svelte@3.0.2)(svelte@5.0.0-next.80)(vite@5.1.6)
     dev: true
 
-  /sveltekit-superforms@2.9.0(@sveltejs/kit@2.5.4)(@types/json-schema@7.0.15)(esbuild-runner@2.2.2)(esbuild@0.20.2)(svelte@5.0.0-next.80):
-    resolution: {integrity: sha512-sF/8nlFmyTcxtoFmIsudNV03O0GS1nB/y1U8L0CM0xY4yfcDeL7KvqqvtEWOA3xW01LSZz5pbvf1UYrrt1nuxw==}
+  /sveltekit-superforms@2.10.1(@sveltejs/kit@2.5.4)(@types/json-schema@7.0.15)(esbuild-runner@2.2.2)(esbuild@0.20.2)(svelte@5.0.0-next.80):
+    resolution: {integrity: sha512-t/t/aikwumjOCykC2p/IwaMm9S2rfS8CFQLql6omPitycPpGwFccQOIDv1TMdSotm+GigA2NJu2BZGe/ULJq1w==}
     requiresBuild: true
     peerDependencies:
       '@sveltejs/kit': 1.x || 2.x
