@@ -5,6 +5,9 @@
   import { getFlash } from "sveltekit-flash-message";
   import { page } from "$app/stores";
   import { toast } from "svelte-sonner";
+  import { setupViewTransition } from "sveltekit-view-transition";
+
+  setupViewTransition();
 
   let { children } = $props();
 

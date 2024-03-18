@@ -7,6 +7,3 @@
 - [ ] Fix css for root layout
 - [ ] For authorization, we can use [skGuard](https://github.com/qwacko/skGuard)
 - [ ] Add [@sveltejs/enhanced-img](https://kit.svelte.dev/docs/images)
-- [ ] Add username to users table, insert first half of email for filler
-- [ ] Check data that returns from oauth providers and fill db (name, avatar, ecc)
-- [ ] Refactor rate limiters folder
