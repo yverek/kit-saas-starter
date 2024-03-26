@@ -3,6 +3,7 @@
   import Button from "$components/ui/button/button.svelte";
   import { GitHub, Drizzle, Svelte, Tailwind, Cloudflare, Shacdn, TypeScript, Pnpm, Superforms } from "$components/icons";
   import { route } from "$lib/ROUTES";
+  import * as m from "$paraglide/messages";
 </script>
 
 <section id="hero">
@@ -13,7 +14,7 @@
       role="alert"
       variant="secondary"
     >
-      <span class="mr-3 rounded-full bg-primary px-4 py-1.5 text-xs text-white">Alpha</span>
+      <span class="mr-3 rounded-full bg-primary px-4 py-1.5 text-xs text-white">{m.headline()}</span>
       <span class="text-sm font-medium">KSS 0.1.0 is out! See what's new</span>
       <ChevronRight class="ml-2 size-4" />
     </Button>

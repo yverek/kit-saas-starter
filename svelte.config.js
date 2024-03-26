@@ -17,6 +17,7 @@ const config = {
       $constants: "src/lib/constants",
       $components: "src/lib/components",
       $utils: "src/lib/utils",
+      $paraglide: "src/paraglide",
       $validations: "src/lib/validations"
       // $functions: "src/lib/functions",
       // $stores: "src/lib/stores"
